@@ -1,0 +1,1853 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0b0c10" />
+<title>DUNK · Cartas NBA 2K26</title>
+<style>
+  /* ============ FUENTE ============ */
+  @import url('https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&display=swap');
+
+  /* ============ TOKENS ============ */
+  :root{
+    --bg:#0b0c10;
+    --bg-2:#101218;
+    --surface:#15171f;
+    --surface-2:#1b1e29;
+    --line:rgba(255,255,255,.08);
+    --line-strong:rgba(255,255,255,.16);
+    --text:#f4f5f7;
+    --muted:#9aa0ad;
+    --muted-2:#6b7280;
+    --accent:#f2552c;          /* naranja balón — acento único */
+    --accent-soft:#ff7a52;
+    --accent-ink:#1a0d07;
+    --good:#37d39b;
+    --bad:#ff5a6e;
+    --radius:18px;
+    --radius-sm:12px;
+    --radius-pill:999px;
+    --maxw:1320px;
+    --display:'Oswald','Arial Narrow',system-ui,sans-serif;
+    --sans:system-ui,-apple-system,'Segoe UI',Roboto,Helvetica,Arial,sans-serif;
+    --ease:cubic-bezier(.16,1,.3,1);
+  }
+
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{
+    margin:0; background:var(--bg); color:var(--text);
+    font-family:var(--sans); font-size:16px; line-height:1.5;
+    -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+    overflow-x:hidden; min-height:100dvh;
+  }
+  h1,h2,h3{font-family:var(--display); font-weight:600; letter-spacing:.01em; margin:0; line-height:1.05}
+  button{font-family:inherit; color:inherit; cursor:pointer}
+  img{display:block; max-width:100%}
+  ::selection{background:var(--accent); color:#fff}
+
+  /* ============ FONDO AMBIENTE ============ */
+  .bg-arena{position:fixed; inset:0; z-index:-2; pointer-events:none;
+    background:
+      radial-gradient(120% 80% at 50% -10%, rgba(242,85,44,.16), transparent 55%),
+      radial-gradient(90% 60% at 100% 110%, rgba(56,108,255,.10), transparent 60%),
+      radial-gradient(70% 50% at 0% 100%, rgba(55,211,155,.06), transparent 60%),
+      var(--bg);
+  }
+  .grain{position:fixed; inset:0; z-index:60; pointer-events:none; opacity:.05; mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");}
+
+  /* ============ HEADER ============ */
+  header.nav{position:sticky; top:0; z-index:40;
+    backdrop-filter:saturate(140%) blur(14px); -webkit-backdrop-filter:saturate(140%) blur(14px);
+    background:linear-gradient(180deg, rgba(11,12,16,.92), rgba(11,12,16,.66));
+    border-bottom:1px solid var(--line);}
+  .nav-in{max-width:var(--maxw); margin:0 auto; padding:12px 16px; display:flex; align-items:center; gap:16px;}
+  .brand{display:flex; align-items:center; gap:10px; flex:0 0 auto;}
+  .brand .mark{width:34px; height:34px; border-radius:10px; flex:0 0 auto;
+    background:radial-gradient(circle at 32% 28%, var(--accent-soft), var(--accent) 60%, #b8300f);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 4px 14px rgba(242,85,44,.45);
+    position:relative; overflow:hidden;}
+  .brand .mark::before,.brand .mark::after{content:""; position:absolute; background:rgba(0,0,0,.55);}
+  .brand .mark::before{inset:0 48% 0 48%;}
+  .brand .mark::after{inset:48% 0 48% 0;}
+  .brand .word{font-family:var(--display); font-weight:700; font-size:22px; letter-spacing:.06em; line-height:1;}
+  .brand .word b{color:var(--accent)}
+  .brand .sub{font-size:10.5px; letter-spacing:.18em; text-transform:uppercase; color:var(--muted-2); line-height:1; margin-top:3px;}
+
+  .tabs{margin-left:auto; display:flex; gap:4px; background:var(--surface); border:1px solid var(--line);
+    padding:4px; border-radius:var(--radius-pill);}
+  .tab{border:0; background:transparent; color:var(--muted); padding:9px 16px; border-radius:var(--radius-pill);
+    font-family:var(--display); font-weight:600; font-size:14px; letter-spacing:.04em; text-transform:uppercase;
+    transition:color .2s, background .2s; white-space:nowrap;}
+  .tab[aria-selected="true"]{background:var(--accent); color:#fff; box-shadow:0 4px 14px rgba(242,85,44,.4);}
+  .tab:hover:not([aria-selected="true"]){color:var(--text)}
+
+  .progress-chip{flex:0 0 auto; display:flex; align-items:center; gap:9px; padding:7px 12px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-pill); font-size:13px;}
+  .progress-chip .ring{--p:0; width:26px; height:26px; border-radius:50%; flex:0 0 auto;
+    background:conic-gradient(var(--accent) calc(var(--p)*1%), rgba(255,255,255,.12) 0);
+    display:grid; place-items:center; position:relative;}
+  .progress-chip .ring::after{content:""; position:absolute; inset:4px; border-radius:50%; background:var(--surface);}
+  .progress-chip b{font-family:var(--display); font-weight:600; position:relative; z-index:1; font-size:10px;}
+  .progress-chip span{color:var(--muted); white-space:nowrap}
+
+  /* campana de mensajes */
+  .bell{position:relative; flex:0 0 auto; width:40px; height:40px; border-radius:50%; cursor:pointer;
+    display:grid; place-items:center; color:var(--text);
+    background:var(--surface); border:1px solid var(--line); transition:background .2s, transform .1s;}
+  .bell:hover{background:rgba(255,255,255,.10)}
+  .bell:active{transform:scale(.94)}
+  .bell-badge{position:absolute; top:-4px; right:-4px; min-width:18px; height:18px; padding:0 4px;
+    border-radius:999px; background:var(--accent); color:#fff; box-shadow:0 0 0 2px var(--bg);
+    font-family:var(--display); font-weight:700; font-size:10px; line-height:18px; text-align:center;}
+  /* monedas */
+  .coin-ico{display:inline-block; width:16px; height:16px; flex:0 0 auto; vertical-align:-3px;
+    background:url("data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%2024%2024'%3E%3Ccircle%20cx='12'%20cy='12'%20r='11'%20fill='%23ef7a25'/%3E%3Cg%20fill='none'%20stroke='%235a2208'%20stroke-width='1.4'%3E%3Ccircle%20cx='12'%20cy='12'%20r='11'/%3E%3Cpath%20d='M12%201V23'/%3E%3Cpath%20d='M1%2012H23'/%3E%3Cpath%20d='M4.2%204.2C9%208%209%2016%204.2%2019.8'/%3E%3Cpath%20d='M19.8%204.2C15%208%2015%2016%2019.8%2019.8'/%3E%3C/g%3E%3C/svg%3E") center/contain no-repeat;
+    filter:drop-shadow(0 1px 1px rgba(0,0,0,.45));}
+  .coins-chip{flex:0 0 auto; display:flex; align-items:center; gap:7px; padding:7px 12px;
+    background:var(--surface); border:1px solid var(--line); border-radius:var(--radius-pill);}
+  .coins-chip b{font-family:var(--display); font-weight:700; font-size:14px; color:#ffd76b;}
+  .pack-buy .coin-ico{width:14px; height:14px; vertical-align:-2px;}
+  .pack-buy.cant-afford{opacity:.5;}
+  .mg-reward{margin-top:2px; color:#ffd24d; font-family:var(--display); font-weight:700; font-size:18px;}
+  .mg-reward .coin-ico{width:16px;height:16px; vertical-align:-2px; margin-right:3px;}
+  /* lista de mensajes */
+  .msg-list{padding:8px 16px 22px; display:flex; flex-direction:column; gap:10px;}
+  .msg{display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:14px;
+    border:1px solid var(--line); background:rgba(255,255,255,.03);}
+  .msg.claimed{opacity:.55}
+  .msg-ico{font-size:26px; line-height:1; flex:0 0 auto;}
+  .msg-body{flex:1 1 auto; min-width:0}
+  .msg-body h4{margin:0; font-size:14.5px; font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:.02em;}
+  .msg-body p{margin:3px 0 0; font-size:13px; color:var(--muted);}
+  .msg-claim{flex:0 0 auto; padding:9px 16px; font-size:13px;}
+  .msg-done{flex:0 0 auto; font-size:12px; color:var(--muted); font-weight:600; text-transform:uppercase; letter-spacing:.05em;}
+
+  /* ============ LAYOUT ============ */
+  main{max-width:var(--maxw); margin:0 auto; padding:22px 16px 96px;}
+  .view{display:none; animation:viewIn .45s var(--ease) both;}
+  .view.active{display:block;}
+  @keyframes viewIn{from{opacity:0; transform:translateY(8px)} to{opacity:1; transform:none}}
+
+  .view-head{display:flex; align-items:flex-end; justify-content:space-between; gap:16px; flex-wrap:wrap; margin-bottom:18px;}
+  .view-head h2{font-size:clamp(26px,5vw,42px); text-transform:uppercase; letter-spacing:.02em; font-weight:700;}
+  .view-head p{color:var(--muted); margin:6px 0 0; max-width:60ch; font-size:14.5px;}
+
+  /* ============ CONTROLES ALBUM ============ */
+  .controls{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:18px;}
+  .field{position:relative; flex:1 1 200px; min-width:160px;}
+  .field input,.field select{width:100%; background:var(--surface); border:1px solid var(--line); color:var(--text);
+    padding:11px 13px; border-radius:var(--radius-sm); font-size:14px; font-family:inherit; outline:none;
+    transition:border-color .2s, box-shadow .2s;}
+  .field input::placeholder{color:var(--muted-2)}
+  .field input:focus,.field select:focus{border-color:var(--accent); box-shadow:0 0 0 3px rgba(242,85,44,.22)}
+  .field select{appearance:none; -webkit-appearance:none; cursor:pointer; padding-right:34px;}
+  .field.sel::after{content:""; position:absolute; right:14px; top:50%; width:7px; height:7px; pointer-events:none;
+    border-right:2px solid var(--muted); border-bottom:2px solid var(--muted); transform:translateY(-70%) rotate(45deg);}
+  .seg{display:flex; gap:4px; background:var(--surface); border:1px solid var(--line); padding:4px; border-radius:var(--radius-sm);}
+  .seg button{border:0; background:transparent; color:var(--muted); padding:8px 13px; border-radius:9px; font-size:13px; font-weight:600; transition:.2s;}
+  .seg button[aria-pressed="true"]{background:var(--surface-2); color:var(--text)}
+
+  /* ============ CARTA ============ */
+  .grid{display:grid; gap:14px; grid-template-columns:repeat(auto-fill,minmax(148px,1fr));}
+  @media(min-width:560px){.grid{gap:18px; grid-template-columns:repeat(auto-fill,minmax(172px,1fr));}}
+
+  .card{
+    --c1:#444; --c2:#222; --foil:.12; --rx:0deg; --ry:0deg;
+    position:relative; border:0; padding:0; background:transparent;
+    aspect-ratio:3/4.15; border-radius:var(--radius); perspective:900px; width:100%;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .card-inner{position:absolute; inset:0; border-radius:inherit; overflow:hidden;
+    transform:rotateX(var(--rx)) rotateY(var(--ry)); transform-style:preserve-3d;
+    transition:transform .4s var(--ease), box-shadow .3s;
+    background:
+      linear-gradient(160deg, color-mix(in srgb,var(--c1) 92%,#000) 0%, color-mix(in srgb,var(--c2) 80%,#000) 100%);
+    box-shadow:0 10px 26px rgba(0,0,0,.5), inset 0 0 0 1px rgba(255,255,255,.10), inset 0 1px 0 rgba(255,255,255,.22);
+    will-change:transform;
+  }
+  .card:hover .card-inner{box-shadow:0 22px 50px rgba(0,0,0,.6), inset 0 0 0 1px rgba(255,255,255,.22), 0 0 28px color-mix(in srgb,var(--c1) 50%, transparent);}
+
+  .card-img{position:absolute; inset:0; z-index:1;}
+  .card-img img{width:100%; height:100%; object-fit:cover; object-position:center 16%;
+    -webkit-mask-image:linear-gradient(180deg,#000 60%, transparent 99%); mask-image:linear-gradient(180deg,#000 60%, transparent 99%);}
+  .card-img::after{content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, transparent 38%, color-mix(in srgb,var(--c2) 70%,#000) 96%);}
+
+  .card-logo{position:absolute; z-index:1; right:-18px; top:46%; width:140px; height:140px; opacity:.14;
+    background-size:contain; background-repeat:no-repeat; background-position:center; filter:saturate(0) brightness(1.6); pointer-events:none;}
+
+  /* lámina holográfica */
+  .card-foil{position:absolute; inset:0; z-index:3; border-radius:inherit; pointer-events:none; opacity:var(--foil);
+    background:
+      repeating-linear-gradient(115deg,
+        hsl(0 92% 64%/.78) 0%, hsl(50 92% 64%/.78) 12%, hsl(120 86% 58%/.78) 24%,
+        hsl(190 92% 62%/.78) 36%, hsl(255 92% 66%/.78) 48%, hsl(320 92% 64%/.78) 60%, hsl(0 92% 64%/.78) 72%);
+    background-size:220% 220%; background-position:calc(var(--mx,50%)) calc(var(--my,50%));
+    mix-blend-mode:overlay; transition:opacity .3s;}
+  .card-shine{position:absolute; inset:0; z-index:4; border-radius:inherit; pointer-events:none; opacity:.45;
+    background:radial-gradient(150px 150px at var(--mx,38%) var(--my,30%), rgba(255,255,255,.5), transparent 62%);
+    mix-blend-mode:soft-light; transition:opacity .3s;}
+  .card:hover .card-shine{opacity:1}
+  .card:hover .card-foil{opacity:calc(var(--foil) + .18)}
+
+  /* brillo extra solo para los muy altos (sin etiqueta) */
+  .card[data-glow="1"] .card-inner::after{content:""; position:absolute; inset:0; z-index:2; border-radius:inherit; pointer-events:none;
+    box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.28), inset 0 0 22px color-mix(in srgb,var(--c1) 38%, transparent);}
+  .card[data-glow="1"] .card-foil{animation:foilDrift 7s linear infinite;}
+  @keyframes foilDrift{0%{background-position:0% 50%}50%{background-position:100% 60%}100%{background-position:0% 50%}}
+
+  .card-ovr{position:absolute; z-index:5; top:9px; left:11px; display:flex; flex-direction:column; align-items:center; line-height:.82;
+    text-shadow:0 2px 6px rgba(0,0,0,.7);}
+  .card-ovr b{font-family:var(--display); font-weight:700; font-size:30px;}
+  .card.finals .card-ovr b{color:#ffd23e;}   /* media mejorada en amarillo */
+  .card-star{position:absolute; z-index:6; top:8px; right:11px; font-size:16px; line-height:1;
+    color:#ffd23e; text-shadow:0 1px 3px rgba(0,0,0,.75);}
+  .card.finals:not(.fcard) .card-dup{top:32px;}   /* la repetida baja para no chocar con la estrella */
+  .card-ovr .ovr-orig{font-family:var(--display); font-weight:600; font-size:12px; color:#fff;
+    opacity:.92; margin-top:1px; text-shadow:0 1px 3px rgba(0,0,0,.85);}
+  .card-ovr span{font-family:var(--display); font-weight:600; font-size:12px; letter-spacing:.06em; opacity:.92; margin-top:2px;
+    background:rgba(0,0,0,.35); padding:1px 6px; border-radius:6px;}
+  .card-info{position:absolute; z-index:5; left:11px; right:11px; bottom:11px;}
+  .card-info h3{font-size:15.5px; font-weight:600; letter-spacing:.01em; text-shadow:0 2px 8px rgba(0,0,0,.85); text-transform:uppercase;}
+  .card-info p{margin:3px 0 0; font-size:11px; color:rgba(255,255,255,.78); text-transform:uppercase; letter-spacing:.08em; text-shadow:0 1px 4px rgba(0,0,0,.8);}
+  .card-dup{position:absolute; z-index:5; top:10px; right:10px; font-family:var(--display); font-weight:600; font-size:12px;
+    background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.22); padding:2px 8px; border-radius:var(--radius-pill);}
+
+  /* carta bloqueada (no poseída) */
+  .card.locked .card-inner{background:linear-gradient(160deg,#181a22,#0e0f15); box-shadow:0 8px 20px rgba(0,0,0,.4), inset 0 0 0 1px var(--line);}
+  .card.locked .card-img,.card.locked .card-foil,.card.locked .card-shine,.card.locked .card-ovr,.card.locked .card-dup{display:none}
+  .card.locked .card-logo{opacity:.07; filter:saturate(0) brightness(2)}
+  .card.locked::before{content:"?"; position:absolute; inset:0; z-index:5; display:grid; place-items:center;
+    font-family:var(--display); font-weight:700; font-size:64px; color:rgba(255,255,255,.12);}
+  .card.locked .card-info h3{color:var(--muted-2); font-size:12px}
+  .card.locked .card-info p{color:var(--muted-2)}
+
+  .empty{grid-column:1/-1; text-align:center; padding:54px 20px; color:var(--muted);
+    border:1px dashed var(--line-strong); border-radius:var(--radius); background:rgba(255,255,255,.015);}
+  .empty h3{font-size:22px; color:var(--text); margin-bottom:8px; text-transform:uppercase}
+
+  /* ============ BOTONES ============ */
+  .btn{display:inline-flex; align-items:center; justify-content:center; gap:9px; border:0; border-radius:var(--radius-pill);
+    font-family:var(--display); font-weight:600; font-size:15px; letter-spacing:.04em; text-transform:uppercase;
+    padding:13px 24px; transition:transform .12s var(--ease), box-shadow .25s, background .25s; white-space:nowrap;}
+  .btn:active{transform:scale(.97)}
+  .btn-primary{background:linear-gradient(180deg,var(--accent-soft),var(--accent)); color:#fff;
+    box-shadow:0 8px 22px rgba(242,85,44,.42), inset 0 1px 0 rgba(255,255,255,.35);}
+  .btn-primary:hover{box-shadow:0 12px 30px rgba(242,85,44,.55), inset 0 1px 0 rgba(255,255,255,.45);}
+  .btn-ghost{background:var(--surface); color:var(--text); border:1px solid var(--line-strong);}
+  .btn-ghost:hover{background:var(--surface-2)}
+  .btn[disabled]{opacity:.45; pointer-events:none}
+
+  /* ============ SOBRES ============ */
+  .packs-wrap{display:grid; gap:18px; grid-template-columns:1fr; max-width:760px; margin:0 auto;}
+  @media(min-width:640px){.packs-wrap{grid-template-columns:1fr 1fr}}
+  @media(min-width:1000px){.packs-wrap{grid-template-columns:repeat(3,1fr); max-width:1100px}}
+  .teams-done{margin-top:8px; font-size:13px; color:var(--muted);}
+  .teams-done b{color:var(--accent); font-family:var(--display); font-weight:700; font-size:15px;}
+
+  /* ===== EVENTO FINALES ===== */
+  .event-banner{display:flex; align-items:center; gap:14px; margin:0 0 24px; padding:14px 18px; border-radius:16px;
+    border:1px solid rgba(242,85,44,.5);
+    background:linear-gradient(100deg, rgba(242,85,44,.20), rgba(242,85,44,.06) 55%, transparent);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.08);}
+  .event-trophy{color:var(--accent); line-height:0; filter:drop-shadow(0 2px 8px rgba(242,85,44,.6));}
+  .event-body{display:flex; flex-direction:column; gap:3px;}
+  .event-text{font-size:14px; color:var(--text);}
+  .event-text b{font-family:var(--display); font-weight:700; letter-spacing:.02em; color:var(--accent);}
+  .event-count{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.09em; font-weight:600;}
+  .card.finals .card-inner{box-shadow:inset 0 0 0 2px rgba(232,184,75,.9);}
+  .card-finals{position:absolute; z-index:6; top:9px; left:50%; transform:translateX(-50%);
+    font-family:var(--display); font-weight:700; font-size:10px; letter-spacing:.07em; white-space:nowrap;
+    padding:4px 9px; border-radius:999px; color:#221806;
+    background:linear-gradient(180deg,#ffe49c,#e3b347); box-shadow:0 2px 9px rgba(0,0,0,.45);}
+
+  /* ===== CARTA ESPECIAL NBA FINALS (dorada) ===== */
+  .card.fcard{background:linear-gradient(150deg,#e9c349,#7a5a14);}
+  /* contorno dorado brillante + resplandor */
+  .card.fcard .card-inner{box-shadow:
+    inset 0 0 0 2px #fff0b0, inset 0 0 0 4px #d9af3c, inset 0 0 18px rgba(255,224,120,.35),
+    0 0 22px rgba(233,195,73,.55), 0 16px 46px rgba(0,0,0,.6);
+    animation:fcardGlow 2.6s ease-in-out infinite;}
+  @keyframes fcardGlow{
+    0%,100%{box-shadow:inset 0 0 0 2px #fff0b0, inset 0 0 0 4px #d9af3c, inset 0 0 18px rgba(255,224,120,.35), 0 0 18px rgba(233,195,73,.45), 0 16px 46px rgba(0,0,0,.6);}
+    50%{box-shadow:inset 0 0 0 2px #fff6cf, inset 0 0 0 4px #f0cd5e, inset 0 0 24px rgba(255,230,140,.55), 0 0 34px rgba(255,210,80,.78), 0 16px 46px rgba(0,0,0,.6);}
+  }
+  /* lámina DORADA en vez de arcoíris (solo carta Finals) */
+  .card.fcard .card-foil{mix-blend-mode:overlay;
+    background:repeating-linear-gradient(115deg,
+      rgba(255,247,200,.85) 0%, rgba(214,164,52,.55) 14%, rgba(122,86,20,.4) 26%,
+      rgba(255,224,120,.8) 40%, rgba(214,164,52,.5) 54%, rgba(255,247,200,.85) 70%);
+    background-size:220% 220%;}
+  .card.fcard .card-finals{display:none}              /* sin la pildora pequeña */
+  /* sello "Finals" abajo, sin emoji */
+  .fcard-mark{position:absolute; z-index:6; bottom:50px; left:50%; transform:translateX(-50%);
+    display:flex; align-items:center; padding:3px 16px; border-radius:999px; white-space:nowrap;
+    background:linear-gradient(180deg,#fff3c4,#e7be46); box-shadow:0 2px 10px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.6);}
+  .fcard-mark .fc-word{font-family:Georgia,'Times New Roman',serif; font-style:italic; font-weight:700;
+    font-size:16px; color:#1a1305; letter-spacing:.01em; text-shadow:0 1px 0 rgba(255,255,255,.4);}
+  .card.fcard .card-ovr b{color:#ffe06a;}
+  /* corona de campeón (Knicks Finals) */
+  .champ-badge{position:absolute; z-index:7; top:7px; left:50%; transform:translateX(-50%);
+    display:flex; align-items:center; gap:3px; padding:2px 7px; border-radius:999px; white-space:nowrap;
+    font-family:var(--display); font-weight:600; font-size:7.5px; letter-spacing:.07em; text-transform:uppercase;
+    color:#ffdf8a; background:rgba(0,0,0,.42);
+    box-shadow:inset 0 0 0 1px rgba(233,195,73,.55);}
+  .champ-badge svg{color:#ffdf8a; flex:0 0 auto; width:9px; height:9px;}
+
+  /* selector de versiones en el detalle (las dos en grande) */
+  .ver-label{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:16px 0 10px;}
+  .ver-row{display:flex; gap:14px; flex-wrap:wrap;}
+  .ver{position:relative; width:clamp(140px,44%,180px); cursor:pointer; border-radius:16px; padding:8px 8px 30px; border:2px solid var(--line); background:rgba(255,255,255,.02); transition:.18s;}
+  .ver .card{pointer-events:none; width:100%;}
+  .ver .ver-name{position:absolute; bottom:8px; left:0; right:0; text-align:center; font-size:12px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
+  .ver:hover{border-color:var(--line-strong)}
+  .ver.sel{border-color:var(--accent); background:rgba(242,85,44,.10);}
+  .ver.sel .ver-name{color:var(--accent)}
+  .ver:hover{border-color:var(--line-strong)}
+  .ver.sel{border-color:var(--accent); background:rgba(242,85,44,.08);}
+  .ver.sel .ver-name{color:var(--accent)}
+  .reveal-dot.dot-finals{box-shadow:0 0 0 2px #e9c349, 0 0 12px rgba(233,195,73,.7);}
+  .pack{position:relative; border-radius:22px; padding:26px 22px 24px; overflow:hidden; isolation:isolate;
+    border:1px solid var(--line-strong); background:var(--surface); display:flex; flex-direction:column; min-height:340px;}
+  .pack.std{background:linear-gradient(165deg,#1a1d29,#0f1118);}
+  .pack.elite{background:linear-gradient(165deg,#2a1810,#140a06);}
+  .pack::before{content:""; position:absolute; inset:0; z-index:-1; opacity:.6;
+    background:radial-gradient(120% 70% at 50% 0%, color-mix(in srgb,var(--pc,#386cff) 40%, transparent), transparent 60%);}
+  .pack .pk-foil{position:absolute; inset:0; z-index:-1; opacity:.25; pointer-events:none;
+    background:repeating-linear-gradient(125deg,transparent 0 14px, color-mix(in srgb,var(--pc,#386cff) 50%, transparent) 14px 16px);}
+  .pack .pk-kicker{font-family:var(--display); font-size:11px; letter-spacing:.24em; text-transform:uppercase; color:var(--muted);}
+  .pack h3{font-size:30px; text-transform:uppercase; margin-top:6px; letter-spacing:.02em;}
+  .pack .pk-desc{color:var(--muted); font-size:14px; margin:10px 0 0; flex:1;}
+  .pack .pk-badge{position:absolute; top:18px; right:18px; font-family:var(--display); font-weight:600; font-size:11px; letter-spacing:.1em;
+    text-transform:uppercase; padding:5px 11px; border-radius:var(--radius-pill); border:1px solid var(--line-strong); color:var(--text);}
+  .pack .pk-art{position:absolute; right:-26px; bottom:-10px; font-family:var(--display); font-weight:700; font-size:150px; line-height:.8;
+    color:rgba(255,255,255,.05); z-index:-1;}
+  .pack .btn{margin-top:18px; align-self:flex-start}
+  .pack-stats{text-align:center; color:var(--muted); font-size:13px; margin-top:22px;}
+  .pack-stats b{color:var(--text); font-family:var(--display)}
+
+  /* overlay de apertura */
+  .opener{position:fixed; inset:0; z-index:80; display:none; place-items:center; padding:20px;
+    background:rgba(6,7,10,.86); backdrop-filter:blur(8px); -webkit-backdrop-filter:blur(8px);}
+  .opener.show{display:grid; animation:fade .3s ease both}
+  @keyframes fade{from{opacity:0}to{opacity:1}}
+  .opener-stage{position:relative; width:min(94vw,520px); text-align:center;}
+  .reveal-strip{display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin-bottom:18px; min-height:54px;}
+  .reveal-dot{width:38px; height:52px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface);
+    display:grid; place-items:center; font-family:var(--display); font-weight:600; font-size:15px; color:var(--muted-2); transition:.3s;}
+  .reveal-dot.on{color:#fff; border-color:transparent;}
+  .opener .bigcard{width:min(72vw,260px); margin:0 auto;}
+  .opener .tap-hint{color:var(--muted); margin-top:16px; font-size:13.5px; letter-spacing:.04em; min-height:20px;}
+  .opener .opener-actions{display:flex; gap:10px; justify-content:center; margin-top:18px;}
+  .flip-in{animation:flipIn .6s var(--ease) both}
+  @keyframes flipIn{from{opacity:0; transform:rotateY(90deg) scale(.85)} to{opacity:1; transform:none}}
+
+  /* ============ QUINTETO ============ */
+  .lineup-wrap{display:grid; gap:22px; grid-template-columns:1fr; align-items:start;}
+  @media(min-width:880px){.lineup-wrap{grid-template-columns:1.3fr .9fr}}
+  .court{position:relative; border-radius:var(--radius); border:1px solid var(--line); overflow:hidden;
+    background:
+      linear-gradient(180deg, rgba(242,85,44,.05), transparent 40%),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.018) 0 2px, transparent 2px 60px),
+      linear-gradient(160deg,#13202a,#0c1014);
+    padding:18px;}
+  .court-top{display:flex; justify-content:space-between; align-items:baseline; margin-bottom:14px;}
+  .court-top .ttl{font-family:var(--display); text-transform:uppercase; letter-spacing:.08em; color:var(--muted); font-size:12px;}
+  .slots{display:grid; grid-template-columns:repeat(5,1fr); gap:10px;}
+  @media(max-width:520px){.slots{grid-template-columns:repeat(2,1fr)}}
+  .slot{position:relative; aspect-ratio:3/4.15; border-radius:14px; border:1.5px dashed var(--line-strong);
+    background:rgba(255,255,255,.02); display:grid; place-items:center; overflow:hidden; transition:.2s;}
+  .slot:hover{border-color:var(--accent); background:rgba(242,85,44,.06)}
+  .slot .pos{font-family:var(--display); font-weight:700; font-size:26px; color:var(--muted-2);}
+  .slot .add{position:absolute; bottom:8px; font-size:10px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted-2);}
+  .slot.filled{border-style:solid; border-color:transparent; padding:0;}
+  .slot.filled .mini{position:absolute; inset:0;}
+  .mini{border-radius:inherit; overflow:hidden; background:linear-gradient(160deg,var(--c1),var(--c2));}
+  .mini img{width:100%; height:100%; object-fit:cover; object-position:center 14%;
+    -webkit-mask-image:linear-gradient(180deg,#000 55%,transparent); mask-image:linear-gradient(180deg,#000 55%,transparent)}
+  .mini .m-ovr{position:absolute; top:5px; left:7px; font-family:var(--display); font-weight:700; font-size:19px; text-shadow:0 1px 4px #000}
+  .mini .m-nm{position:absolute; bottom:6px; left:7px; right:7px; font-size:9.5px; text-transform:uppercase; letter-spacing:.04em; font-weight:700; text-shadow:0 1px 4px #000}
+  .mini .m-rm{position:absolute; top:5px; right:6px; width:18px; height:18px; border-radius:50%; background:rgba(0,0,0,.55);
+    border:1px solid rgba(255,255,255,.3); display:grid; place-items:center; font-size:12px; line-height:1; color:#fff}
+  .slot .pos-tag{position:absolute; top:6px; right:7px; z-index:2; font-family:var(--display); font-size:10px; font-weight:600;
+    background:rgba(0,0,0,.5); padding:1px 6px; border-radius:6px; letter-spacing:.06em}
+  .slot.match .pos-tag{background:var(--good); color:#06251a}
+
+  .panel{border:1px solid var(--line); border-radius:var(--radius); background:var(--surface); padding:20px;}
+  .stat-row{display:flex; justify-content:space-between; align-items:center; padding:11px 0; border-bottom:1px solid var(--line);}
+  .stat-row:last-of-type{border-bottom:0}
+  .stat-row .lbl{color:var(--muted); font-size:14px}
+  .stat-row .val{font-family:var(--display); font-weight:600; font-size:20px}
+  .stat-total .val{font-size:34px; color:var(--accent)}
+  .hint-line{color:var(--muted-2); font-size:12.5px; margin:10px 0 0; line-height:1.5}
+
+  /* marcador resultado */
+  .score{display:none; margin-top:16px; border-radius:14px; overflow:hidden; border:1px solid var(--line-strong);}
+  .score.show{display:block; animation:viewIn .4s var(--ease) both}
+  .score-head{padding:9px 14px; font-family:var(--display); text-transform:uppercase; letter-spacing:.1em; font-size:13px; text-align:center;}
+  .score.win .score-head{background:linear-gradient(90deg,rgba(55,211,155,.25),transparent); color:var(--good)}
+  .score.lose .score-head{background:linear-gradient(90deg,rgba(255,90,110,.22),transparent); color:var(--bad)}
+  .score-body{display:grid; grid-template-columns:1fr auto 1fr; align-items:center; padding:14px; gap:10px; background:var(--surface-2)}
+  .score-body .team{font-family:var(--display); font-weight:600; text-transform:uppercase; font-size:13px; color:var(--muted)}
+  .score-body .pts{font-family:var(--display); font-weight:700; font-size:40px; line-height:1}
+  .score-body .mid{color:var(--muted-2); font-size:12px}
+  .score-body .s-you{text-align:right}
+
+  /* ============ MODAL DETALLE / PICKER ============ */
+  .sheet{position:fixed; inset:0; z-index:90; display:none; align-items:center; justify-content:center; padding:18px;
+    background:rgba(6,7,10,.74); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px);}
+  .sheet.show{display:flex; animation:fade .25s ease both}
+  .sheet-card{position:relative; background:var(--bg-2); border:1px solid var(--line-strong); border-radius:22px;
+    width:min(96vw,900px); max-height:90dvh; overflow:auto; animation:sheetIn .4s var(--ease) both;}
+  @keyframes sheetIn{from{opacity:0; transform:translateY(16px) scale(.98)} to{opacity:1; transform:none}}
+  .sheet-close{position:absolute; top:12px; right:12px; z-index:5; width:38px; height:38px; border-radius:50%;
+    background:rgba(0,0,0,.5); border:1px solid var(--line-strong); color:#fff; font-size:20px; line-height:1; display:grid; place-items:center;}
+  .detail{display:grid; grid-template-columns:1fr; gap:0;}
+  @media(min-width:640px){.detail{grid-template-columns:300px 1fr}}
+  .detail-card{padding:24px; display:grid; place-items:center; background:radial-gradient(80% 60% at 50% 0%, rgba(255,255,255,.05), transparent);}
+  .detail-card .card{width:min(70vw,250px)}
+  .detail-info{padding:24px 26px 28px;}
+  .detail-info .eyebrow{font-family:var(--display); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent)}
+  .detail-info h2{font-size:32px; text-transform:uppercase; margin:8px 0 2px}
+  .detail-info .team-line{color:var(--muted); text-transform:uppercase; letter-spacing:.08em; font-size:13px}
+  .detail-grid{display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:20px 0;}
+  .dstat{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:13px 12px; text-align:center}
+  .dstat b{font-family:var(--display); font-weight:700; font-size:26px; display:block}
+  .dstat span{color:var(--muted); font-size:10.5px; text-transform:uppercase; letter-spacing:.1em}
+  .detail-actions{display:flex; gap:10px; flex-wrap:wrap}
+
+  .picker-head{padding:18px 20px 12px; border-bottom:1px solid var(--line); display:flex; align-items:center; gap:12px;}
+  .picker-head h3{font-size:22px; text-transform:uppercase}
+  .picker-head .pf{margin-left:auto; flex:0 0 auto; width:180px}
+  .picker-grid{padding:16px 20px 24px;}
+
+  /* ============ TOAST ============ */
+  .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); z-index:100;
+    background:var(--surface-2); border:1px solid var(--line-strong); color:var(--text); padding:12px 18px;
+    border-radius:var(--radius-pill); font-size:14px; opacity:0; pointer-events:none; transition:.3s var(--ease);
+    box-shadow:0 10px 30px rgba(0,0,0,.5); max-width:90vw;}
+  .toast.show{opacity:1; transform:translateX(-50%) translateY(0)}
+  .toast b{color:var(--accent)}
+
+  .skeleton{background:linear-gradient(100deg,var(--surface) 30%, var(--surface-2) 50%, var(--surface) 70%);
+    background-size:200% 100%; animation:sk 1.3s linear infinite; border-radius:var(--radius);}
+  @keyframes sk{from{background-position:200% 0}to{background-position:-200% 0}}
+
+  /* ============ BARRA INFERIOR (solo móvil) ============ */
+  .bottom-nav{display:none;}
+  @media (max-width:640px){
+    .nav-in{padding:11px 14px; gap:10px;}
+    .brand .word{font-size:20px}
+    .tabs{display:none}                 /* las pestañas del header se ocultan */
+    .coins-chip{margin-left:auto; padding:6px 10px;}
+    .progress-chip{display:none}        /* en móvil se oculta para dejar sitio a la cuenta */
+    .acct{width:34px; height:34px; font-size:14px;}
+    .acct-menu{right:12px; top:58px;}
+    main{padding-bottom:104px}
+    .opener-actions{flex-wrap:wrap}
+    .bottom-nav{display:flex; position:fixed; left:10px; right:10px; bottom:10px; z-index:45;
+      gap:6px; padding:6px; border-radius:var(--radius-pill); border:1px solid var(--line-strong);
+      background:linear-gradient(180deg, rgba(23,25,34,.94), rgba(13,15,22,.97));
+      backdrop-filter:saturate(150%) blur(16px); -webkit-backdrop-filter:saturate(150%) blur(16px);
+      box-shadow:0 -6px 26px rgba(0,0,0,.5);}
+    .bottom-nav .tab{flex:1; text-align:center; padding:12px 6px; font-size:13px; border-radius:var(--radius-pill);
+      background:transparent; color:var(--muted); font-family:var(--display); font-weight:600; letter-spacing:.04em;
+      text-transform:uppercase; border:0;}
+    .bottom-nav .tab[aria-selected="true"]{background:var(--accent); color:#fff; box-shadow:0 4px 14px rgba(242,85,44,.4);}
+  }
+
+  /* ============ REDUCED MOTION ============ */
+  /* ===== CUENTA / LOGIN ===== */
+  .acct{flex:0 0 auto; width:38px; height:38px; border-radius:50%; cursor:pointer; padding:0;
+    display:grid; place-items:center; color:#fff; font-family:var(--display); font-weight:700; font-size:15px;
+    background:linear-gradient(160deg,var(--accent),#b53517); border:1px solid var(--line-strong); text-transform:uppercase;}
+  .acct:active{transform:scale(.95)}
+  .acct-menu{position:absolute; top:64px; right:16px; z-index:60; display:none; flex-direction:column; gap:12px;
+    background:var(--surface); border:1px solid var(--line-strong); border-radius:14px; padding:14px; min-width:210px;
+    box-shadow:0 18px 50px rgba(0,0,0,.55);}
+  .acct-menu.show{display:flex}
+  .acct-who{font-size:13px; color:var(--muted); line-height:1.6}
+  .acct-who b{color:var(--text); font-family:var(--display); font-size:16px}
+  .auth{position:fixed; inset:0; z-index:200; display:none; align-items:center; justify-content:center; padding:20px;
+    background:radial-gradient(circle at 50% 0%, rgba(242,85,44,.20), transparent 60%), var(--bg);}
+  .auth.show{display:flex}
+  .auth-card{width:100%; max-width:380px; background:var(--surface); border:1px solid var(--line-strong);
+    border-radius:22px; padding:28px 24px; box-shadow:0 30px 80px rgba(0,0,0,.6);}
+  .auth-brand{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
+  .auth-brand .mark{width:40px; height:40px; border-radius:11px; background:linear-gradient(150deg,var(--accent),#b53517);}
+  .auth-brand .word{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:.06em;}
+  .auth-brand .word b{color:var(--accent)}
+  .auth-sub{color:var(--muted); font-size:14px; margin:4px 0 18px; line-height:1.5;}
+  .auth-tabs{display:flex; gap:6px; background:rgba(255,255,255,.05); border:1px solid var(--line); border-radius:12px; padding:5px; margin-bottom:16px;}
+  .auth-tab{flex:1; border:0; background:transparent; color:var(--muted); font-family:var(--display); font-weight:600;
+    padding:10px; border-radius:9px; cursor:pointer; font-size:14px; text-transform:uppercase; letter-spacing:.03em;}
+  .auth-tab[aria-selected="true"]{background:var(--accent); color:#fff;}
+  #auth-form{display:flex; flex-direction:column; gap:12px;}
+  #auth-form input{background:var(--bg); border:1px solid var(--line-strong); border-radius:12px; padding:14px 16px;
+    color:var(--text); font-size:15px; outline:none; font-family:inherit;}
+  #auth-form input:focus{border-color:var(--accent);}
+  .auth-err{color:#ff6b6b; font-size:13px; min-height:16px; margin:0;}
+  #auth-submit{padding:14px; font-size:16px;}
+  .auth-skip{display:block; margin:14px auto 0; background:none; border:0; color:var(--muted); font-size:13px; text-decoration:underline; cursor:pointer;}
+
+  @media (prefers-reduced-motion: reduce){
+    *{animation-duration:.001ms !important; animation-iteration-count:1 !important; transition-duration:.001ms !important}
+    .card-inner{transform:none !important}
+  }
+
+  /* ===== MINIJUEGO: ENCESTES ===== */
+  .mg-stage{position:relative; width:100%; height:min(76vh,700px); margin-top:4px;
+    border-radius:18px; overflow:hidden; border:1px solid var(--line); background:#0f0b18;
+    display:flex; align-items:center; justify-content:center; touch-action:none;}
+  .mg-stage canvas{display:block; touch-action:none; background:linear-gradient(180deg,#1c1830,#120f1f);}
+  .mg-hud{position:absolute; top:0; left:0; right:0; display:flex; justify-content:space-between; align-items:flex-start;
+    padding:12px 14px; pointer-events:none; color:#fff; font-family:var(--display); font-weight:700;}
+  .mg-stat{background:rgba(255,255,255,.10); backdrop-filter:blur(6px); padding:7px 13px; border-radius:12px;
+    font-size:13px; letter-spacing:.5px;}
+  .mg-stat span{color:#ffd24d}
+  .mg-hud .big{font-size:22px}
+  .mg-msg{position:absolute; top:42%; left:50%; transform:translate(-50%,-50%); color:#fff; font-family:var(--display);
+    font-weight:800; font-size:32px; text-shadow:0 4px 20px rgba(0,0,0,.5); opacity:0; pointer-events:none;
+    transition:opacity .15s; text-align:center; white-space:nowrap;}
+  .mg-hint{position:absolute; bottom:86px; left:50%; transform:translateX(-50%); text-align:center;
+    color:rgba(255,255,255,.78); font-size:12.5px; pointer-events:none; transition:opacity .4s;
+    background:rgba(0,0,0,.4); padding:6px 14px; border-radius:999px; backdrop-filter:blur(3px); white-space:nowrap;}
+  .mg-over{position:absolute; inset:0; display:none; flex-direction:column; align-items:center; justify-content:center;
+    gap:14px; background:rgba(13,8,34,.85); backdrop-filter:blur(8px); color:#fff; text-align:center; z-index:5;}
+  .mg-over h1{font-size:34px}
+  .mg-over p{font-size:16px; opacity:.85}
+  .mg-over .mg-final{font-size:54px; font-weight:900; color:#ffd24d; font-family:var(--display)}
+  .mg-btn{margin-top:8px; background:var(--accent); color:#fff; border:none; font-family:var(--display);
+    font-size:17px; font-weight:700; padding:13px 32px; border-radius:40px; cursor:pointer;
+    box-shadow:0 6px 0 #b53517; transition:transform .08s, box-shadow .08s;}
+  .mg-btn:active{transform:translateY(3px); box-shadow:0 3px 0 #b53517;}
+  @media(max-width:640px){ .bottom-nav .tab{font-size:11.5px; padding:11px 3px; letter-spacing:.02em;} }
+</style>
+</head>
+<body>
+  <div class="bg-arena" aria-hidden="true"></div>
+  <div class="grain" aria-hidden="true"></div>
+
+  <header class="nav">
+    <div class="nav-in">
+      <div class="brand">
+        <div class="mark" aria-hidden="true"></div>
+        <div>
+          <div class="word">DUN<b>K</b></div>
+          <div class="sub">Cartas NBA 2K26</div>
+        </div>
+      </div>
+      <nav class="tabs" role="tablist" aria-label="Modos">
+        <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
+        <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
+        <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
+        <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
+      </nav>
+      <div class="coins-chip" title="Balones (gana jugando Encestes)"><span class="coin-ico"></span><b class="coin-amount">0</b></div>
+      <button class="bell" id="bell" aria-label="Mensajes" title="Mensajes">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"></path>
+          <path d="M13.7 21a2 2 0 0 1-3.4 0"></path>
+        </svg>
+        <span class="bell-badge" id="bell-badge" hidden>0</span>
+      </button>
+      <div class="progress-chip" title="Cartas distintas coleccionadas">
+        <div class="ring" id="prog-ring"><b id="prog-pct">0%</b></div>
+        <span><b id="prog-count">0</b> / 150</span>
+      </div>
+      <button class="acct" id="acct" hidden aria-label="Cuenta"><span id="acct-ini">?</span></button>
+      <div class="acct-menu" id="acct-menu">
+        <div class="acct-who">Sesión iniciada como<br><b id="acct-name"></b></div>
+        <button class="btn btn-ghost" id="acct-logout">Cerrar sesión</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- ===== LOGIN / CUENTA ===== -->
+  <div id="auth" class="auth" data-mode="login">
+    <div class="auth-card">
+      <div class="auth-brand"><div class="mark" aria-hidden="true"></div><div class="word">DUN<b>K</b></div></div>
+      <p class="auth-sub">Crea tu cuenta y tu colección, balones y progreso se guardan en la nube.</p>
+      <div class="auth-tabs" role="tablist">
+        <button class="auth-tab" data-mode="login" aria-selected="true">Entrar</button>
+        <button class="auth-tab" data-mode="register" aria-selected="false">Crear cuenta</button>
+      </div>
+      <form id="auth-form" autocomplete="on">
+        <input id="auth-user" placeholder="Usuario" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" />
+        <input id="auth-pass" type="password" placeholder="Contraseña" autocomplete="current-password" />
+        <p class="auth-err" id="auth-err"></p>
+        <button class="btn btn-primary" id="auth-submit" type="submit">Entrar</button>
+      </form>
+      <button class="auth-skip" id="auth-skip">Jugar sin cuenta</button>
+    </div>
+  </div>
+
+  <main>
+    <!-- ===== BANNER EVENTO FINALES ===== -->
+    <div id="event-banner" class="event-banner" style="display:none">
+      <div class="event-trophy"><svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg></div>
+      <div class="event-body">
+        <span id="event-text" class="event-text"></span>
+        <span id="event-count" class="event-count"></span>
+      </div>
+    </div>
+    <!-- ===== ÁLBUM ===== -->
+    <section class="view active" id="view-album" role="tabpanel">
+      <div class="view-head">
+        <div>
+          <h2>Tu colección</h2>
+          <p>150 estrellas reales de la NBA con su media de NBA 2K26. Abre sobres para desbloquearlas y completa el álbum.</p>
+          <p id="teams-done" class="teams-done">Equipos completos: <b>0</b> / 30 · cada equipo completo te da un Sobre de Recompensa</p>
+        </div>
+      </div>
+      <div class="controls">
+        <div class="field"><input id="search" type="search" placeholder="Buscar jugador…" autocomplete="off" /></div>
+        <div class="field sel" style="flex:0 1 200px"><select id="filter-team"><option value="">Todos los equipos</option></select></div>
+        <div class="field sel" style="flex:0 1 180px"><select id="sort">
+          <option value="media">Media (mayor)</option>
+          <option value="media-asc">Media (menor)</option>
+          <option value="nombre">Nombre A-Z</option>
+          <option value="equipo">Equipo</option>
+        </select></div>
+        <div class="seg" role="group" aria-label="Filtro de posesión">
+          <button data-own="all" aria-pressed="true">Todas</button>
+          <button data-own="owned" aria-pressed="false">Las que tengo</button>
+        </div>
+      </div>
+      <div class="grid" id="album-grid"></div>
+    </section>
+
+    <!-- ===== SOBRES ===== -->
+    <section class="view" id="view-sobres" role="tabpanel">
+      <div class="view-head">
+        <div>
+          <h2>Abrir sobres</h2>
+          <p>Cada sobre cuesta balones. ¿Sin saldo? Juega <b>Encestes</b> para ganar más.</p>
+          <p class="teams-done">Tienes <span class="coin-ico"></span> <b class="coin-amount" style="color:#ffd76b">0</b> balones</p>
+        </div>
+      </div>
+      <div class="packs-wrap">
+        <div class="pack std" style="--pc:#386cff">
+          <div class="pk-foil"></div>
+          <span class="pk-badge">5 cartas</span>
+          <div class="pk-kicker">Sobre estándar</div>
+          <h3>Base</h3>
+          <p class="pk-desc">Cinco cartas aleatorias de toda la liga. La forma normal de crecer tu colección.</p>
+          <span class="pk-art">5</span>
+          <button class="btn btn-primary pack-buy" data-pack="std" id="btn-std">Abrir · <span class="coin-ico"></span> 150</button>
+        </div>
+        <div class="pack elite" style="--pc:#f2552c">
+          <div class="pk-foil"></div>
+          <span class="pk-badge">5 cartas · 1 top</span>
+          <div class="pk-kicker">Sobre élite</div>
+          <h3>Élite</h3>
+          <p class="pk-desc">Cinco cartas con una garantizada de media 88 o superior. Tu mejor opción para cazar cracks.</p>
+          <span class="pk-art">★</span>
+          <button class="btn btn-primary pack-buy" data-pack="elite" id="btn-elite">Abrir · <span class="coin-ico"></span> 600</button>
+        </div>
+        <div class="pack finals" id="pack-finals" style="--pc:#e8b84b; display:none">
+          <div class="pk-foil"></div>
+          <span class="pk-badge">Evento · 5 cartas</span>
+          <div class="pk-kicker">Finales NBA</div>
+          <h3>Finales</h3>
+          <p class="pk-desc">Sobre del evento: una estrella finalista (Spurs o Knicks) garantizada, con su boost de Finales.</p>
+          <span class="pk-art"><svg viewBox="0 0 24 24" width="140" height="140" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg></span>
+          <button class="btn btn-primary pack-buy" data-pack="finals" id="btn-finals">Abrir · <span class="coin-ico"></span> 1200</button>
+        </div>
+      </div>
+      <div class="pack-stats">Sobres abiertos: <b id="packs-opened">0</b> · Cartas obtenidas: <b id="cards-total">0</b></div>
+    </section>
+
+    <!-- ===== QUINTETO ===== -->
+    <section class="view" id="view-quinteto" role="tabpanel">
+      <div class="view-head">
+        <div>
+          <h2>Construye tu quinteto</h2>
+          <p>Elige 5 titulares de tu colección. Cubrir cada posición (PG·SG·SF·PF·C) suma química y poder total.</p>
+        </div>
+      </div>
+      <div class="lineup-wrap">
+        <div class="court">
+          <div class="court-top">
+            <span class="ttl">Tu quinteto inicial</span>
+            <span class="ttl" id="lineup-filled">0/5</span>
+          </div>
+          <div class="slots" id="slots"></div>
+        </div>
+        <div class="panel">
+          <div class="stat-row"><span class="lbl">Media de equipo</span><span class="val" id="st-avg">—</span></div>
+          <div class="stat-row"><span class="lbl">Química (posiciones)</span><span class="val" id="st-pos">+0</span></div>
+          <div class="stat-row"><span class="lbl">Conexión (mismo equipo)</span><span class="val" id="st-team">+0</span></div>
+          <div class="stat-row stat-total"><span class="lbl">Poder total</span><span class="val" id="st-total">0</span></div>
+          <p class="hint-line" id="lineup-hint">Toca un hueco para añadir un jugador.</p>
+          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap">
+            <button class="btn btn-ghost" id="btn-clear">Vaciar</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===== MINIJUEGO: ENCESTES ===== -->
+    <section class="view" id="view-juego" role="tabpanel">
+      <div class="view-head">
+        <div>
+          <h2>Encestes</h2>
+          <p>Arrastra el balón y suéltalo para encestar. Encadena canastas y suma puntos.</p>
+        </div>
+      </div>
+      <div class="mg-stage" id="mg-stage">
+        <canvas id="mg-c"></canvas>
+        <div class="mg-hud">
+          <div id="mg-score" class="mg-stat">PUNTOS <span class="big">0</span></div>
+          <div class="mg-stat">RACHA <span id="mg-streak">0</span></div>
+          <div class="mg-stat">TIEMPO <span id="mg-time">60</span>s</div>
+        </div>
+        <div id="mg-msg" class="mg-msg"></div>
+        <div id="mg-hint" class="mg-hint">Arrastra desde el balón y suelta para lanzar</div>
+        <div id="mg-over" class="mg-over">
+          <h1>¡Tiempo!</h1>
+          <p>Encestaste</p>
+          <div class="mg-final" id="mg-final">0</div>
+          <p id="mg-best">Mejor: 0</p>
+          <p class="mg-reward" id="mg-reward"></p>
+          <button id="mg-again" class="mg-btn">Jugar otra vez</button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- barra inferior de navegación (solo móvil) -->
+  <nav class="bottom-nav" role="tablist" aria-label="Modos">
+    <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
+    <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
+    <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
+    <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
+  </nav>
+
+  <!-- overlay apertura de sobre -->
+  <div class="opener" id="opener" aria-hidden="true">
+    <div class="opener-stage">
+      <div class="reveal-strip" id="reveal-strip"></div>
+      <div class="bigcard" id="opener-card"></div>
+      <div class="tap-hint" id="opener-hint">Toca para revelar</div>
+      <div class="opener-actions" id="opener-actions" style="display:none">
+        <button class="btn btn-primary" id="opener-again">Abrir otro</button>
+        <button class="btn btn-ghost" id="opener-done">Ver colección</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- modal detalle / picker -->
+  <div class="sheet" id="sheet" aria-hidden="true">
+    <div class="sheet-card" id="sheet-card">
+      <button class="sheet-close" id="sheet-close" aria-label="Cerrar">×</button>
+      <div id="sheet-body"></div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ============================================================
+   DUNK · juego de cartas NBA 2K26  (single-file, vanilla JS)
+   ============================================================ */
+(() => {
+  "use strict";
+
+  /* ---- colores y CDN de equipos NBA ---- */
+  const TEAMS = {
+    "Atlanta Hawks":        {c1:"#E03A3E", c2:"#26282A", id:1610612737},
+    "Boston Celtics":       {c1:"#007A33", c2:"#0c3d22", id:1610612738},
+    "Brooklyn Nets":        {c1:"#2b2b2b", c2:"#0a0a0a", id:1610612751},
+    "Charlotte Hornets":    {c1:"#1D1160", c2:"#00788C", id:1610612766},
+    "Chicago Bulls":        {c1:"#CE1141", c2:"#1c1c1c", id:1610612741},
+    "Cleveland Cavaliers":  {c1:"#860038", c2:"#41122a", id:1610612739},
+    "Dallas Mavericks":     {c1:"#0064B1", c2:"#002B5E", id:1610612742},
+    "Denver Nuggets":       {c1:"#0E2240", c2:"#FEC524", id:1610612743},
+    "Detroit Pistons":      {c1:"#C8102E", c2:"#1D42BA", id:1610612765},
+    "Golden State Warriors":{c1:"#1D428A", c2:"#FFC72C", id:1610612744},
+    "Houston Rockets":      {c1:"#CE1141", c2:"#2a2f33", id:1610612745},
+    "Indiana Pacers":       {c1:"#002D62", c2:"#FDBB30", id:1610612754},
+    "LA Clippers":          {c1:"#C8102E", c2:"#1D428A", id:1610612746},
+    "Los Angeles Lakers":   {c1:"#552583", c2:"#FDB927", id:1610612747},
+    "Memphis Grizzlies":    {c1:"#5D76A9", c2:"#12173F", id:1610612763},
+    "Miami Heat":           {c1:"#98002E", c2:"#F9A01B", id:1610612748},
+    "Milwaukee Bucks":      {c1:"#00471B", c2:"#0b2d14", id:1610612749},
+    "Minnesota Timberwolves":{c1:"#236192", c2:"#0C2340", id:1610612750},
+    "New Orleans Pelicans": {c1:"#0C2340", c2:"#C8102E", id:1610612740},
+    "New York Knicks":      {c1:"#006BB6", c2:"#F58426", id:1610612752},
+    "Oklahoma City Thunder":{c1:"#007AC1", c2:"#EF3B24", id:1610612760},
+    "Orlando Magic":        {c1:"#0077C0", c2:"#1a1f23", id:1610612753},
+    "Philadelphia 76ers":   {c1:"#006BB6", c2:"#ED174C", id:1610612755},
+    "Phoenix Suns":         {c1:"#1D1160", c2:"#E56020", id:1610612756},
+    "Portland Trail Blazers":{c1:"#E03A3E", c2:"#1a1a1a", id:1610612757},
+    "Sacramento Kings":     {c1:"#5A2D81", c2:"#2b2f33", id:1610612758},
+    "San Antonio Spurs":    {c1:"#5b636a", c2:"#16181a", id:1610612759},
+    "Toronto Raptors":      {c1:"#CE1141", c2:"#1a1a1a", id:1610612761},
+    "Utah Jazz":            {c1:"#002B5C", c2:"#00471B", id:1610612762},
+    "Washington Wizards":   {c1:"#002B5C", c2:"#E31837", id:1610612764},
+  };
+  const FALLBACK_TEAM = {c1:"#3a3f4a", c2:"#16181d", id:0};
+  const teamOf = n => TEAMS[n] || FALLBACK_TEAM;
+  const logoURL = n => { const t = teamOf(n); return t.id ? `https://cdn.nba.com/logos/nba/${t.id}/global/L/logo.svg` : ""; };
+  const POSORDER = ["PG","SG","SF","PF","C"];
+
+  /* ---- estado ---- */
+  const LS = "dunk_nba_v1";
+  let PLAYERS = [];
+  let BY = {};                 // slug -> player
+  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, display:{}, coins:250 }; }
+  let state = defaultState();
+
+  // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
+  const PACK_COST = { std:150, elite:600, finals:1200, reward:0 };
+  const COINS_PER_POINT = 10;           // cada punto del minijuego = 10 monedas
+  function renderCoins(){
+    const els = document.querySelectorAll(".coin-amount");
+    els.forEach(e=> e.textContent = (state.coins||0).toLocaleString("es"));
+    if(typeof renderShop==="function") renderShop();
+  }
+  function addCoins(n){ state.coins = (state.coins||0) + n; save(); renderCoins(); return state.coins; }
+  function spendCoins(n){ if((state.coins||0) < n) return false; state.coins -= n; save(); renderCoins(); return true; }
+  // puente para el minijuego "Encestes" (vive en otro script)
+  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT };
+
+  // ===== EVENTO TEMÁTICO: FINALES NBA =====
+  const EVENT = {
+    on: true,
+    name: "Finales NBA 2026",
+    teams: ["San Antonio Spurs", "New York Knicks"],
+    boost: 3,                 // +media a los jugadores finalistas durante el evento
+    end: "2026-06-23T23:59:59" // fin del evento
+  };
+  const eventActive = () => EVENT.on && Date.now() < new Date(EVENT.end).getTime();
+  function applyEventBoost(){
+    if(!eventActive()) return;
+    PLAYERS.forEach(p=>{
+      if(EVENT.teams.includes(p.equipo)){
+        p.finals = true;
+        p.finalsOvr = Math.min(99, p.media + EVENT.boost);  // media del evento (se muestra con flechitas)
+      }
+    });
+  }
+  function renderEvent(){
+    const active = eventActive();
+    const banner = $("#event-banner");
+    const finalsPack = $("#pack-finals");
+    if(finalsPack) finalsPack.style.display = active ? "" : "none";
+    if(!banner) return;
+    if(!active){ banner.style.display="none"; return; }
+    banner.style.display="";
+    const days = Math.max(0, Math.ceil((new Date(EVENT.end).getTime()-Date.now())/86400000));
+    const vs = EVENT.teams.map(t=>t.split(" ").pop()).join(" vs ");
+    $("#event-text").innerHTML = `<b>${EVENT.name}</b> · ${esc(vs)} · cartas finalistas con +${EVENT.boost} de media`;
+    $("#event-count").textContent = days>0 ? `Termina en ${days} día${days>1?"s":""}` : "Último día";
+  }
+  let albumFilter = { q:"", team:"", sort:"media", own:"all" };
+  let lineup = [null,null,null,null,null];   // slugs por slot
+  let pickingSlot = null;
+
+  const $ = s => document.querySelector(s);
+  const $$ = s => [...document.querySelectorAll(s)];
+  const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const ovr = p => p.finalsOvr || p.media;   // media EFECTIVA (prioriza la mejorada del evento)
+
+  // ===== CARTAS ESPECIALES "NBA FINALS" (edición dorada, solo del sobre Finales) =====
+  const FINALS_CARD = {
+    "victor-wembanyama":"finals-cards/Spurs/victor-wembanyama.jpg",
+    "deaaron-fox":"finals-cards/Spurs/deaaron-fox.jpg",
+    "devin-vassell":"finals-cards/Spurs/devin-vassell.jpg",
+    "stephon-castle":"finals-cards/Spurs/stephon-castle.jpg",
+    "harrison-barnes":"finals-cards/Spurs/harrison-barnes.jpg",
+    "jalen-brunson":"finals-cards/Knicks/jalen-brunson.jpg",
+    "karl-anthony-towns":"finals-cards/Knicks/karl-anthony-towns.jpg",
+    "mikal-bridges":"finals-cards/Knicks/mikal-bridges.jpg",
+    "mitchell-robinson":"finals-cards/Knicks/mitchell-robinson.jpg",
+    "og-anunoby":"finals-cards/Knicks/og-anunoby.jpg",
+  };
+  const FINALS_FOCO = {};   // encuadre por carta Finals si hace falta (object-position)
+  const ownsNormal = s => (state.owned[s]||0)>0;
+  const ownsFinals = s => (state.finals && state.finals[s]||0)>0;
+  const ownsAny = s => ownsNormal(s) || ownsFinals(s);
+  function displayVariant(s){
+    if(state.display && state.display[s]==="finals" && ownsFinals(s)) return "finals";
+    if(ownsNormal(s)) return "normal";
+    if(ownsFinals(s)) return "finals";
+    return null;
+  }
+
+  function load(){ try{ const r=JSON.parse(localStorage.getItem(LS)); if(r){ state=Object.assign(state,r);} }catch(e){}
+    if(!state.finals) state.finals={}; if(!state.display) state.display={}; if(!state.messages) state.messages=[];
+    if(typeof state.coins!=="number") state.coins=250; }
+  function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} scheduleCloud(); }
+
+  /* ===== CUENTAS / NUBE (servidor DUNK en Railway) ===== */
+  const API = "";              // mismo origen que sirve el juego
+  let authUser = null, cloudT = null;
+  const authToken = () => localStorage.getItem("dunk_token");
+  async function api(path, opts={}){
+    const o = Object.assign({ headers:{} }, opts);
+    o.headers["Content-Type"] = "application/json";
+    const t = authToken(); if(t) o.headers["Authorization"] = "Bearer " + t;
+    if(o.body && typeof o.body !== "string") o.body = JSON.stringify(o.body);
+    const r = await fetch(API + path, o);
+    let j = {}; try{ j = await r.json(); }catch(e){}
+    if(!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+    return j;
+  }
+  function scheduleCloud(){ if(!authUser) return; clearTimeout(cloudT);
+    cloudT = setTimeout(()=>{ api("/api/save", { method:"PUT", body:{ data:state } }).catch(()=>{}); }, 700); }
+  function applyState(obj){
+    state = Object.assign(defaultState(), obj || {});
+    if(!state.finals) state.finals={}; if(!state.display) state.display={};
+    if(!state.messages) state.messages=[]; if(typeof state.coins!=="number") state.coins=250;
+  }
+  function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); }
+  function updateAccountUI(){
+    const b=$("#acct"); if(!b) return;
+    if(authUser){ b.hidden=false; $("#acct-ini").textContent=authUser[0]||"?"; $("#acct-name").textContent=authUser; }
+    else b.hidden=true;
+  }
+  function showAuth(){ $("#auth").classList.add("show"); }
+  function hideAuth(){ $("#auth").classList.remove("show"); }
+  async function resumeSession(){
+    if(!authToken()) return false;
+    try{
+      const me = await api("/api/me");
+      authUser = me.username; localStorage.setItem("dunk_user", authUser);
+      try{ const s = await api("/api/save"); if(s.data) applyState(s.data); }catch(e){}
+      save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll();
+      return true;
+    }catch(err){
+      if(/HTTP 401|Sesión/.test(err.message)){ localStorage.removeItem("dunk_token"); return false; }
+      authUser = localStorage.getItem("dunk_user") || null;   // servidor caído: juega en local
+      updateAccountUI(); hideAuth(); return true;
+    }
+  }
+  async function doAuth(mode){
+    const u=$("#auth-user").value, p=$("#auth-pass").value, errEl=$("#auth-err"), btn=$("#auth-submit");
+    errEl.textContent=""; btn.disabled=true;
+    try{
+      const r = await api("/api/"+mode, { method:"POST", body:{ username:u, password:p } });
+      localStorage.setItem("dunk_token", r.token); localStorage.setItem("dunk_user", r.username); authUser=r.username;
+      if(mode==="register"){ applyState(defaultState()); }
+      else { try{ const s=await api("/api/save"); applyState(s.data||{}); }catch(e){ applyState({}); } }
+      save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll();
+      toast(mode==="register" ? ("¡Cuenta creada! Bienvenido, "+authUser) : ("¡Hola de nuevo, "+authUser+"!"));
+    }catch(err){ errEl.textContent = err.message || "Algo salió mal"; }
+    finally{ btn.disabled=false; }
+  }
+  function logout(){ localStorage.removeItem("dunk_token"); localStorage.removeItem("dunk_user"); location.reload(); }
+  function bindAuth(){
+    $$("#auth .auth-tab").forEach(t=>t.addEventListener("click", ()=>{
+      $$("#auth .auth-tab").forEach(x=>x.setAttribute("aria-selected", String(x===t)));
+      $("#auth").dataset.mode = t.dataset.mode;
+      $("#auth-submit").textContent = t.dataset.mode==="register" ? "Crear cuenta" : "Entrar";
+      $("#auth-err").textContent="";
+    }));
+    $("#auth-form").addEventListener("submit", e=>{ e.preventDefault(); doAuth($("#auth").dataset.mode||"login"); });
+    $("#auth-skip").addEventListener("click", hideAuth);
+    $("#acct").addEventListener("click", e=>{ e.stopPropagation(); $("#acct-menu").classList.toggle("show"); });
+    $("#acct-logout").addEventListener("click", logout);
+    document.addEventListener("click", e=>{ if(!e.target.closest("#acct") && !e.target.closest("#acct-menu")) $("#acct-menu").classList.remove("show"); });
+  }
+
+  /* ---- intensidad de lámina por media (visual, sin etiqueta) ---- */
+  function foilFor(m){
+    if(m>=90) return {foil:.40, glow:1};
+    if(m>=85) return {foil:.30, glow:0};
+    if(m>=80) return {foil:.23, glow:0};
+    return {foil:.17, glow:0};
+  }
+
+  /* ---- markup de una carta ---- */
+  // Encuadre por foto: jugadores que no están centrados en su imagen.
+  // valor = object-position (x y). Por defecto "center 16%".
+  const FOCO = {
+    "joel-embiid":"80% 14%",
+    "donovan-mitchell":"54% 46%",
+    "derrick-white":"23% 22%",
+    "shai-gilgeous-alexander":"30% 26%",
+  };
+  function cardHTML(p, {owned=true, count=0, mini=false, variant="normal"}={}){
+    const t = teamOf(p.equipo);
+    const logo = logoURL(p.equipo);
+    if(!owned){
+      return `<div class="card locked" style="--c1:${t.c1};--c2:${t.c2}" data-slug="${p.slug}">
+        <div class="card-inner">
+          ${logo?`<div class="card-logo" style="background-image:url('${logo}')"></div>`:""}
+          <div class="card-info"><h3>Por descubrir</h3><p>${esc(p.equipo)}</p></div>
+        </div></div>`;
+    }
+    const isFinals = variant==="finals" && FINALS_CARD[p.slug];
+    const photo = isFinals ? FINALS_CARD[p.slug] : p.foto;
+    const foco = isFinals
+      ? `style="object-position:${FINALS_FOCO[p.slug] || "50% 18%"}"`
+      : (FOCO[p.slug] ? `style="object-position:${FOCO[p.slug]}"` : "");
+    const f = foilFor(ovr(p));
+    const boosted = p.finals || isFinals;   // muestra media mejorada + original
+    return `<button class="card ${p.finals?'finals':''} ${isFinals?'fcard':''}" style="--c1:${t.c1};--c2:${t.c2};--foil:${f.foil}" data-glow="${f.glow}" data-slug="${p.slug}" data-variant="${isFinals?'finals':'normal'}" aria-label="${esc(p.nombre)}, media ${ovr(p)}${isFinals?' edición Finals':''}">
+      <div class="card-inner">
+        <div class="card-img"><img loading="lazy" src="${esc(photo)}" alt="${esc(p.nombre)}" ${foco} onerror="this.style.opacity=0"></div>
+        ${logo?`<div class="card-logo" style="background-image:url('${logo}')"></div>`:""}
+        <div class="card-foil"></div>
+        <div class="card-shine"></div>
+        ${isFinals ? `<div class="fcard-mark"><span class="fc-word">Finals</span></div>`
+                   : (p.finals?`<div class="card-star">★</div>`:"")}
+        ${isFinals && p.equipo==="New York Knicks" ? `<div class="champ-badge"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M3 7l4 4 5-6 5 6 4-4-1.5 11h-15L3 7z"/><rect x="4.5" y="18.5" width="15" height="2.4" rx="1" fill="currentColor"/></svg>Campeón</div>` : ""}
+        <div class="card-ovr"><b>${boosted?ovr(p):p.media}</b>${boosted?`<span class="ovr-orig">${p.media}</span>`:""}<span>${p.posicion}</span></div>
+        ${count>1?`<div class="card-dup">×${count}</div>`:""}
+        <div class="card-info"><h3>${esc(p.nombre)}</h3><p>${esc(p.equipo)}</p></div>
+      </div></button>`;
+  }
+
+  /* =====================================================
+     ÁLBUM
+     ===================================================== */
+  function renderProgress(){
+    const uniq = PLAYERS.filter(p=>ownsAny(p.slug)).length;
+    const pct = Math.round(uniq/PLAYERS.length*100);
+    $("#prog-count").textContent = uniq;
+    $("#prog-pct").textContent = pct+"%";
+    $("#prog-ring").style.setProperty("--p", pct);
+  }
+
+  function renderAlbum(){
+    const grid = $("#album-grid");
+    let list = PLAYERS.slice();
+    const q = albumFilter.q.trim().toLowerCase();
+    if(q) list = list.filter(p => p.nombre.toLowerCase().includes(q) || p.equipo.toLowerCase().includes(q));
+    if(albumFilter.team) list = list.filter(p => p.equipo === albumFilter.team);
+    if(albumFilter.own==="owned") list = list.filter(p => ownsAny(p.slug));
+
+    const s = albumFilter.sort;
+    list.sort((a,b)=>{
+      if(s==="media") return ovr(b)-ovr(a) || a.nombre.localeCompare(b.nombre);
+      if(s==="media-asc") return ovr(a)-ovr(b) || a.nombre.localeCompare(b.nombre);
+      if(s==="nombre") return a.nombre.localeCompare(b.nombre);
+      if(s==="equipo") return a.equipo.localeCompare(b.equipo) || ovr(b)-ovr(a);
+      return 0;
+    });
+
+    if(!list.length){
+      grid.innerHTML = `<div class="empty"><h3>Nada por aquí</h3>
+        <p>${albumFilter.own==="owned" ? "Aún no tienes cartas con este filtro. Abre un sobre para empezar." : "Ningún jugador coincide con tu búsqueda."}</p></div>`;
+      return;
+    }
+    grid.innerHTML = list.map(p => {
+      const v = displayVariant(p.slug);
+      const count = v==="finals" ? (state.finals[p.slug]||0) : (state.owned[p.slug]||0);
+      return cardHTML(p, {owned:!!v, count, variant:v||"normal"});
+    }).join("");
+  }
+
+  /* tilt + lámina siguiendo el puntero (delegado, sin re-render) */
+  function bindTilt(root){
+    root.addEventListener("pointermove", e=>{
+      const card = e.target.closest(".card:not(.locked)"); if(!card) return;
+      const r = card.getBoundingClientRect();
+      const px = (e.clientX-r.left)/r.width, py=(e.clientY-r.top)/r.height;
+      card.style.setProperty("--ry", (px-.5)*16+"deg");
+      card.style.setProperty("--rx", (.5-py)*16+"deg");
+      card.style.setProperty("--mx", px*100+"%");
+      card.style.setProperty("--my", py*100+"%");
+    }, {passive:true});
+    root.addEventListener("pointerleave", e=>{
+      const card = e.target.closest && e.target.closest(".card"); if(!card) return;
+      card.style.setProperty("--rx","0deg"); card.style.setProperty("--ry","0deg");
+    }, true);
+  }
+
+  /* =====================================================
+     DETALLE
+     ===================================================== */
+  function openDetail(slug){
+    const p = BY[slug]; if(!p) return;
+    const v = displayVariant(slug) || "normal";
+    const inLineup = lineup.includes(slug);
+    const variants = [];
+    if(ownsNormal(slug)) variants.push("normal");
+    if(ownsFinals(slug)) variants.push("finals");
+    const cnt = v==="finals" ? (state.finals[slug]||0) : (state.owned[slug]||0);
+    const body = $("#sheet-body");
+    body.innerHTML = `
+      <div class="detail">
+        <div class="detail-card">${cardHTML(p,{owned:true,count:cnt,variant:v})}</div>
+        <div class="detail-info">
+          <div class="eyebrow">${esc(p.posicion)} · ${esc(p.equipo)}</div>
+          <h2>${esc(p.nombre)}</h2>
+          <div class="team-line">${v==="finals"?"Edición NBA Finals":"Carta NBA 2K26"}</div>
+          ${variants.length>1 ? `<div class="ver-label">Tus versiones · elige cuál exponer</div>
+            <div class="ver-row">${variants.map(vr=>`
+              <div class="ver ${vr===v?'sel':''}" data-ver="${vr}" role="button" tabindex="0">
+                ${cardHTML(p,{owned:true,count:0,variant:vr})}
+                <span class="ver-name">${vr==="finals"?"Finals":"Normal"}</span>
+              </div>`).join("")}</div>` : ""}
+          <div class="detail-grid">
+            <div class="dstat"><b>${v==="finals"?ovr(p):p.media}</b><span>Media</span></div>
+            <div class="dstat"><b>${esc(p.posicion)}</b><span>Posición</span></div>
+            <div class="dstat"><b>×${cnt}</b><span>En tu mazo</span></div>
+          </div>
+          <div class="detail-actions">
+            ${inLineup
+              ? `<button class="btn btn-ghost" data-act="rm-lineup">Quitar del quinteto</button>`
+              : `<button class="btn btn-primary" data-act="add-lineup">Añadir al quinteto</button>`}
+          </div>
+        </div>
+      </div>`;
+    body.querySelectorAll("[data-ver]").forEach(b=>b.addEventListener("click", ()=>{
+      state.display[slug]=b.dataset.ver; save(); renderAlbum(); openDetail(slug);
+    }));
+    body.querySelector("[data-act='add-lineup']")?.addEventListener("click", ()=>{ addToLineup(slug); closeSheet(); toast(`<b>${esc(p.nombre)}</b> al quinteto`); });
+    body.querySelector("[data-act='rm-lineup']")?.addEventListener("click", ()=>{ removeFromLineup(slug); closeSheet(); });
+    showSheet();
+  }
+
+  function showSheet(){ const s=$("#sheet"); s.classList.add("show"); s.setAttribute("aria-hidden","false"); }
+  function closeSheet(){ const s=$("#sheet"); s.classList.remove("show"); s.setAttribute("aria-hidden","true"); }
+
+  /* =====================================================
+     SOBRES
+     ===================================================== */
+  function weight(p, taken){
+    let w = Math.pow(Math.max(1, 101-ovr(p)), 1.3);   // media baja => más común (suavizado)
+    const owned = state.owned[p.slug] || 0;
+    if(owned === 0) w *= 1.8;            // favorece cartas que aún no tienes
+    else w /= (1 + owned * 1.7);         // penaliza las repetidas (más copias => menos probable)
+    if(taken && taken.has(p.slug)) w *= 0.12;  // repetir dentro del mismo sobre: raro pero posible
+    return w;
+  }
+  function drawOne(pool, taken){
+    const total = pool.reduce((s,p)=>s+weight(p,taken),0);
+    let r = Math.random()*total;
+    for(const p of pool){ r-=weight(p,taken); if(r<=0) return p; }
+    return pool[pool.length-1];
+  }
+  function openPack(kind){
+    if(kind==="reward" && !((state.rewardPacks||0)>0)){ toast("No tienes sobres de recompensa. Completa un equipo en el álbum."); return; }
+    if(kind==="finals" && !eventActive()){ toast("El evento de Finales ya terminó."); return; }
+    const cost = PACK_COST[kind] || 0;
+    if(cost > 0 && !spendCoins(cost)){
+      toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return;
+    }
+    const n=5, picks=[], taken=new Set();   // taken => sin duplicados dentro del mismo sobre
+    if(kind==="finals"){
+      const fin = PLAYERS.filter(p=>p.finals && ovr(p)>=85);
+      const pool = fin.length ? fin : PLAYERS.filter(p=>p.finals);
+      const first = drawOne(pool, taken); picks.push(first); taken.add(first.slug);
+      for(let i=0;i<n-1;i++){ const p=drawOne(PLAYERS, taken); picks.push(p); taken.add(p.slug); }
+    } else if(kind==="elite" || kind==="reward"){
+      const minMedia = kind==="reward" ? 90 : 88;          // recompensa garantiza 90+
+      const tops = PLAYERS.filter(p=>ovr(p)>=minMedia);
+      const first = drawOne(tops, taken); picks.push(first); taken.add(first.slug);
+      for(let i=0;i<n-1;i++){ const p=drawOne(PLAYERS, taken); picks.push(p); taken.add(p.slug); }
+    } else {
+      for(let i=0;i<n;i++){ const p=drawOne(PLAYERS, taken); picks.push(p); taken.add(p.slug); }
+    }
+    // mejor carta al final para clímax
+    picks.sort((a,b)=>ovr(a)-ovr(b));
+    let out = picks.map(p=>({p, variant:"normal"}));
+    // CARTA ESPECIAL FINALS: solo en el sobre Finales, muy rara (~5%)
+    let gotSpecial=null;
+    if(kind==="finals" && Math.random()<0.05){
+      const specials = PLAYERS.filter(p=>FINALS_CARD[p.slug]);
+      gotSpecial = specials[Math.floor(Math.random()*specials.length)];
+      out[out.length-1] = {p:gotSpecial, variant:"finals"};   // como clímax del sobre
+    }
+    out.forEach(it=>{
+      if(it.variant==="finals") state.finals[it.p.slug]=(state.finals[it.p.slug]||0)+1;
+      else state.owned[it.p.slug]=(state.owned[it.p.slug]||0)+1;
+    });
+    state.packs++; state.totalCards+=n;
+    if(kind==="reward") state.rewardPacks=Math.max(0,(state.rewardPacks||0)-1);
+    const newlyDone = checkTeamRewards();   // ¿algún equipo completado con estas cartas?
+    save();
+    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum();
+    runOpener(out);
+    if(gotSpecial) toast(`¡Carta especial <b>NBA Finals</b> de ${esc(gotSpecial.nombre)}!`);
+    newlyDone.forEach(t=> toast(`¡Equipo completo: <b>${esc(t)}</b>! Tienes un mensaje para reclamar tu recompensa`));
+  }
+  function renderPackStats(){ $("#packs-opened").textContent=state.packs; $("#cards-total").textContent=state.totalCards; }
+  function renderShop(){
+    const map={std:"#btn-std",elite:"#btn-elite",finals:"#btn-finals"};
+    for(const k in map){ const b=document.querySelector(map[k]); if(!b) continue;
+      b.classList.toggle("cant-afford", (state.coins||0) < PACK_COST[k]); }
+  }
+
+  // ---- RECOMPENSAS POR EQUIPO ----
+  function rosterByTeam(){
+    const m={}; PLAYERS.forEach(p=>{ (m[p.equipo]=m[p.equipo]||[]).push(p.slug); }); return m;
+  }
+  function teamsCompletedCount(){
+    const m=rosterByTeam(); let n=0;
+    for(const t in m){ if(m[t].every(s=>ownsAny(s))) n++; } return n;
+  }
+  // marca equipos recién completados y crea un MENSAJE (la recompensa se reclama desde Mensajes)
+  function checkTeamRewards(){
+    const m=rosterByTeam(), newly=[];
+    if(!state.messages) state.messages=[];
+    const hasMsg = t => state.messages.some(x=>x.team===t);   // dedup por mensaje, no por teamsClaimed
+    for(const t in m){
+      if(m[t].every(s=>ownsAny(s)) && !hasMsg(t)){
+        state.teamsClaimed[t]=1;
+        state.messages.push({ team:t, ts:Date.now(), claimed:false });
+        newly.push(t);
+      }
+    }
+    return newly;
+  }
+  function renderRewards(){
+    const done=teamsCompletedCount();
+    const td=$("#teams-done");
+    if(td) td.innerHTML=`Equipos completos: <b>${done}</b> / 30 · completa un equipo y reclama tu recompensa en Mensajes`;
+    const rp=state.rewardPacks||0;
+    const btn=$("#btn-reward");
+    if(btn){ btn.disabled = rp<=0; btn.textContent = rp>0 ? `Abrir recompensa (${rp})` : "Sin sobres (0)"; }
+    const badge=$("#reward-badge"); if(badge) badge.textContent = rp>0 ? `x${rp} disponible${rp>1?"s":""}` : "Recompensa";
+  }
+
+  // ---- MENSAJES / BANDEJA ----
+  const unclaimedCount = () => (state.messages||[]).filter(m=>!m.claimed).length;
+  function renderMessages(){
+    const n=unclaimedCount(); const badge=$("#bell-badge");
+    if(!badge) return;
+    if(n>0){ badge.hidden=false; badge.textContent = n>9?"9+":String(n); }
+    else badge.hidden=true;
+  }
+  function drawMessages(){
+    const list=$("#msg-list"); if(!list) return;
+    const msgs=(state.messages||[]).slice().reverse();
+    if(!msgs.length){
+      list.innerHTML=`<div class="empty" style="padding:30px 20px"><h3>Sin mensajes</h3><p>Completa los 5 jugadores de un mismo equipo y aquí te llegará tu recompensa.</p></div>`;
+      return;
+    }
+    list.innerHTML = msgs.map(m=>`
+      <div class="msg ${m.claimed?'claimed':''}">
+        <div class="msg-ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg></div>
+        <div class="msg-body">
+          <h4>¡Equipo completo: ${esc(m.team)}!</h4>
+          <p>${m.claimed ? "Recompensa reclamada. Ábrela en Sobres." : "Has desbloqueado un Sobre de Recompensa."}</p>
+        </div>
+        ${m.claimed ? `<span class="msg-done">Reclamado ✓</span>`
+                    : `<button class="btn btn-primary msg-claim" data-claim="${esc(m.team)}">Reclamar</button>`}
+      </div>`).join("");
+  }
+  function openMessages(){
+    const body=$("#sheet-body");
+    body.innerHTML=`<div class="picker-head"><h3>Mensajes</h3></div><div class="msg-list" id="msg-list"></div>`;
+    drawMessages();
+    body.querySelector("#msg-list").addEventListener("click", e=>{
+      const b=e.target.closest("[data-claim]"); if(b) claimReward(b.dataset.claim);
+    });
+    showSheet();
+  }
+  // abre el sobre de recompensa directamente (carta 90+ garantizada), sin pasar por Sobres
+  function openRewardPack(){
+    const n=5, picks=[], taken=new Set();
+    const tops=PLAYERS.filter(p=>ovr(p)>=90);
+    const first=drawOne(tops,taken); picks.push(first); taken.add(first.slug);
+    for(let i=0;i<n-1;i++){ const p=drawOne(PLAYERS,taken); picks.push(p); taken.add(p.slug); }
+    picks.sort((a,b)=>ovr(a)-ovr(b));
+    const out = picks.map(p=>({p, variant:"normal"}));
+    out.forEach(it=>{ state.owned[it.p.slug]=(state.owned[it.p.slug]||0)+1; });
+    state.packs++; state.totalCards+=n;
+    const newlyDone=checkTeamRewards();
+    save();
+    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum();
+    runOpener(out);
+    newlyDone.forEach(t=> toast(`¡Equipo completo: <b>${esc(t)}</b>! Tienes un mensaje para reclamar tu recompensa`));
+  }
+  function claimReward(team){
+    const m=(state.messages||[]).find(x=>x.team===team && !x.claimed);
+    if(!m) return;
+    m.claimed=true; save();
+    renderMessages(); drawMessages();
+    closeSheet();
+    toast(`Recompensa de <b>${esc(team)}</b> reclamada`);
+    openRewardPack();   // se abre la recompensa al instante desde la notificación
+  }
+
+  let openerQueue=[], openerIdx=0, openerLast=null;
+  function runOpener(cards){
+    openerQueue=cards; openerIdx=0;
+    const strip=$("#reveal-strip");
+    strip.innerHTML=cards.map((c,i)=>`<div class="reveal-dot" data-i="${i}">${i+1}</div>`).join("");
+    $("#opener-card").innerHTML="";
+    $("#opener-actions").style.display="none";
+    $("#opener-hint").textContent="Toca para revelar";
+    const o=$("#opener"); o.classList.add("show"); o.setAttribute("aria-hidden","false");
+    revealNext();
+  }
+  function revealNext(){
+    if(openerIdx>=openerQueue.length){
+      $("#opener-hint").textContent="¡Sobre completo!";
+      $("#opener-actions").style.display="flex";
+      return;
+    }
+    const it=openerQueue[openerIdx];
+    const p=it.p, variant=it.variant||"normal";
+    const dot=$(`.reveal-dot[data-i="${openerIdx}"]`);
+    if(dot){ const t=teamOf(p.equipo); dot.classList.add("on"); dot.style.background=`linear-gradient(160deg,${t.c1},${t.c2})`; dot.textContent=ovr(p); if(variant==="finals") dot.classList.add("dot-finals"); }
+    const wrap=$("#opener-card");
+    const cnt = variant==="finals" ? (state.finals[p.slug]||1) : (state.owned[p.slug]||1);
+    wrap.innerHTML=cardHTML(p,{owned:true,count:cnt,variant});
+    const el=wrap.querySelector(".card"); el.classList.add("flip-in");
+    openerLast=p;
+    openerIdx++;
+    $("#opener-hint").textContent = openerIdx>=openerQueue.length ? "Toca para terminar" : `Toca para la siguiente (${openerIdx}/${openerQueue.length})`;
+  }
+
+  /* =====================================================
+     QUINTETO
+     ===================================================== */
+  function renderSlots(){
+    const wrap=$("#slots");
+    wrap.innerHTML = lineup.map((slug,i)=>{
+      if(!slug){
+        return `<div class="slot" data-slot="${i}" role="button" tabindex="0" aria-label="Hueco ${i+1}">
+          <span class="pos">+</span><span class="add">Añadir</span></div>`;
+      }
+      const p=BY[slug]; const t=teamOf(p.equipo);
+      const foco=FOCO[p.slug]?`style="object-position:${FOCO[p.slug]}"`:"";
+      return `<div class="slot filled" data-slot="${i}">
+        <span class="pos-tag">${p.posicion}</span>
+        <div class="mini" style="--c1:${t.c1};--c2:${t.c2}">
+          <img src="${esc(p.foto)}" alt="${esc(p.nombre)}" ${foco} onerror="this.style.opacity=0">
+          <span class="m-ovr">${p.media}</span>
+          <button class="m-rm" data-rm="${i}" aria-label="Quitar">×</button>
+          <span class="m-nm">${esc(p.nombre)}</span>
+        </div></div>`;
+    }).join("");
+    const filled=lineup.filter(Boolean).length;
+    $("#lineup-filled").textContent=`${filled}/5`;
+    updateLineupStats();
+  }
+  function updateLineupStats(){
+    const sel=lineup.map(s=>s?BY[s]:null);
+    const filled=sel.filter(Boolean);
+    if(!filled.length){
+      $("#st-avg").textContent="—"; $("#st-pos").textContent="0%"; $("#st-team").textContent="+0"; $("#st-total").textContent="0";
+      $("#lineup-hint").textContent="Toca un hueco para añadir un jugador.";
+      return;
+    }
+    const sumMedia=filled.reduce((s,p)=>s+ovr(p),0);
+    const avg=Math.round(sumMedia/filled.length);
+    const distinctPos=new Set(filled.map(p=>p.posicion)).size;  // posiciones distintas cubiertas
+    const posPct=Math.round(distinctPos/5*100);   // 0,20,40,60,80,100
+    const posB=distinctPos*4;                      // sigue sumando al total
+    const counts={}; filled.forEach(p=>counts[p.equipo]=(counts[p.equipo]||0)+1);
+    let teamB=0; Object.values(counts).forEach(c=>{ if(c>=2) teamB+=(c-1)*3; });
+    const total=sumMedia+posB+teamB;
+    $("#st-avg").textContent=avg;
+    $("#st-pos").textContent=posPct+"%";
+    $("#st-team").textContent="+"+teamB;
+    $("#st-total").textContent=total;
+    $("#lineup-hint").textContent = filled.length<5
+      ? `Te faltan ${5-filled.length}. La química premia cubrir las 5 posiciones distintas.`
+      : "Quinteto completo.";
+    return {total, avg, sumMedia, posB, teamB};
+  }
+  function addToLineup(slug){
+    const p=BY[slug]; if(!p) return;
+    if(lineup.includes(slug)){ toast("Ya está en tu quinteto"); return; }
+    const i=lineup.indexOf(null);                  // primer hueco libre (sin restricción de posición)
+    if(i<0){ toast("Quinteto lleno"); return; }
+    lineup[i]=slug; renderSlots();
+  }
+  function removeFromLineup(slug){ const i=lineup.indexOf(slug); if(i>=0){ lineup[i]=null; renderSlots(); } }
+
+  function openPicker(slotIndex){
+    pickingSlot=slotIndex;
+    const owned=PLAYERS.filter(p=>state.owned[p.slug]).sort((a,b)=>ovr(b)-ovr(a));
+    const body=$("#sheet-body");
+    if(!owned.length){
+      body.innerHTML=`<div class="picker-head"><h3>Elegir jugador</h3></div>
+        <div class="empty" style="margin:20px"><h3>Tu mazo está vacío</h3><p>Abre un sobre para conseguir cartas y armar tu quinteto.</p></div>`;
+      showSheet(); return;
+    }
+    body.innerHTML=`
+      <div class="picker-head">
+        <h3>Elegir jugador</h3>
+        <div class="field sel pf"><select id="pick-pos">
+          <option value="">Todas las posiciones</option>
+          ${POSORDER.map(x=>`<option value="${x}">Solo ${x}</option>`).join("")}
+        </select></div>
+      </div>
+      <div class="picker-grid"><div class="grid" id="picker-grid"></div></div>`;
+    const drawGrid=(f)=>{
+      let l=owned.slice(); if(f) l=l.filter(p=>p.posicion===f);
+      const g=$("#picker-grid");
+      g.innerHTML = l.length ? l.map(p=>cardHTML(p,{owned:true,count:state.owned[p.slug]})).join("")
+        : `<div class="empty"><h3>Sin ${f}</h3><p>No tienes jugadores en esta posición todavía.</p></div>`;
+    };
+    drawGrid("");
+    $("#pick-pos").addEventListener("change", e=>drawGrid(e.target.value));
+    body.querySelector("#picker-grid").addEventListener("click", e=>{
+      const card=e.target.closest(".card[data-slug]"); if(!card) return;
+      const slug=card.dataset.slug;
+      if(lineup.includes(slug)){ toast("Ya está en tu quinteto"); return; }
+      lineup[pickingSlot]=slug; renderSlots(); closeSheet();
+    });
+    showSheet();
+  }
+
+  function simulate(){
+    const st=updateLineupStats(); if(!st) return;
+    // rival: 5 jugadores aleatorios de la liga, fuerza cercana
+    const pool=PLAYERS.slice();
+    const rivalSel=[];
+    for(let i=0;i<5;i++){ const p=pool[Math.floor(Math.random()*pool.length)]; rivalSel.push(p); }
+    const rivalMedia=rivalSel.reduce((s,p)=>s+ovr(p),0);
+    const rPos=new Set(rivalSel.map(p=>p.posicion)).size*4;
+    const rivalPower=rivalMedia+rPos+Math.round(Math.random()*8);
+    const rivalTeam = rivalSel[Math.floor(Math.random()*5)].equipo;
+
+    const youPower=st.total+Math.round(Math.random()*8);
+    // puntos "creíbles" a partir del poder
+    const toPts=pw=>Math.round(88 + (pw-410)*0.18 + Math.random()*6);
+    let you=Math.max(82,toPts(youPower)), riv=Math.max(82,toPts(rivalPower));
+    if(you===riv) (Math.random()<.5?you++:riv++);
+    const win=you>riv;
+
+    const sc=$("#score");
+    sc.className="score show "+(win?"win":"lose");
+    $("#score-head").textContent = win ? "Victoria — gran quinteto" : "Derrota — sigue mejorando tu mazo";
+    $("#rival-name").textContent = rivalTeam.split(" ").pop();
+    animateNumber($("#pts-you"), you); animateNumber($("#pts-rival"), riv);
+    toast(win?"¡Ganaste!":"Esta vez no…");
+  }
+  function animateNumber(el, to){
+    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if(reduce){ el.textContent=to; return; }
+    let cur=0; const step=Math.max(1,Math.round(to/22));
+    const t=setInterval(()=>{ cur+=step; if(cur>=to){cur=to; clearInterval(t);} el.textContent=cur; }, 28);
+  }
+
+  /* =====================================================
+     NAV / TOAST / EVENTOS
+     ===================================================== */
+  function showView(v){
+    $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===v)));
+    $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
+    if(v==="quinteto") renderSlots();
+    if(window.MiniGame){ if(v==="juego") window.MiniGame.start(); else window.MiniGame.stop(); }
+    window.scrollTo({top:0, behavior:"instant"});
+  }
+  let toastT;
+  function toast(html){ const t=$("#toast"); t.innerHTML=html; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
+
+  function bindEvents(){
+    $$(".tab").forEach(t=>t.addEventListener("click",()=>showView(t.dataset.view)));
+    $("#bell").addEventListener("click", openMessages);
+
+    // álbum
+    $("#search").addEventListener("input", e=>{ albumFilter.q=e.target.value; renderAlbum(); });
+    $("#filter-team").addEventListener("change", e=>{ albumFilter.team=e.target.value; renderAlbum(); });
+    $("#sort").addEventListener("change", e=>{ albumFilter.sort=e.target.value; renderAlbum(); });
+    $$(".seg [data-own]").forEach(b=>b.addEventListener("click",()=>{
+      $$(".seg [data-own]").forEach(x=>x.setAttribute("aria-pressed", String(x===b)));
+      albumFilter.own=b.dataset.own; renderAlbum();
+    }));
+    $("#album-grid").addEventListener("click", e=>{
+      const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
+    });
+    bindTilt($("#album-grid"));
+
+    // sobres
+    $$("[data-pack]").forEach(b=>b.addEventListener("click",()=>openPack(b.dataset.pack)));
+    $("#opener").addEventListener("click", e=>{
+      if(e.target.closest("#opener-actions")) return;
+      if($("#opener-actions").style.display==="flex") return;
+      revealNext();
+    });
+    $("#opener-again").addEventListener("click",(e)=>{ e.stopPropagation(); openPack(lastPackKind); });
+    $("#opener-done").addEventListener("click",(e)=>{ e.stopPropagation(); closeOpener(); showView("album"); renderAlbum(); });
+    bindTilt($("#opener-card"));
+
+    // quinteto
+    $("#slots").addEventListener("click", e=>{
+      const rm=e.target.closest("[data-rm]"); if(rm){ e.stopPropagation(); lineup[+rm.dataset.rm]=null; renderSlots(); return; }
+      const slot=e.target.closest("[data-slot]"); if(slot) openPicker(+slot.dataset.slot);
+    });
+    $("#slots").addEventListener("keydown", e=>{
+      if(e.key!=="Enter"&&e.key!==" ") return; const slot=e.target.closest("[data-slot]"); if(slot){ e.preventDefault(); openPicker(+slot.dataset.slot); }
+    });
+    $("#btn-clear").addEventListener("click", ()=>{ lineup=[null,null,null,null,null]; renderSlots(); });
+
+    // sheet
+    $("#sheet-close").addEventListener("click", closeSheet);
+    $("#sheet").addEventListener("click", e=>{ if(e.target.id==="sheet") closeSheet(); });
+    document.addEventListener("keydown", e=>{ if(e.key==="Escape"){ closeSheet(); closeOpener(); } });
+  }
+  let lastPackKind="std";
+  const _openPack=openPack;
+  openPack=function(k){ lastPackKind=k; _openPack(k); };
+  function closeOpener(){ const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true"); }
+
+  /* =====================================================
+     ARRANQUE
+     ===================================================== */
+  function showLoading(){
+    $("#album-grid").innerHTML = Array.from({length:12}).map(()=>`<div class="skeleton" style="aspect-ratio:3/4.15"></div>`).join("");
+  }
+  function fatal(msg){
+    $("#album-grid").innerHTML = `<div class="empty"><h3>No se pudieron cargar los datos</h3><p>${msg}</p></div>`;
+  }
+
+  async function init(){
+    load();
+    showLoading();
+    let data;
+    try{
+      const res = await fetch("medias.json", {cache:"no-store"});
+      if(!res.ok) throw new Error("HTTP "+res.status);
+      data = await res.json();
+    }catch(err){
+      fatal("Abre el juego con un servidor local (no haciendo doble clic). En la carpeta del proyecto ejecuta <b>npx serve .</b> o <b>python3 -m http.server</b> y entra por http://localhost.");
+      console.error(err); return;
+    }
+    PLAYERS = data;
+    PLAYERS.forEach(p=>BY[p.slug]=p);
+    applyEventBoost();   // boost de Finales a los equipos finalistas (si el evento está activo)
+
+    // ---- MODO TEST (por URL) ----
+    //  ?todas   -> desbloquea las 150 cartas
+    //  ?reset   -> vuelve a empezar de cero
+    const q = new URLSearchParams(location.search);
+    if(q.has("reset")){ state=defaultState(); save(); }
+    if(q.has("monedas")){ state.coins=(state.coins||0)+5000; save(); }
+    if(q.has("todas") || q.has("test")){
+      PLAYERS.forEach(p=>{ if(!state.owned[p.slug]) state.owned[p.slug]=1; });
+      state.totalCards = Math.max(state.totalCards, PLAYERS.length);
+      save();
+    }
+
+    // filtro de equipos
+    const teams=[...new Set(PLAYERS.map(p=>p.equipo))].sort();
+    $("#filter-team").insertAdjacentHTML("beforeend", teams.map(t=>`<option value="${esc(t)}">${esc(t)}</option>`).join(""));
+
+    // reconciliar recompensas de equipos ya completos (sin avisos al arrancar)
+    checkTeamRewards(); save();
+
+    bindEvents();
+    bindAuth();
+    renderAll();
+
+    // sesión / cuenta
+    const resumed = await resumeSession();
+    if(!resumed) showAuth();
+    updateAccountUI();
+
+    if(!Object.keys(state.owned).length){
+      toast("¡Bienvenido! Abre un sobre para empezar tu colección");
+    }
+  }
+  document.addEventListener("DOMContentLoaded", init);
+})();
+</script>
+
+<!-- ===== MINIJUEGO: ENCESTES (encapsulado) ===== -->
+<script>
+window.MiniGame = (function(){
+  let cv, ctx, stage, W, H, S;
+  let ball, hoop, dragging, dragStart, dragNow;
+  let score, streak, timeLeft, running, best, timerId, msgTimeout;
+  let particles = [], rings = [], rafId = null, active = false, inited = false;
+  const GROUND = () => H - 40 * S;
+  function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r);
+    ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
+  const GRAV = 0.42;
+  const POWER = 0.21;   // potencia por pixel de arrastre (más alto = menos arrastre necesario)
+  const NET_COLS = 8, NET_ROWS = 5, NET_DROP = 46;
+
+  function resize(){
+    if(!stage) return;
+    const top = stage.getBoundingClientRect().top;          // posición del escenario en el viewport
+    const isMobile = window.matchMedia('(max-width:640px)').matches;
+    const navSpace = isMobile ? 84 : 16;                    // hueco para la barra inferior (solo móvil)
+    let availH = Math.max(260, window.innerHeight - top - navSpace - 10);
+    const availW = stage.clientWidth;
+    let h = Math.min(availH, 700), w = h * 9 / 16;
+    if(w > availW){ w = availW; h = w * 16 / 9; }
+    stage.style.height = h + 'px';                          // el escenario se ajusta al canvas (sin huecos)
+    cv.style.width = w + 'px'; cv.style.height = h + 'px';
+    const dpr = window.devicePixelRatio || 1;
+    cv.width = w * dpr; cv.height = h * dpr;
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    W = w; H = h; S = w / 400;
+  }
+
+  function newHoop(){
+    const r = 34 * S, margin = 60 * S;
+    const x = margin + Math.random() * (W - margin * 2);
+    const y = 120 * S + Math.random() * (H * 0.30);
+    const moving = score >= 5;
+    hoop = { x, y, r, rimY: y, vx: moving ? (Math.random() < .5 ? -1 : 1) * (0.6 + Math.random() * 0.9) * S : 0, scored: false };
+    buildNet(hoop);
+  }
+  function buildNet(h){
+    const r = h.r; h.net = [];
+    for(let c=0;c<=NET_COLS;c++){
+      const t=c/NET_COLS, topX=-r+t*2*r, botX=-r*0.55+t*r*1.1, col=[];
+      for(let k=0;k<=NET_ROWS;k++){ const f=k/NET_ROWS, rx=topX+(botX-topX)*f, ry=NET_DROP*S*f;
+        col.push({x:h.x+rx,y:h.rimY+ry,px:h.x+rx,py:h.rimY+ry,rx,ry,pinned:k===0}); }
+      h.net.push(col);
+    }
+    h.netRestV=[];
+    for(let c=0;c<=NET_COLS;c++){ h.netRestV[c]=[];
+      for(let k=1;k<=NET_ROWS;k++){ const a=h.net[c][k-1],b=h.net[c][k]; h.netRestV[c][k]=Math.hypot(a.rx-b.rx,a.ry-b.ry); } }
+    h.netRestH=[];
+    for(let k=0;k<=NET_ROWS;k++){ h.netRestH[k]=[];
+      for(let c=0;c<NET_COLS;c++){ const a=h.net[c][k],b=h.net[c+1][k]; h.netRestH[k][c]=Math.hypot(a.rx-b.rx,a.ry-b.ry); } }
+  }
+  function satisfy(a,b,rest){
+    let dx=b.x-a.x, dy=b.y-a.y, d=Math.hypot(dx,dy)||0.0001; const diff=(d-rest)/d;
+    const aw=a.pinned?0:1, bw=b.pinned?0:1, tot=aw+bw; if(!tot) return;
+    const STIFF=0.75, fa=aw/tot*STIFF, fb=bw/tot*STIFF;
+    a.x+=dx*diff*fa; a.y+=dy*diff*fa; b.x-=dx*diff*fb; b.y-=dy*diff*fb;
+  }
+  function updateNet(h){
+    if(!h.net) return;
+    for(let c=0;c<=NET_COLS;c++){ const p=h.net[c][0]; p.x=h.x+p.rx; p.y=h.rimY+p.ry; p.px=p.x; p.py=p.y; }
+    const g=0.55*S, damp=0.94;
+    for(let c=0;c<=NET_COLS;c++) for(let k=1;k<=NET_ROWS;k++){ const p=h.net[c][k];
+      const vx=(p.x-p.px)*damp, vy=(p.y-p.py)*damp; p.px=p.x; p.py=p.y; p.x+=vx; p.y+=vy+g; }
+    if(ball.flying){
+      const rad=ball.r*1.35;
+      for(let c=0;c<=NET_COLS;c++) for(let k=1;k<=NET_ROWS;k++){ const p=h.net[c][k];
+        const dx=p.x-ball.x, dy=p.y-ball.y, d=Math.hypot(dx,dy);
+        if(d<rad&&d>0.01){ const push=rad-d; p.x+=dx/d*push; p.y+=dy/d*push; } }
+      const inX=Math.abs(ball.x-h.x)<h.r, inY=ball.y>h.rimY-ball.r&&ball.y<h.rimY+NET_DROP*S+ball.r;
+      if(inX&&inY){ ball.vx*=0.90; ball.vy*=0.90; }
+    }
+    for(let it=0;it<3;it++){
+      for(let c=0;c<=NET_COLS;c++) for(let k=1;k<=NET_ROWS;k++) satisfy(h.net[c][k-1],h.net[c][k],h.netRestV[c][k]);
+      for(let k=1;k<=NET_ROWS;k++) for(let c=0;c<NET_COLS;c++) satisfy(h.net[c][k],h.net[c+1][k],h.netRestH[k][c]);
+    }
+  }
+  function resetBall(){ ball={x:W/2,y:GROUND()-H*0.20,r:22*S,vx:0,vy:0,flying:false,rot:0,vrot:0,canScore:true,trail:[]}; }
+
+  function startGame(){
+    score=0; streak=0; timeLeft=60; running=true;
+    document.getElementById('mg-over').style.display='none';
+    document.getElementById('mg-hint').style.opacity='1';
+    document.getElementById('mg-time').textContent=timeLeft;
+    updateHUD(); resetBall(); newHoop();
+    clearInterval(timerId);
+    timerId=setInterval(()=>{ if(!running) return; timeLeft--;
+      document.getElementById('mg-time').textContent=timeLeft; if(timeLeft<=0) endGame(); },1000);
+  }
+  function endGame(){
+    running=false; clearInterval(timerId);
+    const newBest = score>best; if(newBest){ best=score; localStorage.setItem('basket_best',best); }
+    document.getElementById('mg-final').textContent=score;
+    document.getElementById('mg-best').textContent='Mejor: '+best;
+    // recompensa en monedas
+    const rate=(window.DunkEconomy && window.DunkEconomy.perPoint) || 10;
+    let earned=score*rate; if(newBest && score>0) earned+=100;   // bonus por récord
+    const rw=document.getElementById('mg-reward');
+    if(earned>0 && window.DunkEconomy){ window.DunkEconomy.add(earned);
+      rw.innerHTML='<span class="coin-ico"></span> +'+earned+' balones'+(newBest?' · ¡Récord!':''); }
+    else if(rw){ rw.textContent=''; }
+    document.getElementById('mg-over').style.display='flex';
+  }
+  function updateHUD(){
+    document.querySelector('#mg-score .big').textContent=score;
+    document.getElementById('mg-streak').textContent=streak;
+  }
+  function flash(text,color){ const m=document.getElementById('mg-msg'); m.textContent=text; m.style.color=color||'#ffd24d';
+    m.style.opacity='1'; clearTimeout(msgTimeout); msgTimeout=setTimeout(()=>m.style.opacity='0',600); }
+
+  function shoot(dx,dy){ ball.vx=dx*POWER; ball.vy=dy*POWER; ball.vrot=ball.vx*0.04;
+    ball.flying=true; ball.canScore=true; document.getElementById('mg-hint').style.opacity='0'; }
+
+  function update(){
+    if(running && ball.flying){
+      ball.vy+=GRAV*S; ball.x+=ball.vx; ball.y+=ball.vy; ball.rot+=ball.vrot;
+      ball.trail.push({x:ball.x,y:ball.y}); if(ball.trail.length>9) ball.trail.shift();
+      if(ball.x-ball.r<0){ ball.x=ball.r; ball.vx*=-0.7; }
+      if(ball.x+ball.r>W){ ball.x=W-ball.r; ball.vx*=-0.7; }
+      if(ball.y+ball.r>GROUND()){ ball.y=GROUND()-ball.r; ball.vy*=-0.55; ball.vx*=0.7; ball.vrot*=0.7;
+        if(Math.abs(ball.vy)<1.5*S){ if(ball.canScore) miss(); } }
+      checkHoop();
+    }
+    if(running && hoop.vx){ hoop.x+=hoop.vx; if(hoop.x-hoop.r<30*S||hoop.x+hoop.r>W-30*S) hoop.vx*=-1; }
+    updateNet(hoop);
+  }
+  function checkHoop(){
+    if(!ball.canScore) return;
+    const dx=ball.x-hoop.x, withinX=Math.abs(dx)<hoop.r*0.8, atRim=Math.abs(ball.y-hoop.rimY)<12*S;
+    if(withinX&&atRim&&ball.vy<0){ ball.canScore=false; return; }
+    if(withinX&&atRim&&ball.vy>0){ scoreBasket(); return; }
+    const posts=[hoop.x-hoop.r, hoop.x+hoop.r];
+    for(const px of posts){ const ddx=ball.x-px, ddy=ball.y-hoop.rimY, dist=Math.hypot(ddx,ddy);
+      if(dist<ball.r+4*S){ const ang=Math.atan2(ddy,ddx), overlap=ball.r+4*S-dist;
+        ball.x+=Math.cos(ang)*overlap; ball.y+=Math.sin(ang)*overlap;
+        const dot=ball.vx*Math.cos(ang)+ball.vy*Math.sin(ang);
+        ball.vx-=1.6*dot*Math.cos(ang); ball.vy-=1.6*dot*Math.sin(ang); ball.vx*=0.8; ball.vy*=0.8; } }
+  }
+  function burst(x,y,color){ for(let i=0;i<18;i++){ const a=Math.random()*Math.PI*2, sp=(1+Math.random()*4)*S;
+    particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2*S,life:1,color}); } }
+  function scoreBasket(){
+    ball.canScore=false; streak++; const pts=streak>=3?3:2; score+=pts; updateHUD();
+    burst(hoop.x,hoop.rimY, streak>=3?'#ff7a3d':'#ffd24d');
+    rings.push({x:hoop.x,y:hoop.rimY,r:hoop.r*0.5,life:1,color:streak>=3?'#ff7a3d':'#ffd24d'});
+    if(streak>=3) flash('¡EN LLAMAS! +'+pts,'#ff7a3d'); else flash('¡CANASTA! +'+pts,'#7CFC9B');
+    timeLeft=Math.min(timeLeft+1,99); document.getElementById('mg-time').textContent=timeLeft;
+    setTimeout(()=>{ if(running){ resetBall(); newHoop(); } },700);
+  }
+  function miss(){ ball.canScore=false; if(streak>0) flash('Fallaste','#ff6b6b'); streak=0; updateHUD();
+    setTimeout(()=>{ if(running) resetBall(); },500); }
+
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    drawBackground();
+    drawHoop(); drawAim(); drawBall(); drawParticles();
+  }
+  function drawBackground(){
+    const gy=GROUND();
+    // base oscura
+    let bg=ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,'#1b1730'); bg.addColorStop(1,'#0c0a16');
+    ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    // resplandor de focos (naranja) arriba
+    let glow=ctx.createRadialGradient(W/2,-30*S,8,W/2,-30*S,H*0.7);
+    glow.addColorStop(0,'rgba(242,85,44,.20)'); glow.addColorStop(1,'rgba(242,85,44,0)');
+    ctx.fillStyle=glow; ctx.fillRect(0,0,W,H);
+    // público (bokeh tenue)
+    for(let i=0;i<48;i++){ const sx=((i*97.3)%W), sy=((i*53.7)%(H*0.60));
+      ctx.fillStyle='rgba(255,255,255,'+(0.02+(i%5)*0.012).toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(sx,sy,(1+(i%3))*S,0,7); ctx.fill(); }
+    // suelo de madera
+    let wood=ctx.createLinearGradient(0,gy,0,H); wood.addColorStop(0,'#cf7d3f'); wood.addColorStop(1,'#92501c');
+    ctx.fillStyle=wood; ctx.fillRect(0,gy,W,H-gy);
+    ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=1*S;
+    for(let i=0;i<6;i++){ const yy=gy+(i+1)*(H-gy)/7; ctx.beginPath(); ctx.moveTo(0,yy); ctx.lineTo(W,yy); ctx.stroke(); }
+    ctx.fillStyle='rgba(255,255,255,.2)'; ctx.fillRect(0,gy,W,2*S);
+    // zona (llave) en perspectiva + arco 3pt
+    const kx=W/2;
+    ctx.strokeStyle='rgba(255,255,255,.30)'; ctx.lineWidth=2.4*S;
+    ctx.beginPath(); ctx.moveTo(kx-46*S,H); ctx.lineTo(kx-30*S,gy); ctx.lineTo(kx+30*S,gy); ctx.lineTo(kx+46*S,H); ctx.stroke();
+    ctx.beginPath(); ctx.arc(kx,gy,66*S,Math.PI,0); ctx.stroke();
+    // viñeta
+    let vg=ctx.createRadialGradient(W/2,H*0.46,H*0.28,W/2,H*0.5,H*0.78);
+    vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.45)');
+    ctx.fillStyle=vg; ctx.fillRect(0,0,W,H);
+  }
+  function drawHoop(){
+    const {x,rimY,r,net}=hoop;
+    // tablero (cristal) detrás del aro
+    const bw=66*S, bh=44*S, bTop=rimY-bh-7*S;
+    ctx.fillStyle='rgba(200,215,255,.10)'; roundRect(x-bw/2,bTop,bw,bh,5*S); ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,.45)'; ctx.lineWidth=2*S; roundRect(x-bw/2,bTop,bw,bh,5*S); ctx.stroke();
+    const tw=26*S, th=18*S;
+    ctx.strokeStyle='#ff5a1f'; ctx.lineWidth=2.4*S; ctx.strokeRect(x-tw/2, bTop+bh-th-6*S, tw, th);
+    ctx.fillStyle='rgba(255,255,255,.22)'; ctx.fillRect(x-2*S, bTop+bh, 4*S, rimY-(bTop+bh));
+    // red
+    if(net){ ctx.strokeStyle='rgba(255,255,255,.82)'; ctx.lineWidth=1.3*S;
+      for(let c=0;c<=NET_COLS;c++){ ctx.beginPath(); ctx.moveTo(net[c][0].x,net[c][0].y);
+        for(let k=1;k<=NET_ROWS;k++) ctx.lineTo(net[c][k].x,net[c][k].y); ctx.stroke(); }
+      for(let k=1;k<=NET_ROWS;k++){ ctx.beginPath(); ctx.moveTo(net[0][k].x,net[0][k].y);
+        for(let c=1;c<=NET_COLS;c++) ctx.lineTo(net[c][k].x,net[c][k].y); ctx.stroke(); } }
+    // aro con relieve
+    ctx.lineCap='round';
+    ctx.strokeStyle='#ff8a4d'; ctx.lineWidth=6*S;
+    ctx.beginPath(); ctx.moveTo(x-r,rimY); ctx.lineTo(x+r,rimY); ctx.stroke();
+    ctx.strokeStyle='#e0481a'; ctx.lineWidth=3*S;
+    ctx.beginPath(); ctx.moveTo(x-r,rimY+2.4*S); ctx.lineTo(x+r,rimY+2.4*S); ctx.stroke();
+    ctx.lineCap='butt';
+    ctx.fillStyle='#ff8a4d';
+    ctx.beginPath(); ctx.arc(x-r,rimY,4*S,0,7); ctx.fill();
+    ctx.beginPath(); ctx.arc(x+r,rimY,4*S,0,7); ctx.fill();
+  }
+  function drawBall(){
+    const onFire = streak>=3;
+    // estela
+    if(ball.flying && ball.trail){
+      for(let i=0;i<ball.trail.length;i++){ const t=ball.trail[i], a=(i+1)/ball.trail.length*0.32;
+        ctx.globalAlpha=a; ctx.fillStyle=onFire?'#ff7a3d':'#ffb866';
+        ctx.beginPath(); ctx.arc(t.x,t.y,ball.r*(0.35+0.5*a),0,7); ctx.fill(); }
+      ctx.globalAlpha=1;
+    }
+    // sombra escalada por altura
+    const gy=GROUND(), hgt=Math.max(0,Math.min(1,(gy-ball.y)/(H*0.6)));
+    ctx.save(); ctx.globalAlpha=0.28*(1-hgt*0.75); ctx.fillStyle='#000';
+    ctx.beginPath(); ctx.ellipse(ball.x,gy-2*S,ball.r*(0.85-hgt*0.4),ball.r*(0.32-hgt*0.18),0,0,7); ctx.fill(); ctx.restore();
+    // glow "en llamas"
+    if(onFire){ ctx.save(); const fg=ctx.createRadialGradient(ball.x,ball.y,ball.r*0.4,ball.x,ball.y,ball.r*2);
+      fg.addColorStop(0,'rgba(255,120,40,.55)'); fg.addColorStop(1,'rgba(255,120,40,0)');
+      ctx.fillStyle=fg; ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r*2,0,7); ctx.fill(); ctx.restore(); }
+    // balón
+    ctx.save(); ctx.translate(ball.x,ball.y); ctx.rotate(ball.rot);
+    const g=ctx.createRadialGradient(-ball.r*0.32,-ball.r*0.32,ball.r*0.15,0,0,ball.r);
+    g.addColorStop(0,'#ffc079'); g.addColorStop(.6,'#ef7a25'); g.addColorStop(1,'#c85912'); ctx.fillStyle=g;
+    ctx.beginPath(); ctx.arc(0,0,ball.r,0,7); ctx.fill();
+    // brillo superior
+    ctx.globalAlpha=.5; ctx.fillStyle='rgba(255,255,255,.5)';
+    ctx.beginPath(); ctx.ellipse(-ball.r*0.32,-ball.r*0.36,ball.r*0.28,ball.r*0.16,-0.5,0,7); ctx.fill(); ctx.globalAlpha=1;
+    // costuras
+    ctx.strokeStyle='#6b2604'; ctx.lineWidth=2*S;
+    ctx.beginPath(); ctx.moveTo(-ball.r,0); ctx.lineTo(ball.r,0); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(0,-ball.r); ctx.lineTo(0,ball.r); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,0,ball.r,-0.5,0.5); ctx.stroke();
+    ctx.beginPath(); ctx.arc(0,0,ball.r,Math.PI-0.5,Math.PI+0.5); ctx.stroke();
+    ctx.restore();
+  }
+  function drawAim(){
+    if(!dragging) return;
+    const dx=ball.x-dragNow.x, dy=ball.y-dragNow.y;
+    let px=ball.x, py=ball.y, pvx=dx*POWER, pvy=dy*POWER;
+    ctx.fillStyle='rgba(255,255,255,.5)';
+    for(let i=0;i<28;i++){ pvy+=GRAV*S; px+=pvx; py+=pvy; if(py+ball.r>GROUND()) break;
+      if(i%2===0){ ctx.beginPath(); ctx.arc(px,py,3*S,0,7); ctx.fill(); } }
+    const pow=Math.min(Math.hypot(dx,dy)/(200*S),1);
+    ctx.strokeStyle=`hsl(${120-pow*120},90%,55%)`; ctx.lineWidth=4*S;
+    ctx.beginPath(); ctx.moveTo(ball.x,ball.y); ctx.lineTo(dragNow.x,dragNow.y); ctx.stroke();
+  }
+  function drawParticles(){
+    for(const r of rings){ ctx.globalAlpha=Math.max(r.life,0)*0.85; ctx.strokeStyle=r.color||'#ffd24d'; ctx.lineWidth=3*S;
+      ctx.beginPath(); ctx.arc(r.x,r.y,r.r,0,7); ctx.stroke(); }
+    for(const p of particles){ ctx.globalAlpha=Math.max(p.life,0); ctx.fillStyle=p.color;
+      ctx.beginPath(); ctx.arc(p.x,p.y,4*S,0,7); ctx.fill(); }
+    ctx.globalAlpha=1;
+  }
+  function updateParticles(){
+    for(const p of particles){ p.vy+=0.2*S; p.x+=p.vx; p.y+=p.vy; p.life-=0.025; }
+    particles=particles.filter(p=>p.life>0);
+    for(const r of rings){ r.r+=3.4*S; r.life-=0.05; }
+    rings=rings.filter(r=>r.life>0);
+  }
+
+  function pos(e){ const rect=cv.getBoundingClientRect(); const t=e.touches?e.touches[0]:e;
+    return {x:t.clientX-rect.left, y:t.clientY-rect.top}; }
+  function down(e){ if(!active||!running||ball.flying) return; const p=pos(e);
+    if(Math.hypot(p.x-ball.x,p.y-ball.y)<ball.r*2.5){ dragging=true; dragStart=p; dragNow=p; e.preventDefault(); } }
+  function move(e){ if(!dragging) return; dragNow=pos(e); e.preventDefault(); }
+  function up(e){ if(!dragging) return; dragging=false;
+    const dx=ball.x-dragNow.x, dy=ball.y-dragNow.y;
+    if(Math.hypot(dx,dy)>20*S && dy<0) shoot(dx,dy); e.preventDefault(); }
+
+  function loop(){ if(!active){ rafId=null; return; } update(); updateParticles(); draw(); rafId=requestAnimationFrame(loop); }
+
+  function init(){
+    if(inited) return; inited=true;
+    cv=document.getElementById('mg-c'); ctx=cv.getContext('2d'); stage=document.getElementById('mg-stage');
+    best=+(localStorage.getItem('basket_best')||0);
+    cv.addEventListener('mousedown',down);
+    window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
+    cv.addEventListener('touchstart',down,{passive:false});
+    window.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up,{passive:false});
+    document.getElementById('mg-again').addEventListener('click',startGame);
+    window.addEventListener('resize',()=>{ if(active){ resize(); if(ball&&!ball.flying){ ball.x=W/2; ball.y=GROUND()-H*0.20; } } });
+  }
+  return {
+    start(){ init(); active=true; resize(); startGame(); if(!rafId) loop(); },
+    stop(){ active=false; running=false; clearInterval(timerId); if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }
+  };
+})();
+</script>
+</body>
+</html>
