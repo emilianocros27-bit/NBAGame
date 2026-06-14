@@ -577,8 +577,8 @@
         <button class="auth-tab" data-mode="register" aria-selected="false">Crear cuenta</button>
       </div>
       <form id="auth-form" autocomplete="on">
-        <input id="auth-user" placeholder="Usuario" autocomplete="username" autocapitalize="off" autocorrect="off" spellcheck="false" />
-        <input id="auth-pass" type="password" placeholder="Contraseña" autocomplete="current-password" />
+        <input id="auth-user" type="email" placeholder="Correo electrónico" autocomplete="email" autocapitalize="off" autocorrect="off" spellcheck="false" />
+        <input id="auth-pass" type="password" placeholder="Contraseña (mín. 6)" autocomplete="current-password" />
         <p class="auth-err" id="auth-err"></p>
         <button class="btn btn-primary" id="auth-submit" type="submit">Entrar</button>
       </form>
@@ -885,22 +885,13 @@
     if(typeof state.coins!=="number") state.coins=250; }
   function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} scheduleCloud(); }
 
-  /* ===== CUENTAS / NUBE (servidor DUNK en Railway) ===== */
-  const API = "";              // mismo origen que sirve el juego
-  let authUser = null, cloudT = null;
-  const authToken = () => localStorage.getItem("dunk_token");
-  async function api(path, opts={}){
-    const o = Object.assign({ headers:{} }, opts);
-    o.headers["Content-Type"] = "application/json";
-    const t = authToken(); if(t) o.headers["Authorization"] = "Bearer " + t;
-    if(o.body && typeof o.body !== "string") o.body = JSON.stringify(o.body);
-    const r = await fetch(API + path, o);
-    let j = {}; try{ j = await r.json(); }catch(e){}
-    if(!r.ok) throw new Error(j.error || ("HTTP " + r.status));
-    return j;
+  /* ===== CUENTAS / NUBE (Firebase Auth + Firestore) ===== */
+  let authUser = null, currentUid = null, cloudT = null;
+  function scheduleCloud(){
+    if(!currentUid || !window.DunkFire) return;
+    clearTimeout(cloudT);
+    cloudT = setTimeout(()=>{ window.DunkFire.saveState(currentUid, state).catch(()=>{}); }, 700);
   }
-  function scheduleCloud(){ if(!authUser) return; clearTimeout(cloudT);
-    cloudT = setTimeout(()=>{ api("/api/save", { method:"PUT", body:{ data:state } }).catch(()=>{}); }, 700); }
   function applyState(obj){
     state = Object.assign(defaultState(), obj || {});
     if(!state.finals) state.finals={}; if(!state.display) state.display={};
@@ -909,39 +900,44 @@
   function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); }
   function updateAccountUI(){
     const b=$("#acct"); if(!b) return;
-    if(authUser){ b.hidden=false; $("#acct-ini").textContent=authUser[0]||"?"; $("#acct-name").textContent=authUser; }
+    if(authUser){ b.hidden=false; $("#acct-ini").textContent=(authUser[0]||"?").toUpperCase(); $("#acct-name").textContent=authUser; }
     else b.hidden=true;
   }
   function showAuth(){ $("#auth").classList.add("show"); }
   function hideAuth(){ $("#auth").classList.remove("show"); }
-  async function resumeSession(){
-    if(!authToken()) return false;
-    try{
-      const me = await api("/api/me");
-      authUser = me.username; localStorage.setItem("dunk_user", authUser);
-      try{ const s = await api("/api/save"); if(s.data) applyState(s.data); }catch(e){}
+
+  // Firebase notifica el estado de sesión: al cargar, al entrar y al salir
+  async function handleAuth(user){
+    if(user){
+      authUser = user.email; currentUid = user.uid;
+      let cloud = null;
+      try{ cloud = await window.DunkFire.loadSave(user.uid); }catch(e){}
+      if(cloud){ applyState(cloud); }
+      else { applyState(defaultState()); try{ await window.DunkFire.saveState(user.uid, state); }catch(e){} }
       save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll();
-      return true;
-    }catch(err){
-      if(/HTTP 401|Sesión/.test(err.message)){ localStorage.removeItem("dunk_token"); return false; }
-      authUser = localStorage.getItem("dunk_user") || null;   // servidor caído: juega en local
-      updateAccountUI(); hideAuth(); return true;
+    } else {
+      authUser=null; currentUid=null; updateAccountUI(); showAuth();
     }
   }
+  function startSession(){
+    if(window.DunkFire){ window.DunkFire.onAuth(handleAuth); return; }
+    window.addEventListener("dunkfire-ready", ()=>window.DunkFire.onAuth(handleAuth), { once:true });
+    setTimeout(()=>{ if(!window.DunkFire) showAuth(); }, 6000);   // si Firebase no carga, al menos muestra el login
+  }
   async function doAuth(mode){
-    const u=$("#auth-user").value, p=$("#auth-pass").value, errEl=$("#auth-err"), btn=$("#auth-submit");
-    errEl.textContent=""; btn.disabled=true;
+    const email=$("#auth-user").value.trim(), pass=$("#auth-pass").value, errEl=$("#auth-err"), btn=$("#auth-submit");
+    errEl.textContent="";
+    if(!window.DunkFire){ errEl.textContent="Conexión no lista, espera un momento e inténtalo de nuevo"; return; }
+    btn.disabled=true;
     try{
-      const r = await api("/api/"+mode, { method:"POST", body:{ username:u, password:p } });
-      localStorage.setItem("dunk_token", r.token); localStorage.setItem("dunk_user", r.username); authUser=r.username;
-      if(mode==="register"){ applyState(defaultState()); }
-      else { try{ const s=await api("/api/save"); applyState(s.data||{}); }catch(e){ applyState({}); } }
-      save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll();
-      toast(mode==="register" ? ("¡Cuenta creada! Bienvenido, "+authUser) : ("¡Hola de nuevo, "+authUser+"!"));
-    }catch(err){ errEl.textContent = err.message || "Algo salió mal"; }
+      if(mode==="register") await window.DunkFire.register(email, pass);
+      else await window.DunkFire.login(email, pass);
+      // handleAuth (onAuth) cargará el progreso y ocultará el login
+      toast(mode==="register" ? "¡Cuenta creada! Bienvenido" : "¡Hola de nuevo!");
+    }catch(err){ errEl.textContent = window.DunkFire.mapErr(err); }
     finally{ btn.disabled=false; }
   }
-  function logout(){ localStorage.removeItem("dunk_token"); localStorage.removeItem("dunk_user"); location.reload(); }
+  async function logout(){ try{ if(window.DunkFire) await window.DunkFire.logout(); }catch(e){} location.reload(); }
   function bindAuth(){
     $$("#auth .auth-tab").forEach(t=>t.addEventListener("click", ()=>{
       $$("#auth .auth-tab").forEach(x=>x.setAttribute("aria-selected", String(x===t)));
@@ -1536,11 +1532,7 @@
     bindEvents();
     bindAuth();
     renderAll();
-
-    // sesión / cuenta
-    const resumed = await resumeSession();
-    if(!resumed) showAuth();
-    updateAccountUI();
+    startSession();   // Firebase: muestra login o reanuda sesión
 
     if(!Object.keys(state.owned).length){
       toast("¡Bienvenido! Abre un sobre para empezar tu colección");
@@ -1848,6 +1840,47 @@ window.MiniGame = (function(){
     stop(){ active=false; running=false; clearInterval(timerId); if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }
   };
 })();
+</script>
+
+<!-- ===== FIREBASE (Auth + Firestore) ===== -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyCahATuEFQDCtRhttn4GqkurK-CVBsp0O8",
+    authDomain: "dunk-fd827.firebaseapp.com",
+    projectId: "dunk-fd827",
+    storageBucket: "dunk-fd827.firebasestorage.app",
+    messagingSenderId: "826674605967",
+    appId: "1:826674605967:web:01e1b8a4660246c0c065fa"
+  };
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  function mapErr(e){
+    const c = (e && e.code) || "";
+    if(c.includes("email-already-in-use")) return "Ese correo ya está registrado";
+    if(c.includes("invalid-email")) return "Correo no válido";
+    if(c.includes("weak-password")) return "Contraseña muy corta (mínimo 6)";
+    if(c.includes("missing-password")) return "Escribe una contraseña";
+    if(c.includes("invalid-credential") || c.includes("wrong-password") || c.includes("user-not-found")) return "Correo o contraseña incorrectos";
+    if(c.includes("too-many-requests")) return "Demasiados intentos, espera un momento";
+    if(c.includes("network")) return "Sin conexión a internet";
+    return "No se pudo: " + (c || "error");
+  }
+  window.DunkFire = {
+    register: async (e,p)=>{ const u=(await createUserWithEmailAndPassword(auth,e,p)).user; return {uid:u.uid,email:u.email}; },
+    login:    async (e,p)=>{ const u=(await signInWithEmailAndPassword(auth,e,p)).user; return {uid:u.uid,email:u.email}; },
+    logout:   ()=>signOut(auth),
+    onAuth:   (cb)=>onAuthStateChanged(auth, u=>cb(u?{uid:u.uid,email:u.email}:null)),
+    loadSave: async (uid)=>{ const s=await getDoc(doc(db,"saves",uid)); return s.exists()?s.data().state:null; },
+    saveState:(uid,data)=>setDoc(doc(db,"saves",uid),{ state:data, updated:Date.now() }),
+    mapErr
+  };
+  window.dispatchEvent(new Event("dunkfire-ready"));
 </script>
 </body>
 </html>
