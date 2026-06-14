@@ -526,6 +526,42 @@
     box-shadow:0 6px 0 #b53517; transition:transform .08s, box-shadow .08s;}
   .mg-btn:active{transform:translateY(3px); box-shadow:0 3px 0 #b53517;}
   @media(max-width:640px){ .bottom-nav .tab{font-size:11.5px; padding:11px 3px; letter-spacing:.02em;} }
+
+  /* ===== PERFIL / AMIGOS ===== */
+  .pf-setup{max-width:460px; background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; padding:22px;}
+  .pf-setup h3{font-size:20px; text-transform:uppercase;}
+  .pf-setup p{color:var(--muted); font-size:14px; margin:6px 0 14px;}
+  .pf-uname-row,.pf-search{display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--line-strong); border-radius:12px; padding:6px 6px 6px 14px;}
+  .pf-at{font-family:var(--display); font-weight:700; color:var(--muted); font-size:16px;}
+  .pf-uname-row input,.pf-search input{flex:1; min-width:0; background:transparent; border:0; outline:none; color:var(--text); font-size:15px; padding:8px 0;}
+  .pf-card{display:flex; align-items:center; gap:18px; background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:18px 20px; margin-bottom:24px;}
+  .pf-avatar{width:84px; height:84px; border-radius:50%; flex:0 0 auto; overflow:hidden; cursor:default; padding:0; position:relative;
+    border:2px solid var(--accent); background:linear-gradient(160deg,#2a2030,#15121c); display:grid; place-items:center; color:var(--muted-2);}
+  .pf-avatar img{width:100%; height:100%; object-fit:cover;}
+  .pf-avatar.editable{cursor:pointer;}
+  .pf-avatar .cam{position:absolute; bottom:0; left:0; right:0; height:24px; background:rgba(0,0,0,.55); display:grid; place-items:center; color:#fff;}
+  .pf-id{flex:1 1 auto; min-width:0;}
+  .pf-name{font-family:var(--display); font-weight:700; font-size:23px; letter-spacing:.01em; word-break:break-word;}
+  .pf-meta{color:var(--muted); font-size:13px; margin-top:3px;}
+  .pf-actions{flex:0 0 auto; display:flex; gap:8px; flex-wrap:wrap;}
+  .pf-actions .btn{padding:10px 16px; font-size:14px;}
+  .pf-section{margin-bottom:26px;}
+  .pf-sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .pf-sec-head h3{font-size:18px; text-transform:uppercase; letter-spacing:.02em;}
+  .pf-link{background:none; border:0; color:var(--accent); font-family:var(--display); font-weight:600; cursor:pointer; font-size:13px; text-transform:uppercase; letter-spacing:.04em;}
+  .pf-showcase{display:grid; grid-template-columns:repeat(auto-fill, minmax(118px,1fr)); gap:14px;}
+  .pf-empty{color:var(--muted-2); font-size:14px; padding:20px; border:1px dashed var(--line-strong); border-radius:14px; text-align:center;}
+  .pf-search{max-width:420px; margin-bottom:14px;}
+  .pf-search .btn{padding:9px 12px; flex:0 0 auto;}
+  .pf-rows{display:flex; flex-direction:column; gap:8px;}
+  .pf-rows-title{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em; margin:16px 0 4px;}
+  .frow{display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:10px 12px;}
+  .frow .av{width:40px; height:40px; border-radius:50%; flex:0 0 auto; overflow:hidden; display:grid; place-items:center;
+    background:linear-gradient(160deg,#2a2030,#15121c); color:var(--muted-2); border:1px solid var(--line-strong);}
+  .frow .av img{width:100%; height:100%; object-fit:cover;}
+  .frow .nm{flex:1 1 auto; min-width:0; font-family:var(--display); font-weight:600; font-size:15px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .frow .btn{padding:8px 14px; font-size:13px; flex:0 0 auto;}
+  .frow .tag{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; flex:0 0 auto;}
 </style>
 </head>
 <body>
@@ -562,6 +598,7 @@
       <button class="acct" id="acct" hidden aria-label="Cuenta"><span id="acct-ini">?</span></button>
       <div class="acct-menu" id="acct-menu">
         <div class="acct-who">Sesión iniciada como<br><b id="acct-name"></b></div>
+        <button class="btn btn-ghost" id="acct-profile">Mi perfil</button>
         <button class="btn btn-ghost" id="acct-logout">Cerrar sesión</button>
       </div>
     </div>
@@ -717,6 +754,62 @@
           <button id="mg-again" class="mg-btn">Jugar otra vez</button>
         </div>
       </div>
+    </section>
+
+    <!-- ===== PERFIL ===== -->
+    <section class="view" id="view-perfil" role="tabpanel">
+      <div class="view-head"><div>
+        <h2 id="pf-title">Perfil</h2>
+        <p id="pf-sub">Tu vitrina y tus amigos.</p>
+      </div></div>
+
+      <!-- elegir nombre de usuario (primera vez) -->
+      <div id="pf-setup" class="pf-setup" hidden>
+        <h3>Elige tu nombre de usuario</h3>
+        <p>Así te encontrarán tus amigos.</p>
+        <form id="pf-uname-form" class="pf-uname-row">
+          <span class="pf-at">@</span>
+          <input id="pf-uname" placeholder="tunombre" maxlength="20" autocomplete="off" autocapitalize="off" spellcheck="false" />
+          <button class="btn btn-primary" id="pf-uname-save" type="submit">Guardar</button>
+        </form>
+        <p class="auth-err" id="pf-uname-err"></p>
+      </div>
+
+      <!-- perfil -->
+      <div id="pf-body" class="pf-body" hidden>
+        <div class="pf-card">
+          <button class="pf-avatar" id="pf-avatar" aria-label="Foto de perfil"></button>
+          <div class="pf-id">
+            <div class="pf-name" id="pf-name">@usuario</div>
+            <div class="pf-meta" id="pf-meta"></div>
+          </div>
+          <div class="pf-actions" id="pf-actions"></div>
+        </div>
+
+        <div class="pf-section">
+          <div class="pf-sec-head">
+            <h3>Vitrina</h3>
+            <button class="pf-link" id="pf-showcase-edit" hidden>Editar vitrina</button>
+          </div>
+          <div class="pf-showcase" id="pf-showcase"></div>
+        </div>
+
+        <div class="pf-section" id="pf-friends" hidden>
+          <div class="pf-sec-head"><h3>Amigos</h3></div>
+          <form id="pf-search-form" class="pf-search">
+            <span class="pf-at">@</span>
+            <input id="pf-search-input" placeholder="buscar usuario" autocomplete="off" autocapitalize="off" spellcheck="false" />
+            <button class="btn btn-primary" id="pf-search-btn" type="submit" aria-label="Buscar">
+              <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.3-4.3"></path></svg>
+            </button>
+          </form>
+          <div id="pf-search-res" class="pf-rows"></div>
+          <div id="pf-requests" class="pf-rows"></div>
+          <div id="pf-friends-list" class="pf-rows"></div>
+        </div>
+      </div>
+
+      <input type="file" id="pf-file" accept="image/*" hidden />
     </section>
   </main>
 
@@ -914,9 +1007,10 @@
       try{ cloud = await window.DunkFire.loadSave(user.uid); }catch(e){}
       if(cloud){ applyState(cloud); }
       else { applyState(defaultState()); try{ await window.DunkFire.saveState(user.uid, state); }catch(e){} }
+      try{ myProfile = await window.DunkFire.getProfile(user.uid); }catch(e){ myProfile=null; }
       save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll();
     } else {
-      authUser=null; currentUid=null; updateAccountUI(); showAuth();
+      authUser=null; currentUid=null; myProfile=null; updateAccountUI(); showAuth();
     }
   }
   function startSession(){
@@ -949,7 +1043,208 @@
     $("#auth-skip").addEventListener("click", hideAuth);
     $("#acct").addEventListener("click", e=>{ e.stopPropagation(); $("#acct-menu").classList.toggle("show"); });
     $("#acct-logout").addEventListener("click", logout);
+    $("#acct-profile").addEventListener("click", ()=>{ $("#acct-menu").classList.remove("show"); openProfile(currentUid); });
     document.addEventListener("click", e=>{ if(!e.target.closest("#acct") && !e.target.closest("#acct-menu")) $("#acct-menu").classList.remove("show"); });
+    bindProfile();
+  }
+
+  /* =====================================================
+     PERFIL / VITRINA / AMIGOS
+     ===================================================== */
+  let myProfile = null, viewingUid = null;
+  const SVG_USER = `<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.6"><circle cx="12" cy="8" r="4"></circle><path d="M4 21c0-4 4-6 8-6s8 2 8 6"></path></svg>`;
+  const SVG_CAM = `<svg viewBox="0 0 24 24" width="13" height="13" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 8h3l2-2h8l2 2h3v12H3z"></path><circle cx="12" cy="13" r="3.2"></circle></svg>`;
+
+  function avatarHTML(prof, big){
+    if(prof && prof.avatar) return `<img src="${prof.avatar}" alt="">`;
+    return `<span style="display:grid;place-items:center">${big?SVG_USER:SVG_USER.replace('width="40" height="40"','width="20" height="20"')}</span>`;
+  }
+  async function openProfile(uid){
+    if(!uid) return;
+    viewingUid = uid;
+    showView("perfil");
+    await renderProfile(uid);
+  }
+  async function renderProfile(uid){
+    const isMe = uid === currentUid;
+    const setup=$("#pf-setup"), bodyEl=$("#pf-body");
+    // perfil propio sin nombre de usuario -> setup
+    if(isMe && (!myProfile || !myProfile.username)){
+      setup.hidden=false; bodyEl.hidden=true;
+      $("#pf-title").textContent="Crea tu perfil";
+      $("#pf-uname").focus(); return;
+    }
+    setup.hidden=true; bodyEl.hidden=false;
+    let prof = isMe ? myProfile : null;
+    if(!isMe){ try{ prof = await window.DunkFire.getProfile(uid); }catch(e){ prof=null; } if(prof) prof.uid=uid; }
+    if(!prof){ bodyEl.hidden=true; toast("Perfil no encontrado"); return; }
+
+    $("#pf-title").textContent = isMe ? "Mi perfil" : "Perfil";
+    $("#pf-sub").textContent = isMe ? "Tu vitrina y tus amigos." : "";
+    const av=$("#pf-avatar");
+    av.innerHTML = avatarHTML(prof, true) + (isMe?`<span class="cam">${SVG_CAM}</span>`:"");
+    av.classList.toggle("editable", isMe);
+    $("#pf-name").textContent = "@" + (prof.username||"jugador");
+    $("#pf-meta").textContent = isMe ? authUser : "";
+
+    // acciones
+    const act=$("#pf-actions"); act.innerHTML="";
+    if(isMe){
+      act.innerHTML = `<button class="btn btn-ghost" id="pf-back">Volver al juego</button>`;
+      act.querySelector("#pf-back").addEventListener("click", ()=>showView("album"));
+      $("#pf-showcase-edit").hidden=false;
+      $("#pf-friends").hidden=false;
+      renderFriends();
+    } else {
+      $("#pf-showcase-edit").hidden=true;
+      $("#pf-friends").hidden=true;
+      const rel = await friendStatus(uid);
+      act.appendChild(friendActionBtn(uid, rel));
+      const back=document.createElement("button"); back.className="btn btn-ghost"; back.textContent="Volver";
+      back.addEventListener("click", ()=>openProfile(currentUid)); act.appendChild(back);
+    }
+    renderShowcase(prof, isMe);
+  }
+  function renderShowcase(prof, isMe){
+    const wrap=$("#pf-showcase");
+    const list=(prof.showcase||[]).map(s=>({p:BY[s.slug], variant:s.variant||"normal"})).filter(x=>x.p);
+    if(!list.length){ wrap.innerHTML=`<div class="pf-empty">${isMe?"Aún no expones cartas. Toca \"Editar vitrina\".":"Sin cartas en la vitrina."}</div>`; return; }
+    wrap.innerHTML = list.map(x=>cardHTML(x.p,{owned:true,count:0,variant:x.variant})).join("");
+  }
+
+  // ---- estado de amistad con un usuario ----
+  async function friendStatus(otherUid){
+    try{
+      const all = await window.DunkFire.listFriendships(currentUid);
+      const f = all.find(d=>d.users.includes(otherUid));
+      if(!f) return {state:"none"};
+      if(f.status==="accepted") return {state:"friends"};
+      return {state: f.by===currentUid ? "out" : "in"};
+    }catch(e){ return {state:"none"}; }
+  }
+  function friendActionBtn(uid, rel){
+    const b=document.createElement("button"); b.className="btn btn-primary";
+    if(rel.state==="friends"){ b.className="btn btn-ghost"; b.textContent="Quitar amigo"; b.onclick=async()=>{ await window.DunkFire.removeFriendship(currentUid,uid); openProfile(uid); }; }
+    else if(rel.state==="out"){ b.className="btn btn-ghost"; b.textContent="Solicitud enviada"; b.disabled=true; }
+    else if(rel.state==="in"){ b.textContent="Aceptar solicitud"; b.onclick=async()=>{ await window.DunkFire.acceptRequest(currentUid,uid); openProfile(uid); }; }
+    else { b.textContent="Agregar amigo"; b.onclick=async()=>{ try{ await window.DunkFire.sendRequest(currentUid,uid); toast("Solicitud enviada"); openProfile(uid);}catch(e){ toast("No se pudo enviar"); } }; }
+    return b;
+  }
+
+  // ---- sección amigos (perfil propio) ----
+  async function renderFriends(){
+    const reqWrap=$("#pf-requests"), listWrap=$("#pf-friends-list");
+    reqWrap.innerHTML=""; listWrap.innerHTML="";
+    let all=[]; try{ all=await window.DunkFire.listFriendships(currentUid); }catch(e){}
+    const incoming = all.filter(f=>f.status==="pending" && f.by!==currentUid);
+    const friends  = all.filter(f=>f.status==="accepted");
+    if(incoming.length){
+      reqWrap.innerHTML = `<div class="pf-rows-title">Solicitudes (${incoming.length})</div>`;
+      for(const f of incoming){ const other=f.users.find(u=>u!==currentUid); reqWrap.appendChild(await friendRow(other,"accept")); }
+    }
+    listWrap.innerHTML = `<div class="pf-rows-title">Amigos (${friends.length})</div>`;
+    if(!friends.length){ listWrap.innerHTML += `<div class="pf-empty">Aún no tienes amigos. Búscalos por su @usuario.</div>`; }
+    for(const f of friends){ const other=f.users.find(u=>u!==currentUid); listWrap.appendChild(await friendRow(other,"view")); }
+  }
+  async function friendRow(uid, mode){
+    let prof=null; try{ prof=await window.DunkFire.getProfile(uid); }catch(e){}
+    const row=document.createElement("div"); row.className="frow";
+    row.innerHTML = `<div class="av">${avatarHTML(prof,false)}</div><div class="nm">@${prof&&prof.username?prof.username:"jugador"}</div>`;
+    row.querySelector(".nm").addEventListener("click", ()=>openProfile(uid));
+    if(mode==="accept"){
+      const a=document.createElement("button"); a.className="btn btn-primary"; a.textContent="Aceptar";
+      a.onclick=async()=>{ await window.DunkFire.acceptRequest(currentUid,uid); renderFriends(); };
+      row.appendChild(a);
+    } else {
+      const v=document.createElement("button"); v.className="btn btn-ghost"; v.textContent="Ver";
+      v.onclick=()=>openProfile(uid); row.appendChild(v);
+    }
+    return row;
+  }
+
+  // ---- avatar: subir y redimensionar a 256px (queda pequeño, va en Firestore) ----
+  function resizeImage(file, size, cb){
+    const img=new Image(), url=URL.createObjectURL(file);
+    img.onload=()=>{ const c=document.createElement("canvas"); c.width=c.height=size; const cx=c.getContext("2d");
+      const sc=Math.max(size/img.width,size/img.height), w=img.width*sc, h=img.height*sc;
+      cx.drawImage(img,(size-w)/2,(size-h)/2,w,h); URL.revokeObjectURL(url); cb(c.toDataURL("image/jpeg",0.82)); };
+    img.onerror=()=>{ URL.revokeObjectURL(url); cb(null); };
+    img.src=url;
+  }
+
+  // ---- editor de vitrina (elige hasta 6 cartas tuyas) ----
+  function openShowcaseEditor(){
+    const owned = PLAYERS.filter(p=>ownsAny(p.slug)).sort((a,b)=>ovr(b)-ovr(a));
+    let sel = (myProfile.showcase||[]).map(s=>s.slug);
+    const body=$("#sheet-body");
+    const grid = ()=> owned.map(p=>{
+      const v=displayVariant(p.slug)||"normal"; const on=sel.includes(p.slug);
+      return `<div class="ver ${on?'sel':''}" data-slug="${p.slug}" data-variant="${v}">${cardHTML(p,{owned:true,count:0,variant:v})}<span class="ver-name">${on?'Quitar':'Exponer'}</span></div>`;
+    }).join("");
+    body.innerHTML = `<div class="picker-head"><h3>Tu vitrina · elige hasta 6</h3><span class="pf-link" id="sc-save">Guardar</span></div>
+      <div class="picker-grid"><div class="ver-row" id="sc-grid">${grid()}</div></div>`;
+    if(!owned.length) body.querySelector("#sc-grid").innerHTML=`<div class="pf-empty">Aún no tienes cartas. Abre sobres primero.</div>`;
+    body.querySelector("#sc-grid").addEventListener("click", e=>{
+      const el=e.target.closest("[data-slug]"); if(!el) return; const slug=el.dataset.slug;
+      if(sel.includes(slug)) sel=sel.filter(s=>s!==slug);
+      else { if(sel.length>=6){ toast("Máximo 6 cartas"); return; } sel.push(slug); }
+      el.classList.toggle("sel"); el.querySelector(".ver-name").textContent = el.classList.contains("sel")?"Quitar":"Exponer";
+    });
+    body.querySelector("#sc-save").addEventListener("click", async ()=>{
+      const showcase = sel.map(slug=>({ slug, variant: displayVariant(slug)||"normal" }));
+      myProfile = Object.assign(myProfile||{}, { showcase });
+      try{ await window.DunkFire.saveProfile(currentUid, { showcase }); }catch(e){}
+      closeSheet(); renderShowcase(myProfile, true);
+    });
+    showSheet();
+  }
+
+  function bindProfile(){
+    // elegir nombre de usuario
+    $("#pf-uname-form").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const name=$("#pf-uname").value.trim().toLowerCase().replace(/[^a-z0-9_]/g,"");
+      const err=$("#pf-uname-err"); err.textContent="";
+      if(name.length<3){ err.textContent="Mínimo 3 caracteres (letras, números y _)"; return; }
+      const btn=$("#pf-uname-save"); btn.disabled=true;
+      try{
+        await window.DunkFire.claimUsername(name, currentUid);
+        await window.DunkFire.saveProfile(currentUid, { username:name });
+        myProfile = Object.assign(myProfile||{}, { username:name });
+        renderProfile(currentUid);
+      }catch(ex){ err.textContent = ex.message || "No se pudo guardar"; }
+      finally{ btn.disabled=false; }
+    });
+    // avatar
+    $("#pf-avatar").addEventListener("click", ()=>{ if(viewingUid===currentUid) $("#pf-file").click(); });
+    $("#pf-file").addEventListener("change", e=>{
+      const f=e.target.files[0]; if(!f) return;
+      resizeImage(f, 256, async (dataUrl)=>{
+        if(!dataUrl){ toast("No se pudo procesar la imagen"); return; }
+        myProfile = Object.assign(myProfile||{}, { avatar:dataUrl });
+        try{ await window.DunkFire.saveProfile(currentUid, { avatar:dataUrl }); }catch(ex){}
+        renderProfile(currentUid);
+      });
+      e.target.value="";
+    });
+    // editar vitrina
+    $("#pf-showcase-edit").addEventListener("click", openShowcaseEditor);
+    // buscar amigos
+    $("#pf-search-form").addEventListener("submit", async e=>{
+      e.preventDefault();
+      const name=$("#pf-search-input").value.trim().toLowerCase().replace(/[^a-z0-9_]/g,"");
+      const res=$("#pf-search-res"); res.innerHTML="";
+      if(name.length<3) return;
+      let prof=null; try{ prof=await window.DunkFire.findByUsername(name); }catch(ex){}
+      if(!prof){ res.innerHTML=`<div class="pf-empty">No existe @${esc(name)}</div>`; return; }
+      if(prof.uid===currentUid){ res.innerHTML=`<div class="pf-empty">Ese eres tú</div>`; return; }
+      const row=document.createElement("div"); row.className="frow";
+      row.innerHTML=`<div class="av">${avatarHTML(prof,false)}</div><div class="nm">@${esc(prof.username)}</div>`;
+      row.querySelector(".nm").addEventListener("click",()=>openProfile(prof.uid));
+      const rel=await friendStatus(prof.uid);
+      row.appendChild(friendActionBtn(prof.uid, rel));
+      res.appendChild(row);
+    });
   }
 
   /* ---- intensidad de lámina por media (visual, sin etiqueta) ---- */
@@ -1846,7 +2141,7 @@ window.MiniGame = (function(){
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCahATuEFQDCtRhttn4GqkurK-CVBsp0O8",
@@ -1871,6 +2166,7 @@ window.MiniGame = (function(){
     if(c.includes("network")) return "Sin conexión a internet";
     return "No se pudo: " + (c || "error");
   }
+  const pairId = (a,b)=>[a,b].sort().join("__");
   window.DunkFire = {
     register: async (e,p)=>{ const u=(await createUserWithEmailAndPassword(auth,e,p)).user; return {uid:u.uid,email:u.email}; },
     login:    async (e,p)=>{ const u=(await signInWithEmailAndPassword(auth,e,p)).user; return {uid:u.uid,email:u.email}; },
@@ -1878,6 +2174,32 @@ window.MiniGame = (function(){
     onAuth:   (cb)=>onAuthStateChanged(auth, u=>cb(u?{uid:u.uid,email:u.email}:null)),
     loadSave: async (uid)=>{ const s=await getDoc(doc(db,"saves",uid)); return s.exists()?s.data().state:null; },
     saveState:(uid,data)=>setDoc(doc(db,"saves",uid),{ state:data, updated:Date.now() }),
+    // ---- PERFILES ----
+    getProfile: async (uid)=>{ const s=await getDoc(doc(db,"profiles",uid)); return s.exists()?s.data():null; },
+    saveProfile:(uid,data)=>setDoc(doc(db,"profiles",uid), Object.assign({updated:Date.now()},data), {merge:true}),
+    // reclama un @usuario único (falla si ya existe de otro)
+    claimUsername: async (name,uid)=>{
+      const lower=name.toLowerCase();
+      const ref=doc(db,"usernames",lower);
+      const ex=await getDoc(ref);
+      if(ex.exists()){ if(ex.data().uid===uid) return true; throw new Error("Ese nombre ya está en uso"); }
+      await setDoc(ref,{uid});
+      return true;
+    },
+    findByUsername: async (name)=>{
+      const s=await getDoc(doc(db,"usernames",String(name||"").toLowerCase()));
+      if(!s.exists()) return null;
+      const uid=s.data().uid; const p=await getDoc(doc(db,"profiles",uid));
+      return p.exists()?Object.assign({uid},p.data()):null;
+    },
+    // ---- AMISTADES ----
+    sendRequest:(me,other)=>setDoc(doc(db,"friendships",pairId(me,other)),{ users:[me,other], by:me, status:"pending", at:Date.now() }),
+    acceptRequest:(me,other)=>updateDoc(doc(db,"friendships",pairId(me,other)),{ status:"accepted" }),
+    removeFriendship:(me,other)=>deleteDoc(doc(db,"friendships",pairId(me,other))),
+    listFriendships: async (me)=>{
+      const qs=await getDocs(query(collection(db,"friendships"), where("users","array-contains",me)));
+      return qs.docs.map(d=>d.data());
+    },
     mapErr
   };
   window.dispatchEvent(new Event("dunkfire-ready"));
