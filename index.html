@@ -959,7 +959,7 @@
   const LS = "dunk_nba_v1";
   let PLAYERS = [];
   let BY = {};                 // slug -> player
-  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, graded:{}, display:{}, coins:250 }; }
+  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, graded:{}, display:{}, coins:300 }; }
   let state = defaultState();
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
@@ -983,7 +983,8 @@
     save(); checkTeamRewards(); renderAll();
     return "OK: todas las cartas + Finals + PSA 1-10";
   }
-  window.DunkDev = { giveAll, coins:(n)=>addCoins(n) };
+  function resetAccount(){ applyState(defaultState()); save(); renderAll(); return "OK: cuenta reiniciada (sin cartas, 300 balones)"; }
+  window.DunkDev = { giveAll, coins:(n)=>addCoins(n), reset:resetAccount };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
@@ -1062,7 +1063,7 @@
 
   function load(){ try{ const r=JSON.parse(localStorage.getItem(LS)); if(r){ state=Object.assign(state,r);} }catch(e){}
     if(!state.finals) state.finals={}; if(!state.graded) state.graded={}; if(!state.display) state.display={}; if(!state.messages) state.messages=[];
-    if(typeof state.coins!=="number") state.coins=250; }
+    if(typeof state.coins!=="number") state.coins=300; }
   function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} scheduleCloud(); }
 
   /* ===== CUENTAS / NUBE (Firebase Auth + Firestore) ===== */
@@ -1075,7 +1076,7 @@
   function applyState(obj){
     state = Object.assign(defaultState(), obj || {});
     if(!state.finals) state.finals={}; if(!state.graded) state.graded={}; if(!state.display) state.display={};
-    if(!state.messages) state.messages=[]; if(typeof state.coins!=="number") state.coins=250;
+    if(!state.messages) state.messages=[]; if(typeof state.coins!=="number") state.coins=300;
   }
   function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); }
   function updateAccountUI(){
