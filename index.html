@@ -1664,6 +1664,7 @@
      ===================================================== */
   function weight(p, taken){
     let w = Math.pow(Math.max(1, 101-ovr(p)), 1.3);   // media baja => más común (suavizado)
+    if(ovr(p) >= 95) w *= 0.30;          // estrellas 95+ mucho más raras
     const owned = state.owned[p.slug] || 0;
     if(owned === 0) w *= 1.8;            // favorece cartas que aún no tienes
     else w /= (1 + owned * 1.7);         // penaliza las repetidas (más copias => menos probable)
@@ -1874,6 +1875,8 @@
   let openerQueue=[], openerIdx=0, openerLast=null;
   function runOpener(cards){
     openerQueue=cards; openerIdx=0;
+    // precarga las fotos del sobre para que no tarden en aparecer al revelar
+    cards.forEach(c=>{ const src=(c.variant==="finals" && FINALS_CARD[c.p.slug]) ? FINALS_CARD[c.p.slug] : c.p.foto; if(src){ const im=new Image(); im.src=src; } });
     const strip=$("#reveal-strip");
     strip.innerHTML=cards.map((c,i)=>`<div class="reveal-dot" data-i="${i}">${i+1}</div>`).join("");
     $("#opener-card").innerHTML="";
