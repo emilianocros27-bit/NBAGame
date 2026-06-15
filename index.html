@@ -550,6 +550,12 @@
   .pf-meta{color:var(--muted); font-size:13px; margin-top:3px;}
   .pf-actions{flex:0 0 auto; display:flex; gap:8px; flex-wrap:wrap;}
   .pf-actions .btn{padding:10px 16px; font-size:14px;}
+  @media(max-width:560px){
+    .pf-card{flex-wrap:wrap;}
+    .pf-name{font-size:20px;}
+    .pf-actions{flex:1 1 100%; width:100%;}
+    .pf-actions .btn{flex:1 1 auto;}
+  }
   .pf-section{margin-bottom:26px;}
   .pf-sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
   .pf-sec-head h3{font-size:18px; text-transform:uppercase; letter-spacing:.02em;}
