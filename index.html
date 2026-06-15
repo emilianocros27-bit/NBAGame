@@ -575,6 +575,29 @@
   .t-empty{color:var(--muted-2);}
   .t-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
   .t-actions .btn{padding:8px 14px; font-size:13px;}
+  /* ===== CARTA GRADUADA (slab PSA) ===== */
+  .psa{position:relative; border-radius:14px; padding:6px; aspect-ratio:3/4.15;
+    display:flex; flex-direction:column;
+    background:linear-gradient(160deg, rgba(255,255,255,.16), rgba(255,255,255,.04));
+    border:1px solid rgba(255,255,255,.28); box-shadow:0 14px 40px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.32);}
+  .psa.ghi{box-shadow:0 14px 44px rgba(0,0,0,.55), 0 0 22px rgba(255,210,90,.22), inset 0 1px 0 rgba(255,255,255,.35);}
+  .psa-label{flex:0 0 auto; display:flex; align-items:stretch; margin-bottom:6px; border-radius:5px; overflow:hidden;
+    border:2px solid #d61f26; background:#fff;}
+  .psa-l-text{flex:1 1 auto; min-width:0; padding:6px 9px; display:flex; flex-direction:column; justify-content:center; gap:3px;}
+  .psa-l1{font-family:var(--display); font-weight:700; font-size:10px; color:#111; text-transform:uppercase; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .psa-l2{font-size:8px; color:#444; letter-spacing:.03em; display:flex; align-items:center; gap:6px; white-space:nowrap; overflow:hidden;}
+  .psa-logo{display:inline-flex; align-items:center; font-family:var(--display); font-weight:800; font-style:italic; font-size:11px; line-height:1;}
+  .psa-logo b{color:#1a4fa0;} .psa-logo i{color:#d61f26; font-style:italic; margin:0 -1.5px;}
+  .psa-grade{flex:0 0 auto; width:46px; background:#d61f26; color:#fff; display:flex; flex-direction:column; align-items:center; justify-content:center; line-height:.82;}
+  .psa-grade b{font-family:var(--display); font-weight:800; font-size:23px;}
+  .psa-grade span{font-size:6px; letter-spacing:.03em; margin-top:2px;}
+  .psa-window{flex:1 1 auto; min-height:0; border-radius:8px; position:relative; display:flex; align-items:center; justify-content:center;}
+  .psa-window::after{content:""; position:absolute; inset:0; pointer-events:none; border-radius:8px; z-index:2;
+    background:linear-gradient(120deg, rgba(255,255,255,.16), transparent 28%, transparent 72%, rgba(255,255,255,.08));}
+  .psa-window .card{height:100%; width:auto; max-width:100%;}
+  .psa-tab-badge{display:inline-flex; align-items:center; margin-left:6px; background:#fff; border-radius:5px;
+    padding:1px 4px; font-family:var(--display); font-weight:800; font-style:italic; font-size:9px; line-height:1; vertical-align:middle;}
+  .psa-tab-badge b{color:#1a4fa0;} .psa-tab-badge i{color:#d61f26; font-style:italic; margin:0 -1px;}
 </style>
 </head>
 <body>
@@ -593,6 +616,7 @@
       <nav class="tabs" role="tablist" aria-label="Modos">
         <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
         <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
+        <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
         <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
         <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
       </nav>
@@ -708,8 +732,26 @@
           <span class="pk-art"><svg viewBox="0 0 24 24" width="140" height="140" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg></span>
           <button class="btn btn-primary pack-buy" data-pack="finals" id="btn-finals">Abrir · <span class="coin-ico"></span> 1200</button>
         </div>
+        <div class="pack psa" id="pack-psa" style="--pc:#d23b3b">
+          <div class="pk-foil"></div>
+          <span class="pk-badge">Graduada · 1 carta</span>
+          <div class="pk-kicker">Sobre PSA</div>
+          <h3>PSA</h3>
+          <p class="pk-desc">Una carta encapsulada y graduada (nota 1-10, casi siempre alta). Las gemas PSA 10 son las más valiosas.</p>
+          <span class="pk-art">10</span>
+          <button class="btn btn-primary pack-buy" data-pack="psa" id="btn-psa">Abrir · <span class="coin-ico"></span> 1000</button>
+        </div>
       </div>
       <div class="pack-stats">Sobres abiertos: <b id="packs-opened">0</b> · Cartas obtenidas: <b id="cards-total">0</b></div>
+    </section>
+
+    <!-- ===== INTERCAMBIOS ===== -->
+    <section class="view" id="view-trueques" role="tabpanel">
+      <div class="view-head"><div>
+        <h2>Intercambios</h2>
+        <p>Propón cartas a tus amigos desde su perfil. Aquí ves y respondes los intercambios. Ambos pagan una comisión en balones según la media y el desbalance.</p>
+      </div></div>
+      <div id="trades-list" class="pf-rows"></div>
     </section>
 
     <!-- ===== QUINTETO ===== -->
@@ -835,6 +877,7 @@
   <nav class="bottom-nav" role="tablist" aria-label="Modos">
     <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
     <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
+    <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
     <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
     <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
   </nav>
@@ -911,11 +954,11 @@
   const LS = "dunk_nba_v1";
   let PLAYERS = [];
   let BY = {};                 // slug -> player
-  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, display:{}, coins:250 }; }
+  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, graded:{}, display:{}, coins:250 }; }
   let state = defaultState();
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
-  const PACK_COST = { std:150, elite:600, finals:1200, reward:0 };
+  const PACK_COST = { std:150, elite:600, finals:1200, psa:1000, reward:0 };
   const COINS_PER_POINT = 10;           // cada punto del minijuego = 10 monedas
   function renderCoins(){
     const els = document.querySelectorAll(".coin-amount");
@@ -926,6 +969,16 @@
   function spendCoins(n){ if((state.coins||0) < n) return false; state.coins -= n; save(); renderCoins(); return true; }
   // puente para el minijuego "Encestes" (vive en otro script)
   window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT };
+  // ---- DEV: dar todo para testear (consola: DunkDev.giveAll()) ----
+  function giveAll(){
+    PLAYERS.forEach(p=>{ state.owned[p.slug]=1; });
+    Object.keys(FINALS_CARD).forEach(s=>{ state.finals[s]=1; });
+    PLAYERS.forEach(p=>{ state.graded[p.slug]=[1,2,3,4,5,6,7,8,9,10]; });
+    state.totalCards = Math.max(state.totalCards, PLAYERS.length);
+    save(); checkTeamRewards(); renderAll();
+    return "OK: todas las cartas + Finals + PSA 1-10";
+  }
+  window.DunkDev = { giveAll, coins:(n)=>addCoins(n) };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
@@ -983,16 +1036,27 @@
   const FINALS_FOCO = {};   // encuadre por carta Finals si hace falta (object-position)
   const ownsNormal = s => (state.owned[s]||0)>0;
   const ownsFinals = s => (state.finals && state.finals[s]||0)>0;
-  const ownsAny = s => ownsNormal(s) || ownsFinals(s);
+  const gradesOf = s => (state.graded && state.graded[s]) || [];
+  const ownsGraded = s => gradesOf(s).length>0;
+  const bestGrade = s => gradesOf(s).length ? Math.max.apply(null, gradesOf(s)) : 0;
+  const ownsAny = s => ownsNormal(s) || ownsFinals(s) || ownsGraded(s);
   function displayVariant(s){
-    if(state.display && state.display[s]==="finals" && ownsFinals(s)) return "finals";
+    const d = state.display && state.display[s];
+    if(typeof d==="string" && d.indexOf("graded")===0 && ownsGraded(s)) return "graded";
+    if(d==="finals" && ownsFinals(s)) return "finals";
     if(ownsNormal(s)) return "normal";
     if(ownsFinals(s)) return "finals";
+    if(ownsGraded(s)) return "graded";
     return null;
+  }
+  function displayGrade(s){
+    const d = state.display && state.display[s];
+    if(typeof d==="string" && d.indexOf("graded:")===0){ const g=+d.split(":")[1]; if(gradesOf(s).includes(g)) return g; }
+    return bestGrade(s);
   }
 
   function load(){ try{ const r=JSON.parse(localStorage.getItem(LS)); if(r){ state=Object.assign(state,r);} }catch(e){}
-    if(!state.finals) state.finals={}; if(!state.display) state.display={}; if(!state.messages) state.messages=[];
+    if(!state.finals) state.finals={}; if(!state.graded) state.graded={}; if(!state.display) state.display={}; if(!state.messages) state.messages=[];
     if(typeof state.coins!=="number") state.coins=250; }
   function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} scheduleCloud(); }
 
@@ -1005,7 +1069,7 @@
   }
   function applyState(obj){
     state = Object.assign(defaultState(), obj || {});
-    if(!state.finals) state.finals={}; if(!state.display) state.display={};
+    if(!state.finals) state.finals={}; if(!state.graded) state.graded={}; if(!state.display) state.display={};
     if(!state.messages) state.messages=[]; if(typeof state.coins!=="number") state.coins=250;
   }
   function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); }
@@ -1027,7 +1091,8 @@
       else { applyState(defaultState()); try{ await window.DunkFire.saveState(user.uid, state); }catch(e){} }
       try{ myProfile = await window.DunkFire.getProfile(user.uid); }catch(e){ myProfile=null; }
       try{ await settleTrades(); }catch(e){}   // aplica intercambios aceptados pendientes
-      save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll();
+      ensurePsaEvent();
+      save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll(); renderPsaBadge();
     } else {
       authUser=null; currentUid=null; myProfile=null; updateAccountUI(); showAuth();
     }
@@ -1113,7 +1178,7 @@
       act.querySelector("#pf-back").addEventListener("click", ()=>showView("album"));
       $("#pf-showcase-edit").hidden=false;
       $("#pf-friends").hidden=false;
-      renderFriends(); renderTrades();
+      renderFriends();
     } else {
       $("#pf-showcase-edit").hidden=true;
       $("#pf-friends").hidden=true;
@@ -1364,20 +1429,20 @@
   function respondTrade(t){
     pickMyCards("Tu contraoferta (tus cartas)", async (offer)=>{
       const fee=tradeFee(t.give, offer);
-      try{ await window.DunkFire.updateTrade(t.id, { offer, fee, status:"offered" }); toast("Respuesta enviada"); openProfile(currentUid); }
+      try{ await window.DunkFire.updateTrade(t.id, { offer, fee, status:"offered" }); toast("Respuesta enviada"); renderTrades(); }
       catch(e){ toast("No se pudo enviar"); }
     });
   }
   async function acceptTrade(t){
     if((state.coins||0) < (t.fee||0)){ toast("No te alcanzan los balones para la comisión"); return; }
-    try{ await window.DunkFire.updateTrade(t.id, { status:"accepted" }); await settleTrades(); renderAll(); openProfile(currentUid); toast("¡Intercambio aceptado!"); }
+    try{ await window.DunkFire.updateTrade(t.id, { status:"accepted" }); await settleTrades(); renderAll(); renderTrades(); toast("¡Intercambio aceptado!"); }
     catch(e){ toast("No se pudo aceptar"); }
   }
-  async function rejectTrade(t){ try{ await window.DunkFire.deleteTrade(t.id); }catch(e){} openProfile(currentUid); }
+  async function rejectTrade(t){ try{ await window.DunkFire.deleteTrade(t.id); }catch(e){} renderTrades(); }
 
   async function renderTrades(){
-    const sec=$("#pf-trades-sec"), wrap=$("#pf-trades");
-    sec.hidden=false; wrap.innerHTML="";
+    const wrap=$("#trades-list"); if(!wrap) return; wrap.innerHTML="";
+    if(!currentUid){ wrap.innerHTML=`<div class="pf-empty">Inicia sesión para intercambiar cartas con tus amigos.</div>`; return; }
     let trades=[]; try{ trades=await window.DunkFire.listTrades(currentUid); }catch(e){}
     trades = trades.filter(t=>t.status!=="accepted" || !(t.appliedBy&&t.appliedBy[currentUid]));
     if(!trades.length){ wrap.innerHTML=`<div class="pf-empty">Sin intercambios. Entra al perfil de un amigo y pulsa "Proponer intercambio".</div>`; return; }
@@ -1427,7 +1492,9 @@
     "derrick-white":"23% 22%",
     "shai-gilgeous-alexander":"30% 26%",
   };
-  function cardHTML(p, {owned=true, count=0, mini=false, variant="normal"}={}){
+  function gradeLabel(g){ return g>=10?"GEM MT":g>=9?"MINT":g>=8?"NM-MT":g>=7?"NEAR MINT":g>=6?"EX-MT":g>=5?"EXCELLENT":g>=4?"VG-EX":g>=3?"VERY GOOD":g>=2?"GOOD":"POOR"; }
+  function certNo(slug,g){ let h=0; const s=slug+"|"+g; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return 10000000 + (h%89999999); }
+  function cardHTML(p, {owned=true, count=0, mini=false, variant="normal", grade=null}={}){
     const t = teamOf(p.equipo);
     const logo = logoURL(p.equipo);
     if(!owned){
@@ -1436,6 +1503,21 @@
           ${logo?`<div class="card-logo" style="background-image:url('${logo}')"></div>`:""}
           <div class="card-info"><h3>Por descubrir</h3><p>${esc(p.equipo)}</p></div>
         </div></div>`;
+    }
+    // ---- CARTA GRADUADA (slab tipo PSA) ----
+    if(variant==="graded" && ownsGraded(p.slug)){
+      const g = (typeof grade==="number") ? grade : bestGrade(p.slug);
+      const inner = cardHTML(p, {owned:true, count:0, variant:"normal"});
+      return `<div class="psa ${g>=9?'ghi':''}" data-slug="${p.slug}" data-variant="graded">
+        <div class="psa-label">
+          <div class="psa-l-text">
+            <div class="psa-l1">${esc(p.nombre)} · ${p.media}</div>
+            <div class="psa-l2">DUNK GRADING · CERT ${certNo(p.slug,g)} <span class="psa-logo"><b>P</b><i>S</i><b>A</b></span></div>
+          </div>
+          <div class="psa-grade"><b>${g}</b><span>${gradeLabel(g)}</span></div>
+        </div>
+        <div class="psa-window">${inner}</div>
+      </div>`;
     }
     const isFinals = variant==="finals" && FINALS_CARD[p.slug];
     const photo = isFinals ? FINALS_CARD[p.slug] : p.foto;
@@ -1495,7 +1577,7 @@
     grid.innerHTML = list.map(p => {
       const v = displayVariant(p.slug);
       const count = v==="finals" ? (state.finals[p.slug]||0) : (state.owned[p.slug]||0);
-      return cardHTML(p, {owned:!!v, count, variant:v||"normal"});
+      return cardHTML(p, {owned:!!v, count, variant:v||"normal", grade: v==="graded"?displayGrade(p.slug):null});
     }).join("");
   }
 
@@ -1523,23 +1605,26 @@
     const p = BY[slug]; if(!p) return;
     const v = displayVariant(slug) || "normal";
     const inLineup = lineup.includes(slug);
+    const gv = v==="graded" ? displayGrade(slug) : null;
+    const selKey = v==="graded" ? ("graded:"+gv) : v;
     const variants = [];
-    if(ownsNormal(slug)) variants.push("normal");
-    if(ownsFinals(slug)) variants.push("finals");
-    const cnt = v==="finals" ? (state.finals[slug]||0) : (state.owned[slug]||0);
+    if(ownsNormal(slug)) variants.push({key:"normal", variant:"normal", grade:null, label:"Normal"});
+    if(ownsFinals(slug)) variants.push({key:"finals", variant:"finals", grade:null, label:"Finals"});
+    [...new Set(gradesOf(slug))].sort((a,b)=>b-a).forEach(g=> variants.push({key:"graded:"+g, variant:"graded", grade:g, label:"PSA "+g}));
+    const cnt = v==="finals" ? (state.finals[slug]||0) : v==="graded" ? gradesOf(slug).length : (state.owned[slug]||0);
     const body = $("#sheet-body");
     body.innerHTML = `
       <div class="detail">
-        <div class="detail-card">${cardHTML(p,{owned:true,count:cnt,variant:v})}</div>
+        <div class="detail-card">${cardHTML(p,{owned:true,count:cnt,variant:v,grade:gv})}</div>
         <div class="detail-info">
           <div class="eyebrow">${esc(p.posicion)} · ${esc(p.equipo)}</div>
           <h2>${esc(p.nombre)}</h2>
           <div class="team-line">${v==="finals"?"Edición NBA Finals":"Carta NBA 2K26"}</div>
           ${variants.length>1 ? `<div class="ver-label">Tus versiones · elige cuál exponer</div>
-            <div class="ver-row">${variants.map(vr=>`
-              <div class="ver ${vr===v?'sel':''}" data-ver="${vr}" role="button" tabindex="0">
-                ${cardHTML(p,{owned:true,count:0,variant:vr})}
-                <span class="ver-name">${vr==="finals"?"Finals":"Normal"}</span>
+            <div class="ver-row">${variants.map(ent=>`
+              <div class="ver ${ent.key===selKey?'sel':''}" data-ver="${ent.key}" role="button" tabindex="0">
+                ${cardHTML(p,{owned:true,count:0,variant:ent.variant,grade:ent.grade})}
+                <span class="ver-name">${ent.label}</span>
               </div>`).join("")}</div>` : ""}
           <div class="detail-grid">
             <div class="dstat"><b>${v==="finals"?ovr(p):p.media}</b><span>Media</span></div>
@@ -1550,12 +1635,15 @@
             ${inLineup
               ? `<button class="btn btn-ghost" data-act="rm-lineup">Quitar del quinteto</button>`
               : `<button class="btn btn-primary" data-act="add-lineup">Añadir al quinteto</button>`}
+            ${isPsaFriday() && ownsNormal(slug)
+              ? `<button class="btn btn-ghost" data-act="grade">Graduar (PSA · <span class="coin-ico"></span> ${PSA_GRADE_COST})</button>` : ""}
           </div>
         </div>
       </div>`;
     body.querySelectorAll("[data-ver]").forEach(b=>b.addEventListener("click", ()=>{
       state.display[slug]=b.dataset.ver; save(); renderAlbum(); openDetail(slug);
     }));
+    body.querySelector("[data-act='grade']")?.addEventListener("click", ()=>gradeCard(slug));
     body.querySelector("[data-act='add-lineup']")?.addEventListener("click", ()=>{ addToLineup(slug); closeSheet(); toast(`<b>${esc(p.nombre)}</b> al quinteto`); });
     body.querySelector("[data-act='rm-lineup']")?.addEventListener("click", ()=>{ removeFromLineup(slug); closeSheet(); });
     showSheet();
@@ -1580,6 +1668,21 @@
     let r = Math.random()*total;
     for(const p of pool){ r-=weight(p,taken); if(r<=0) return p; }
     return pool[pool.length-1];
+  }
+  function rollGrade(){ const r=Math.random(); return r<0.40?10 : r<0.68?9 : r<0.85?8 : r<0.94?7 : r<0.98?6 : 5; }
+  const PSA_GRADE_COST = 500;
+  const isPsaFriday = () => new Date().getDay()===5;
+  function gradeCard(slug){
+    if(!isPsaFriday()){ toast("Graduar solo está disponible los viernes (evento PSA)"); return; }
+    if(!ownsNormal(slug)){ toast("Necesitas la carta normal para graduarla"); return; }
+    if(!spendCoins(PSA_GRADE_COST)){ toast("Te faltan balones para graduar"); showView("juego"); return; }
+    removeCardFromState({slug, variant:"normal"});
+    const grade = rollGrade();
+    (state.graded[slug] = state.graded[slug]||[]).push(grade);
+    if(state.display) state.display[slug]="graded";
+    save(); renderAll();
+    toast(`Graduada: <b>${esc(BY[slug].nombre)}</b> · PSA ${grade}`);
+    closeSheet(); openDetail(slug);
   }
   function openPack(kind){
     if(kind==="reward" && !((state.rewardPacks||0)>0)){ toast("No tienes sobres de recompensa. Completa un equipo en el álbum."); return; }
@@ -1606,14 +1709,22 @@
     picks.sort((a,b)=>ovr(a)-ovr(b));
     let out = picks.map(p=>({p, variant:"normal"}));
     // CARTA ESPECIAL FINALS: solo en el sobre Finales, muy rara (~5%)
-    let gotSpecial=null;
+    let gotSpecial=null, gotGraded=null;
     if(kind==="finals" && Math.random()<0.05){
       const specials = PLAYERS.filter(p=>FINALS_CARD[p.slug]);
       gotSpecial = specials[Math.floor(Math.random()*specials.length)];
       out[out.length-1] = {p:gotSpecial, variant:"finals"};   // como clímax del sobre
     }
+    if(kind==="psa" && Math.random()<0.08){
+      const pool=PLAYERS.filter(p=>ovr(p)>=80);
+      const sp=drawOne(pool.length?pool:PLAYERS, new Set());
+      const grade=rollGrade();
+      gotGraded={p:sp,grade};
+      out[out.length-1] = {p:sp, variant:"graded", grade};   // graduada rara, como clímax
+    }
     out.forEach(it=>{
       if(it.variant==="finals") state.finals[it.p.slug]=(state.finals[it.p.slug]||0)+1;
+      else if(it.variant==="graded") (state.graded[it.p.slug]=state.graded[it.p.slug]||[]).push(it.grade);
       else state.owned[it.p.slug]=(state.owned[it.p.slug]||0)+1;
     });
     state.packs++; state.totalCards+=n;
@@ -1623,11 +1734,12 @@
     renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum();
     runOpener(out);
     if(gotSpecial) toast(`¡Carta especial <b>NBA Finals</b> de ${esc(gotSpecial.nombre)}!`);
+    if(gotGraded) toast(`¡Carta graduada! <b>${esc(gotGraded.p.nombre)}</b> · PSA ${gotGraded.grade}`);
     newlyDone.forEach(t=> toast(`¡Equipo completo: <b>${esc(t)}</b>! Tienes un mensaje para reclamar tu recompensa`));
   }
   function renderPackStats(){ $("#packs-opened").textContent=state.packs; $("#cards-total").textContent=state.totalCards; }
   function renderShop(){
-    const map={std:"#btn-std",elite:"#btn-elite",finals:"#btn-finals"};
+    const map={std:"#btn-std",elite:"#btn-elite",finals:"#btn-finals",psa:"#btn-psa"};
     for(const k in map){ const b=document.querySelector(map[k]); if(!b) continue;
       b.classList.toggle("cant-afford", (state.coins||0) < PACK_COST[k]); }
   }
@@ -1665,7 +1777,7 @@
   }
 
   // ---- MENSAJES / BANDEJA ----
-  const unclaimedCount = () => (state.messages||[]).filter(m=>!m.claimed).length;
+  const unclaimedCount = () => (state.messages||[]).filter(m=> m.type==="psa" ? !m.read : !m.claimed).length;
   function renderMessages(){
     const n=unclaimedCount(); const badge=$("#bell-badge");
     if(!badge) return;
@@ -1679,18 +1791,45 @@
       list.innerHTML=`<div class="empty" style="padding:30px 20px"><h3>Sin mensajes</h3><p>Completa los 5 jugadores de un mismo equipo y aquí te llegará tu recompensa.</p></div>`;
       return;
     }
-    list.innerHTML = msgs.map(m=>`
+    const trophy=`<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg>`;
+    list.innerHTML = msgs.map(m=>{
+      if(m.type==="psa") return `
+        <div class="msg">
+          <div class="msg-ico"><span class="psa-logo"><b>P</b><i>S</i><b>A</b></span></div>
+          <div class="msg-body"><h4>Evento PSA · Viernes de graduación</h4>
+            <p>Hoy puedes graduar tus cartas. Abre una carta del álbum y pulsa "Graduar".</p></div>
+        </div>`;
+      return `
       <div class="msg ${m.claimed?'claimed':''}">
-        <div class="msg-ico"><svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg></div>
+        <div class="msg-ico">${trophy}</div>
         <div class="msg-body">
           <h4>¡Equipo completo: ${esc(m.team)}!</h4>
           <p>${m.claimed ? "Recompensa reclamada. Ábrela en Sobres." : "Has desbloqueado un Sobre de Recompensa."}</p>
         </div>
         ${m.claimed ? `<span class="msg-done">Reclamado ✓</span>`
                     : `<button class="btn btn-primary msg-claim" data-claim="${esc(m.team)}">Reclamar</button>`}
-      </div>`).join("");
+      </div>`; }).join("");
+  }
+  function ensurePsaEvent(){
+    if(!isPsaFriday()) return;
+    if(!state.messages) state.messages=[];
+    const key=new Date().toISOString().slice(0,10);
+    if(state.psaDay===key) return;
+    state.psaDay=key;
+    state.messages.push({ type:"psa", ts:Date.now() });
+  }
+  function renderPsaBadge(){
+    const on=isPsaFriday();
+    $$('.tab[data-view="album"]').forEach(t=>{
+      let b=t.querySelector(".psa-tab-badge");
+      if(on){ if(!b){ b=document.createElement("span"); b.className="psa-tab-badge"; b.innerHTML="<b>P</b><i>S</i><b>A</b>"; t.appendChild(b); } }
+      else if(b){ b.remove(); }
+    });
   }
   function openMessages(){
+    // marcar el aviso PSA como leído (quita el globo)
+    (state.messages||[]).forEach(m=>{ if(m.type==="psa") m.read=true; });
+    save();
     const body=$("#sheet-body");
     body.innerHTML=`<div class="picker-head"><h3>Mensajes</h3></div><div class="msg-list" id="msg-list"></div>`;
     drawMessages();
@@ -1888,6 +2027,7 @@
     $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===v)));
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
     if(v==="quinteto") renderSlots();
+    if(v==="trueques") renderTrades();
     if(window.MiniGame){ if(v==="juego") window.MiniGame.start(); else window.MiniGame.stop(); }
     window.scrollTo({top:0, behavior:"instant"});
   }
@@ -1989,7 +2129,7 @@
 
     bindEvents();
     bindAuth();
-    renderAll();
+    renderAll(); renderPsaBadge();
     startSession();   // Firebase: muestra login o reanuda sesión
 
     if(!Object.keys(state.owned).length){
@@ -2036,7 +2176,7 @@ window.MiniGame = (function(){
     const x = margin + Math.random() * (W - margin * 2);
     const y = 120 * S + Math.random() * (H * 0.30);
     const moving = score >= 5;
-    hoop = { x, y, r, rimY: y, vx: moving ? (Math.random() < .5 ? -1 : 1) * (0.6 + Math.random() * 0.9) * S : 0, scored: false };
+    hoop = { x, y, r, rimY: y, vx: moving ? (Math.random() < .5 ? -1 : 1) * (0.6 + Math.random() * 0.9) * S : 0, scored: false, golden: Math.random()<0.18 };
     buildNet(hoop);
   }
   function buildNet(h){
@@ -2079,7 +2219,7 @@ window.MiniGame = (function(){
       for(let k=1;k<=NET_ROWS;k++) for(let c=0;c<NET_COLS;c++) satisfy(h.net[c][k],h.net[c+1][k],h.netRestH[k][c]);
     }
   }
-  function resetBall(){ ball={x:W/2,y:GROUND()-H*0.20,r:22*S,vx:0,vy:0,flying:false,rot:0,vrot:0,canScore:true,trail:[]}; }
+  function resetBall(){ ball={x:W/2,y:GROUND()-H*0.20,r:22*S,vx:0,vy:0,flying:false,rot:0,vrot:0,canScore:true,trail:[],touchedRim:false,done:false,frames:0}; }
 
   function startGame(){
     score=0; streak=0; timeLeft=60; running=true;
@@ -2122,7 +2262,8 @@ window.MiniGame = (function(){
       if(ball.x-ball.r<0){ ball.x=ball.r; ball.vx*=-0.7; }
       if(ball.x+ball.r>W){ ball.x=W-ball.r; ball.vx*=-0.7; }
       if(ball.y+ball.r>GROUND()){ ball.y=GROUND()-ball.r; ball.vy*=-0.55; ball.vx*=0.7; ball.vrot*=0.7;
-        if(Math.abs(ball.vy)<1.5*S){ if(ball.canScore) miss(); } }
+        if(Math.abs(ball.vy)<1.5*S){ if(!ball.done) miss(); } }
+      ball.frames++; if(ball.frames>300 && !ball.done) miss();   // seguridad: nunca se queda atascada
       checkHoop();
     }
     if(running && hoop.vx){ hoop.x+=hoop.vx; if(hoop.x-hoop.r<30*S||hoop.x+hoop.r>W-30*S) hoop.vx*=-1; }
@@ -2131,11 +2272,11 @@ window.MiniGame = (function(){
   function checkHoop(){
     if(!ball.canScore) return;
     const dx=ball.x-hoop.x, withinX=Math.abs(dx)<hoop.r*0.8, atRim=Math.abs(ball.y-hoop.rimY)<12*S;
-    if(withinX&&atRim&&ball.vy<0){ ball.canScore=false; return; }
+    if(withinX&&atRim&&ball.vy<0){ ball.canScore=false; ball.vy=Math.abs(ball.vy)*0.5; ball.y=hoop.rimY+12*S; return; }
     if(withinX&&atRim&&ball.vy>0){ scoreBasket(); return; }
     const posts=[hoop.x-hoop.r, hoop.x+hoop.r];
     for(const px of posts){ const ddx=ball.x-px, ddy=ball.y-hoop.rimY, dist=Math.hypot(ddx,ddy);
-      if(dist<ball.r+4*S){ const ang=Math.atan2(ddy,ddx), overlap=ball.r+4*S-dist;
+      if(dist<ball.r+4*S){ ball.touchedRim=true; const ang=Math.atan2(ddy,ddx), overlap=ball.r+4*S-dist;
         ball.x+=Math.cos(ang)*overlap; ball.y+=Math.sin(ang)*overlap;
         const dot=ball.vx*Math.cos(ang)+ball.vy*Math.sin(ang);
         ball.vx-=1.6*dot*Math.cos(ang); ball.vy-=1.6*dot*Math.sin(ang); ball.vx*=0.8; ball.vy*=0.8; } }
@@ -2143,14 +2284,27 @@ window.MiniGame = (function(){
   function burst(x,y,color){ for(let i=0;i<18;i++){ const a=Math.random()*Math.PI*2, sp=(1+Math.random()*4)*S;
     particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2*S,life:1,color}); } }
   function scoreBasket(){
-    ball.canScore=false; streak++; const pts=streak>=3?3:2; score+=pts; updateHUD();
-    burst(hoop.x,hoop.rimY, streak>=3?'#ff7a3d':'#ffd24d');
-    rings.push({x:hoop.x,y:hoop.rimY,r:hoop.r*0.5,life:1,color:streak>=3?'#ff7a3d':'#ffd24d'});
-    if(streak>=3) flash('¡EN LLAMAS! +'+pts,'#ff7a3d'); else flash('¡CANASTA! +'+pts,'#7CFC9B');
-    timeLeft=Math.min(timeLeft+1,99); document.getElementById('mg-time').textContent=timeLeft;
+    ball.canScore=false; ball.done=true; streak++;
+    const mult = streak>=6?3 : streak>=3?2 : 1;
+    const swish = !ball.touchedRim;
+    let pts = 2*mult;
+    if(swish) pts += 2;
+    let addTime = 1;
+    if(hoop.golden){ pts += 3; addTime = 3; }
+    score += pts; updateHUD();
+    const col = hoop.golden ? '#ffd24d' : swish ? '#7CFC9B' : streak>=3 ? '#ff7a3d' : '#ffd24d';
+    burst(hoop.x,hoop.rimY, col);
+    rings.push({x:hoop.x,y:hoop.rimY,r:hoop.r*0.5,life:1,color:col});
+    let msg;
+    if(hoop.golden) msg='¡DORADO! +'+pts;
+    else if(swish) msg='¡SWISH! +'+pts;
+    else if(streak>=3) msg='¡EN LLAMAS x'+mult+'! +'+pts;
+    else msg='¡CANASTA! +'+pts;
+    flash(msg, col);
+    timeLeft=Math.min(timeLeft+addTime,99); document.getElementById('mg-time').textContent=timeLeft;
     setTimeout(()=>{ if(running){ resetBall(); newHoop(); } },700);
   }
-  function miss(){ ball.canScore=false; if(streak>0) flash('Fallaste','#ff6b6b'); streak=0; updateHUD();
+  function miss(){ ball.canScore=false; ball.done=true; if(streak>0) flash('Fallaste','#ff6b6b'); streak=0; updateHUD();
     setTimeout(()=>{ if(running) resetBall(); },500); }
 
   function draw(){
@@ -2202,11 +2356,15 @@ window.MiniGame = (function(){
         for(let k=1;k<=NET_ROWS;k++) ctx.lineTo(net[c][k].x,net[c][k].y); ctx.stroke(); }
       for(let k=1;k<=NET_ROWS;k++){ ctx.beginPath(); ctx.moveTo(net[0][k].x,net[0][k].y);
         for(let c=1;c<=NET_COLS;c++) ctx.lineTo(net[c][k].x,net[c][k].y); ctx.stroke(); } }
-    // aro con relieve
+    // aro con relieve (dorado si es especial)
+    const rimA = hoop.golden ? '#ffe79a' : '#ff8a4d';
+    const rimB = hoop.golden ? '#d9a92a' : '#e0481a';
+    if(hoop.golden){ ctx.save(); ctx.shadowColor='rgba(255,210,90,.9)'; ctx.shadowBlur=14*S; }
     ctx.lineCap='round';
-    ctx.strokeStyle='#ff8a4d'; ctx.lineWidth=6*S;
+    ctx.strokeStyle=rimA; ctx.lineWidth=6*S;
     ctx.beginPath(); ctx.moveTo(x-r,rimY); ctx.lineTo(x+r,rimY); ctx.stroke();
-    ctx.strokeStyle='#e0481a'; ctx.lineWidth=3*S;
+    if(hoop.golden) ctx.restore();
+    ctx.strokeStyle=rimB; ctx.lineWidth=3*S;
     ctx.beginPath(); ctx.moveTo(x-r,rimY+2.4*S); ctx.lineTo(x+r,rimY+2.4*S); ctx.stroke();
     ctx.lineCap='butt';
     ctx.fillStyle='#ff8a4d';
