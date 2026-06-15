@@ -539,16 +539,16 @@
   .pf-uname-row,.pf-search{display:flex; align-items:center; gap:8px; background:var(--bg); border:1px solid var(--line-strong); border-radius:12px; padding:6px 6px 6px 14px;}
   .pf-at{font-family:var(--display); font-weight:700; color:var(--muted); font-size:16px;}
   .pf-uname-row input,.pf-search input{flex:1; min-width:0; background:transparent; border:0; outline:none; color:var(--text); font-size:15px; padding:8px 0;}
-  .pf-card{display:flex; align-items:center; gap:18px; background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:18px 20px; margin-bottom:24px;}
+  .pf-card{display:flex; align-items:center; flex-wrap:wrap; gap:18px; background:var(--surface); border:1px solid var(--line-strong); border-radius:18px; padding:18px 20px; margin-bottom:24px;}
   .pf-avatar{width:84px; height:84px; border-radius:50%; flex:0 0 auto; overflow:hidden; cursor:default; padding:0; position:relative;
     border:2px solid var(--accent); background:linear-gradient(160deg,#2a2030,#15121c); display:grid; place-items:center; color:var(--muted-2);}
   .pf-avatar img{width:100%; height:100%; object-fit:cover;}
   .pf-avatar.editable{cursor:pointer;}
   .pf-avatar .cam{position:absolute; bottom:0; left:0; right:0; height:24px; background:rgba(0,0,0,.55); display:grid; place-items:center; color:#fff;}
   .pf-id{flex:1 1 auto; min-width:0;}
-  .pf-name{font-family:var(--display); font-weight:700; font-size:23px; letter-spacing:.01em; word-break:break-word;}
+  .pf-name{font-family:var(--display); font-weight:700; font-size:23px; letter-spacing:.01em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .pf-meta{color:var(--muted); font-size:13px; margin-top:3px;}
-  .pf-actions{flex:0 0 auto; display:flex; gap:8px; flex-wrap:wrap;}
+  .pf-actions{flex:0 0 100%; display:flex; gap:8px; flex-wrap:wrap;}
   .pf-actions .btn{padding:10px 16px; font-size:14px;}
   .pf-section{margin-bottom:26px;}
   .pf-sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
