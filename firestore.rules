@@ -28,11 +28,11 @@ service cloud.firestore {
       allow update, delete: if request.auth != null && request.auth.uid in resource.data.users;
     }
 
-    // Intercambios: solo emisor y receptor
+    // Intercambios: solo los implicados (campo parties = [from, to])
     match /trades/{id} {
-      allow read: if request.auth != null && (request.auth.uid == resource.data.from || request.auth.uid == resource.data.to);
-      allow create: if request.auth != null && request.auth.uid == request.resource.data.from;
-      allow update, delete: if request.auth != null && (request.auth.uid == resource.data.from || request.auth.uid == resource.data.to);
+      allow read: if request.auth != null && request.auth.uid in resource.data.parties;
+      allow create: if request.auth != null && request.auth.uid in request.resource.data.parties;
+      allow update, delete: if request.auth != null && request.auth.uid in resource.data.parties;
     }
   }
 }

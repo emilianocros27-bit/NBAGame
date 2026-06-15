@@ -1430,7 +1430,7 @@
       try{
         await window.DunkFire.createTrade({ from:currentUid, to:otherUid, parties:[currentUid,otherUid], give, offer:[], status:"proposed", fee:0, appliedBy:{} });
         toast("Propuesta enviada");
-      }catch(e){ toast("No se pudo enviar"); }
+      }catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo enviar"); }
     });
   }
   function respondTrade(t){
@@ -1450,7 +1450,8 @@
   async function renderTrades(){
     const wrap=$("#trades-list"); if(!wrap) return; wrap.innerHTML="";
     if(!currentUid){ wrap.innerHTML=`<div class="pf-empty">Inicia sesión para intercambiar cartas con tus amigos.</div>`; return; }
-    let trades=[]; try{ trades=await window.DunkFire.listTrades(currentUid); }catch(e){}
+    let trades=[]; try{ trades=await window.DunkFire.listTrades(currentUid); }catch(e){
+      if(/permission|insufficient/i.test(String(e&&e.message))){ wrap.innerHTML=`<div class="pf-empty">No se pudieron cargar los intercambios: faltan permisos en Firestore. Publica las reglas actualizadas.</div>`; return; } }
     trades = trades.filter(t=>t.status!=="accepted" || !(t.appliedBy&&t.appliedBy[currentUid]));
     if(!trades.length){ wrap.innerHTML=`<div class="pf-empty">Sin intercambios. Entra al perfil de un amigo y pulsa "Proponer intercambio".</div>`; return; }
     // nombres de las otras personas
