@@ -1328,7 +1328,8 @@
       const name=$("#pf-search-input").value.trim().toLowerCase().replace(/[^a-z0-9_]/g,"");
       const res=$("#pf-search-res"); res.innerHTML="";
       if(name.length<3) return;
-      let prof=null; try{ prof=await window.DunkFire.findByUsername(name); }catch(ex){}
+      let prof=null, permErr=false; try{ prof=await window.DunkFire.findByUsername(name); }catch(ex){ permErr=/permission|insufficient/i.test(String(ex&&ex.message)); }
+      if(permErr){ res.innerHTML=`<div class="pf-empty">No se pudo buscar: faltan permisos en Firestore. Publica las reglas.</div>`; return; }
       if(!prof){ res.innerHTML=`<div class="pf-empty">No existe @${esc(name)}</div>`; return; }
       if(prof.uid===currentUid){ res.innerHTML=`<div class="pf-empty">Ese eres tú</div>`; return; }
       const row=document.createElement("div"); row.className="frow";
