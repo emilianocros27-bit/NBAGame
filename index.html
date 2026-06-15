@@ -562,6 +562,19 @@
   .frow .nm{flex:1 1 auto; min-width:0; font-family:var(--display); font-weight:600; font-size:15px; cursor:pointer; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
   .frow .btn{padding:8px 14px; font-size:13px; flex:0 0 auto;}
   .frow .tag{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; flex:0 0 auto;}
+  /* intercambios */
+  .t-card{background:var(--surface); border:1px solid var(--line-strong); border-radius:14px; padding:14px;}
+  .t-top{display:flex; align-items:center; justify-content:space-between; font-family:var(--display); font-weight:700; font-size:15px; margin-bottom:10px;}
+  .t-fee{display:inline-flex; align-items:center; gap:5px; color:#ffd76b; font-size:14px;}
+  .t-rows{display:flex; gap:12px; flex-wrap:wrap;}
+  .t-side{flex:1 1 140px; min-width:120px;}
+  .t-lbl{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;}
+  .t-chips{display:flex; flex-wrap:wrap; gap:6px; margin-top:6px;}
+  .t-chip{font-size:12px; font-weight:700; padding:4px 9px; border-radius:999px; color:#fff;
+    background:linear-gradient(135deg, var(--c1,#444), var(--c2,#222)); white-space:nowrap;}
+  .t-empty{color:var(--muted-2);}
+  .t-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .t-actions .btn{padding:8px 14px; font-size:13px;}
 </style>
 </head>
 <body>
@@ -807,6 +820,11 @@
           <div id="pf-requests" class="pf-rows"></div>
           <div id="pf-friends-list" class="pf-rows"></div>
         </div>
+
+        <div class="pf-section" id="pf-trades-sec" hidden>
+          <div class="pf-sec-head"><h3>Intercambios</h3></div>
+          <div id="pf-trades" class="pf-rows"></div>
+        </div>
       </div>
 
       <input type="file" id="pf-file" accept="image/*" hidden />
@@ -1008,6 +1026,7 @@
       if(cloud){ applyState(cloud); }
       else { applyState(defaultState()); try{ await window.DunkFire.saveState(user.uid, state); }catch(e){} }
       try{ myProfile = await window.DunkFire.getProfile(user.uid); }catch(e){ myProfile=null; }
+      try{ await settleTrades(); }catch(e){}   // aplica intercambios aceptados pendientes
       save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll();
     } else {
       authUser=null; currentUid=null; myProfile=null; updateAccountUI(); showAuth();
@@ -1094,12 +1113,15 @@
       act.querySelector("#pf-back").addEventListener("click", ()=>showView("album"));
       $("#pf-showcase-edit").hidden=false;
       $("#pf-friends").hidden=false;
-      renderFriends();
+      renderFriends(); renderTrades();
     } else {
       $("#pf-showcase-edit").hidden=true;
       $("#pf-friends").hidden=true;
+      $("#pf-trades-sec").hidden=true;
       const rel = await friendStatus(uid);
       act.appendChild(friendActionBtn(uid, rel));
+      const trd=document.createElement("button"); trd.className="btn btn-ghost"; trd.textContent="Proponer intercambio";
+      trd.addEventListener("click", ()=>proposeTrade(uid)); act.appendChild(trd);
       const back=document.createElement("button"); back.className="btn btn-ghost"; back.textContent="Volver";
       back.addEventListener("click", ()=>openProfile(currentUid)); act.appendChild(back);
     }
@@ -1245,6 +1267,147 @@
       row.appendChild(friendActionBtn(prof.uid, rel));
       res.appendChild(row);
     });
+  }
+
+  /* =====================================================
+     INTERCAMBIOS
+     ===================================================== */
+  // valor de una carta segun su media (+ extra si es Finals especial)
+  function cardValue(c){
+    const p=BY[c.slug]; if(!p) return 0;
+    const m=ovr(p);
+    let v = m>=95?420 : m>=90?260 : m>=85?150 : m>=80?90 : m>=75?55 : 30;
+    if(c.variant==="finals") v=Math.round(v*1.6);
+    return v;
+  }
+  const sumVal = arr => (arr||[]).reduce((s,c)=>s+cardValue(c),0);
+  // comision: parte del valor total + penalizacion por desbalance
+  function tradeFee(give, offer){
+    const a=sumVal(give), b=sumVal(offer);
+    return Math.round(40 + 0.25*(a+b) + 0.9*Math.abs(a-b));
+  }
+  function addCardToState(c){
+    if(c.variant==="finals") state.finals[c.slug]=(state.finals[c.slug]||0)+1;
+    else state.owned[c.slug]=(state.owned[c.slug]||0)+1;
+  }
+  function removeCardFromState(c){
+    const bag = c.variant==="finals" ? state.finals : state.owned;
+    if(bag[c.slug]>1) bag[c.slug]--; else delete bag[c.slug];
+  }
+  function ownsCardVariant(c){
+    return c.variant==="finals" ? (state.finals[c.slug]||0)>0 : (state.owned[c.slug]||0)>0;
+  }
+
+  // liquidacion: aplica los intercambios aceptados a MI partida (una vez)
+  async function settleTrades(){
+    if(!window.DunkFire || !currentUid) return false;
+    let trades=[]; try{ trades=await window.DunkFire.listTrades(currentUid); }catch(e){ return false; }
+    let changed=false;
+    for(const t of trades){
+      if(t.status!=="accepted") continue;
+      if(t.appliedBy && t.appliedBy[currentUid]) continue;
+      const iAmFrom = t.from===currentUid;
+      const myGive = iAmFrom ? (t.give||[]) : (t.offer||[]);
+      const myGet  = iAmFrom ? (t.offer||[]) : (t.give||[]);
+      // solo si aun tengo lo que doy (evita duplicar si ya se aplico raro)
+      myGive.forEach(c=>{ if(ownsCardVariant(c)) removeCardFromState(c); });
+      myGet.forEach(c=> addCardToState(c));
+      state.coins = Math.max(0, (state.coins||0) - (t.fee||0));
+      const ap = Object.assign({}, t.appliedBy||{}); ap[currentUid]=true;
+      try{ await window.DunkFire.updateTrade(t.id, { appliedBy: ap }); }catch(e){}
+      // borrar cuando ambos lo aplicaron
+      if(ap[t.from] && ap[t.to]){ try{ await window.DunkFire.deleteTrade(t.id); }catch(e){} }
+      changed=true;
+    }
+    if(changed){ save(); }
+    return changed;
+  }
+
+  // resumen visual de cartas de un intercambio
+  function tradeCardsMini(arr){
+    if(!arr||!arr.length) return `<span class="t-empty">—</span>`;
+    return arr.map(c=>{ const p=BY[c.slug]; if(!p) return ""; const t=teamOf(p.equipo);
+      return `<span class="t-chip" style="--c1:${t.c1};--c2:${t.c2}">${esc(p.nombre.split(" ").pop())} ${c.variant==="finals"?ovr(p):p.media}</span>`; }).join("");
+  }
+
+  // ---- elegir cartas MIAS (para proponer u ofrecer) ----
+  function pickMyCards(title, cb){
+    const owned=[];
+    PLAYERS.forEach(p=>{ if((state.owned[p.slug]||0)>0) owned.push({slug:p.slug,variant:"normal",p});
+      if((state.finals[p.slug]||0)>0) owned.push({slug:p.slug,variant:"finals",p}); });
+    owned.sort((a,b)=>ovr(b.p)-ovr(a.p));
+    let sel=[];
+    const body=$("#sheet-body");
+    const cell=(o)=>`<div class="ver" data-slug="${o.slug}" data-variant="${o.variant}">${cardHTML(o.p,{owned:true,count:0,variant:o.variant})}<span class="ver-name">Elegir</span></div>`;
+    body.innerHTML=`<div class="picker-head"><h3>${esc(title)}</h3><span class="pf-link" id="pk-done">Listo</span></div>
+      <p style="padding:0 20px;color:var(--muted);font-size:13px" id="pk-info">Selecciona tus cartas. Comisión estimada según media y desbalance.</p>
+      <div class="picker-grid"><div class="ver-row" id="pk-grid">${owned.map(cell).join("")||'<div class="pf-empty">No tienes cartas.</div>'}</div></div>`;
+    body.querySelector("#pk-grid").addEventListener("click",e=>{
+      const el=e.target.closest("[data-slug]"); if(!el) return;
+      const key=el.dataset.slug+"|"+el.dataset.variant;
+      const i=sel.findIndex(s=>s.slug+"|"+s.variant===key);
+      if(i>=0){ sel.splice(i,1); el.classList.remove("sel"); el.querySelector(".ver-name").textContent="Elegir"; }
+      else { sel.push({slug:el.dataset.slug,variant:el.dataset.variant}); el.classList.add("sel"); el.querySelector(".ver-name").textContent="Quitar"; }
+    });
+    body.querySelector("#pk-done").addEventListener("click",()=>{ if(!sel.length){ toast("Elige al menos una carta"); return; } closeSheet(); cb(sel); });
+    showSheet();
+  }
+
+  function proposeTrade(otherUid){
+    pickMyCards("Ofreces (tus cartas)", async (give)=>{
+      try{
+        await window.DunkFire.createTrade({ from:currentUid, to:otherUid, parties:[currentUid,otherUid], give, offer:[], status:"proposed", fee:0, appliedBy:{} });
+        toast("Propuesta enviada");
+      }catch(e){ toast("No se pudo enviar"); }
+    });
+  }
+  function respondTrade(t){
+    pickMyCards("Tu contraoferta (tus cartas)", async (offer)=>{
+      const fee=tradeFee(t.give, offer);
+      try{ await window.DunkFire.updateTrade(t.id, { offer, fee, status:"offered" }); toast("Respuesta enviada"); openProfile(currentUid); }
+      catch(e){ toast("No se pudo enviar"); }
+    });
+  }
+  async function acceptTrade(t){
+    if((state.coins||0) < (t.fee||0)){ toast("No te alcanzan los balones para la comisión"); return; }
+    try{ await window.DunkFire.updateTrade(t.id, { status:"accepted" }); await settleTrades(); renderAll(); openProfile(currentUid); toast("¡Intercambio aceptado!"); }
+    catch(e){ toast("No se pudo aceptar"); }
+  }
+  async function rejectTrade(t){ try{ await window.DunkFire.deleteTrade(t.id); }catch(e){} openProfile(currentUid); }
+
+  async function renderTrades(){
+    const sec=$("#pf-trades-sec"), wrap=$("#pf-trades");
+    sec.hidden=false; wrap.innerHTML="";
+    let trades=[]; try{ trades=await window.DunkFire.listTrades(currentUid); }catch(e){}
+    trades = trades.filter(t=>t.status!=="accepted" || !(t.appliedBy&&t.appliedBy[currentUid]));
+    if(!trades.length){ wrap.innerHTML=`<div class="pf-empty">Sin intercambios. Entra al perfil de un amigo y pulsa "Proponer intercambio".</div>`; return; }
+    // nombres de las otras personas
+    for(const t of trades){
+      const otherUid = t.from===currentUid ? t.to : t.from;
+      let oprof=null; try{ oprof=await window.DunkFire.getProfile(otherUid); }catch(e){}
+      const oname = "@"+(oprof&&oprof.username?oprof.username:"jugador");
+      const iAmFrom=t.from===currentUid;
+      const myGive = iAmFrom? t.give : t.offer, myGet = iAmFrom? t.offer : t.give;
+      const card=document.createElement("div"); card.className="t-card";
+      let actions="";
+      if(t.status==="proposed" && !iAmFrom) actions=`<button class="btn btn-primary" data-act="respond">Responder</button><button class="btn btn-ghost" data-act="reject">Rechazar</button>`;
+      else if(t.status==="proposed" && iAmFrom) actions=`<span class="tag">Esperando a ${esc(oname)}</span><button class="btn btn-ghost" data-act="reject">Cancelar</button>`;
+      else if(t.status==="offered" && iAmFrom) actions=`<button class="btn btn-primary" data-act="accept">Aceptar</button><button class="btn btn-ghost" data-act="reject">Rechazar</button>`;
+      else if(t.status==="offered" && !iAmFrom) actions=`<span class="tag">Esperando que acepten</span><button class="btn btn-ghost" data-act="reject">Cancelar</button>`;
+      else if(t.status==="accepted") actions=`<span class="tag">Completado</span>`;
+      const showFee = (t.status==="offered"||t.status==="accepted");
+      card.innerHTML=`
+        <div class="t-top">${esc(oname)} ${showFee?`<span class="t-fee"><span class="coin-ico"></span> ${t.fee}</span>`:""}</div>
+        <div class="t-rows">
+          <div class="t-side"><span class="t-lbl">Das</span><div class="t-chips">${tradeCardsMini(myGive)}</div></div>
+          <div class="t-side"><span class="t-lbl">Recibes</span><div class="t-chips">${tradeCardsMini(myGet)}</div></div>
+        </div>
+        <div class="t-actions">${actions}</div>`;
+      card.querySelector("[data-act='respond']")?.addEventListener("click",()=>respondTrade(t));
+      card.querySelector("[data-act='accept']")?.addEventListener("click",()=>acceptTrade(t));
+      card.querySelector("[data-act='reject']")?.addEventListener("click",()=>rejectTrade(t));
+      wrap.appendChild(card);
+    }
   }
 
   /* ---- intensidad de lámina por media (visual, sin etiqueta) ---- */
@@ -2200,6 +2363,11 @@ window.MiniGame = (function(){
       const qs=await getDocs(query(collection(db,"friendships"), where("users","array-contains",me)));
       return qs.docs.map(d=>d.data());
     },
+    // ---- INTERCAMBIOS ----
+    createTrade: async (t)=>{ const id=`${t.from}__${t.to}__${Date.now()}`; await setDoc(doc(db,"trades",id), Object.assign({id},t)); return id; },
+    listTrades: async (me)=>{ const qs=await getDocs(query(collection(db,"trades"), where("parties","array-contains",me))); return qs.docs.map(d=>Object.assign({id:d.id}, d.data())); },
+    updateTrade:(id,data)=>updateDoc(doc(db,"trades",id), data),
+    deleteTrade:(id)=>deleteDoc(doc(db,"trades",id)),
     mapErr
   };
   window.dispatchEvent(new Event("dunkfire-ready"));
