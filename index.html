@@ -478,7 +478,12 @@
   .auth-card{width:100%; max-width:380px; background:var(--surface); border:1px solid var(--line-strong);
     border-radius:22px; padding:28px 24px; box-shadow:0 30px 80px rgba(0,0,0,.6);}
   .auth-brand{display:flex; align-items:center; gap:12px; margin-bottom:8px;}
-  .auth-brand .mark{width:40px; height:40px; border-radius:11px; background:linear-gradient(150deg,var(--accent),#b53517);}
+  .auth-brand .mark{width:40px; height:40px; border-radius:11px; flex:0 0 auto; position:relative; overflow:hidden;
+    background:radial-gradient(circle at 32% 28%, var(--accent-soft), var(--accent) 60%, #b8300f);
+    box-shadow:inset 0 1px 0 rgba(255,255,255,.4), 0 4px 14px rgba(242,85,44,.45);}
+  .auth-brand .mark::before,.auth-brand .mark::after{content:""; position:absolute; background:rgba(0,0,0,.55);}
+  .auth-brand .mark::before{inset:0 48% 0 48%;}
+  .auth-brand .mark::after{inset:48% 0 48% 0;}
   .auth-brand .word{font-family:var(--display); font-weight:800; font-size:30px; letter-spacing:.06em;}
   .auth-brand .word b{color:var(--accent)}
   .auth-sub{color:var(--muted); font-size:14px; margin:4px 0 18px; line-height:1.5;}
