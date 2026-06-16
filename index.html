@@ -344,7 +344,7 @@
   .reveal-dot{width:38px; height:52px; border-radius:7px; border:1px solid var(--line-strong); background:var(--surface);
     display:grid; place-items:center; font-family:var(--display); font-weight:600; font-size:15px; color:var(--muted-2); transition:.3s;}
   .reveal-dot.on{color:#fff; border-color:transparent;}
-  .opener .bigcard{width:min(72vw,260px); margin:0 auto;}
+  .opener .bigcard{width:min(78vw,320px); margin:0 auto;}
   .opener .tap-hint{color:var(--muted); margin-top:16px; font-size:13.5px; letter-spacing:.04em; min-height:20px;}
   .opener .opener-actions{display:flex; gap:10px; justify-content:center; margin-top:18px;}
   .flip-in{animation:flipIn .6s var(--ease) both}
@@ -388,6 +388,40 @@
   @keyframes brandOut{0%{opacity:1}30%{opacity:1; transform:scale(1.06)}100%{opacity:0; transform:scale(1.35)}}
   @keyframes flashUp{0%{opacity:0; transform:scale(.35)}38%{opacity:.95}100%{opacity:0; transform:scale(1.7)}}
   @media (prefers-reduced-motion: reduce){ .pack3d,.pack3d *{animation:none !important} }
+
+  /* ===== REVELADO ESTILO FC (pistas: posición → equipo → media → volteo) ===== */
+  .opener .bigcard{display:grid;}
+  .opener .bigcard > *{grid-area:1/1;}
+  .reveal-clues{position:fixed; inset:0; z-index:90; overflow:hidden;
+    display:grid; place-items:center;
+    background:radial-gradient(70% 55% at 50% 38%, var(--c1,#386cff), #06070b 82%);
+    transition:opacity .35s ease, transform .35s ease;}
+  .reveal-clues.out{opacity:0; transform:scale(1.06);}
+  .rc-line{position:absolute; top:6%; bottom:6%; width:6px; border-radius:4px; opacity:0; transition:opacity .5s;}
+  .rc-l{left:16%;} .rc-r{right:16%;}
+  .reveal-clues.show-pos .rc-line{opacity:1;}
+  .tier-gold .rc-line{background:linear-gradient(#fbe48f,#c8902f); box-shadow:0 0 26px rgba(246,211,107,.9);}
+  .tier-silver .rc-line{background:linear-gradient(#eef2f8,#9aa7b6); box-shadow:0 0 22px rgba(220,228,240,.8);}
+  .rc-pos,.rc-team,.rc-ovr{grid-area:1/1; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:22px;
+    opacity:0; transform:translateY(14px) scale(.94); transition:opacity .55s ease, transform .55s ease;}
+  .rc-pos{font-family:var(--display); font-weight:700; font-size:clamp(80px,26vw,200px); color:#fff; letter-spacing:.04em;}
+  .rc-logo{width:clamp(140px,44vw,340px); height:clamp(140px,44vw,340px); background-size:contain; background-repeat:no-repeat; background-position:center;
+    filter:drop-shadow(0 10px 30px rgba(0,0,0,.6));}
+  .rc-name{font-family:var(--display); font-weight:600; font-size:clamp(22px,7vw,40px); letter-spacing:.05em; text-transform:uppercase; color:#fff; text-align:center; padding:0 8%;}
+  .rc-ovr{font-family:var(--display); font-weight:700; font-size:clamp(120px,40vw,300px); color:#fff; text-shadow:0 4px 30px rgba(0,0,0,.55);}
+  .tier-gold .rc-ovr{color:#ffd76b; text-shadow:0 0 50px rgba(246,211,107,.8);}
+  .show-pos .rc-pos{opacity:1; transform:none;}
+  .show-team .rc-pos{opacity:0; transform:translateY(-10px) scale(.96);}
+  .show-team .rc-team{opacity:1; transform:none;}
+  .show-ovr .rc-team{opacity:0; transform:translateY(-10px) scale(.96);}
+  .show-ovr .rc-ovr{opacity:1; transform:none; animation:ovrPulse .5s ease both;}
+  @keyframes ovrPulse{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+  .reveal-final{opacity:0; transition:opacity .2s ease;}
+  .reveal-final.show{opacity:1;}
+  .opener-card.goldpop, .bigcard.goldpop{position:relative;}
+  .bigcard.goldpop::after{content:""; position:fixed; inset:0; z-index:88; pointer-events:none;
+    background:radial-gradient(circle at 50% 45%, rgba(255,215,107,.9), rgba(255,215,107,0) 55%); animation:goldFlash 1s ease forwards;}
+  @keyframes goldFlash{0%{opacity:0; transform:scale(.3)}35%{opacity:.95}100%{opacity:0; transform:scale(1.6)}}
 
   /* ============ QUINTETO ============ */
   .lineup-wrap{display:grid; gap:22px; grid-template-columns:1fr; align-items:start;}
@@ -1880,12 +1914,15 @@
      SOBRES
      ===================================================== */
   function weight(p, taken){
-    let w = Math.pow(Math.max(1, 101-ovr(p)), 1.3);   // media baja => más común (suavizado)
-    if(ovr(p) >= 95) w *= 0.30;          // estrellas 95+ mucho más raras
+    // Todas salen por igual; solo las de 90+ son más difíciles.
+    let w = 1;
+    const o = ovr(p);
+    if(o >= 95) w = 0.10;                // súper estrellas (95+): muy raras (~10x)
+    else if(o >= 90) w = 0.30;           // estrellas 90+: raras (~3x)
     const owned = state.owned[p.slug] || 0;
-    if(owned === 0) w *= 1.8;            // favorece cartas que aún no tienes
-    else w /= (1 + owned * 1.7);         // penaliza las repetidas (más copias => menos probable)
-    if(taken && taken.has(p.slug)) w *= 0.12;  // repetir dentro del mismo sobre: raro pero posible
+    if(owned === 0) w *= 1.5;            // favorece cartas que aún no tienes (variedad)
+    else w /= (1 + owned);               // penaliza las repetidas
+    if(taken && taken.has(p.slug)) w *= 0.02;  // casi nunca repite dentro del mismo sobre
     return w;
   }
   function drawOne(pool, taken){
@@ -2127,7 +2164,12 @@
     clearTimeout(tearTimer);
     tearTimer=setTimeout(finish, 720);
   }
+  let openerBusy=false;
+  function setRevealHint(){
+    $("#opener-hint").textContent = openerIdx>=openerQueue.length ? "Toca para terminar" : `Toca para la siguiente (${openerIdx}/${openerQueue.length})`;
+  }
   function revealNext(){
+    if(openerBusy) return;
     if(openerIdx>=openerQueue.length){
       $("#opener-hint").textContent="¡Sobre completo!";
       $("#opener-actions").style.display="flex";
@@ -2137,13 +2179,53 @@
     const p=it.p, variant=it.variant||"normal";
     const dot=$(`.reveal-dot[data-i="${openerIdx}"]`);
     if(dot){ const t=teamOf(p.equipo); dot.classList.add("on"); dot.style.background=`linear-gradient(160deg,${t.c1},${t.c2})`; dot.textContent=ovr(p); if(variant==="finals") dot.classList.add("dot-finals"); }
-    const wrap=$("#opener-card");
-    const cnt = variant==="finals" ? (state.finals[p.slug]||1) : (state.owned[p.slug]||1);
-    wrap.innerHTML=cardHTML(p,{owned:true,count:cnt,variant});
-    const el=wrap.querySelector(".card"); el.classList.add("flip-in");
     openerLast=p;
     openerIdx++;
-    $("#opener-hint").textContent = openerIdx>=openerQueue.length ? "Toca para terminar" : `Toca para la siguiente (${openerIdx}/${openerQueue.length})`;
+    revealCard(it);
+  }
+  function revealCard(it){
+    const p=it.p, variant=it.variant||"normal";
+    const t=teamOf(p.equipo);
+    const cnt = variant==="finals" ? (state.finals[p.slug]||1) : (state.owned[p.slug]||1);
+    const wrap=$("#opener-card");
+    const cardEl = cardHTML(p,{owned:true,count:cnt,variant});
+    const tier = (variant==="finals"||variant==="graded"||ovr(p)>=90) ? "gold"
+               : (ovr(p)>=84) ? "silver" : "bronze";
+    // cartas bajas: volteo directo (como en FC, sin animación larga)
+    if(tier==="bronze"){
+      wrap.innerHTML=cardEl;
+      const el=wrap.querySelector(".card,.psa,.pcard"); if(el) el.classList.add("flip-in");
+      setRevealHint();
+      return;
+    }
+    // estrellas: secuencia de pistas posición → equipo → media → volteo
+    const logo=logoURL(p.equipo);
+    const ovrShown = variant==="graded" ? p.media : ovr(p);
+    wrap.innerHTML=`
+      <div class="reveal-clues tier-${tier}" style="--c1:${t.c1};--c2:${t.c2}">
+        <span class="rc-line rc-l"></span><span class="rc-line rc-r"></span>
+        <div class="rc-pos">${esc(p.posicion)}</div>
+        <div class="rc-team">${logo?`<span class="rc-logo" style="background-image:url('${logo}')"></span>`:""}<span class="rc-name">${esc(p.equipo)}</span></div>
+        <div class="rc-ovr">${ovrShown}</div>
+      </div>
+      <div class="reveal-final">${cardEl}</div>`;
+    const clues=wrap.querySelector(".reveal-clues");
+    const fin=wrap.querySelector(".reveal-final");
+    const step = tier==="gold" ? 1300 : 950;
+    openerBusy=true;
+    $("#opener-hint").textContent="…";
+    requestAnimationFrame(()=>clues.classList.add("show-pos"));
+    setTimeout(()=>clues.classList.add("show-team"), step);
+    setTimeout(()=>clues.classList.add("show-ovr"), step*2);
+    setTimeout(()=>{
+      clues.classList.add("out");
+      fin.classList.add("show");
+      const el=fin.querySelector(".card,.psa,.pcard"); if(el) el.classList.add("flip-in");
+      if(tier==="gold") wrap.classList.add("goldpop");
+      setTimeout(()=>wrap.classList.remove("goldpop"), 900);
+      openerBusy=false;
+      setRevealHint();
+    }, step*3);
   }
 
   /* =====================================================
