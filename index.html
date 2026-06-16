@@ -258,6 +258,10 @@
   .event-text{font-size:14px; color:var(--text);}
   .event-text b{font-family:var(--display); font-weight:700; letter-spacing:.02em; color:var(--accent);}
   .event-count{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.09em; font-weight:600;}
+  .prize-banner{border-color:rgba(255,200,80,.5);
+    background:linear-gradient(100deg, rgba(255,200,80,.18), rgba(255,200,80,.05) 55%, transparent);}
+  .prize-banner .event-trophy{color:#ffce5a; filter:drop-shadow(0 2px 8px rgba(255,200,80,.55));}
+  .prize-banner .event-text b{color:#ffce5a;}
   .card.finals .card-inner{box-shadow:inset 0 0 0 2px rgba(232,184,75,.9);}
   .card-finals{position:absolute; z-index:6; top:9px; left:50%; transform:translateX(-50%);
     font-family:var(--display); font-weight:700; font-size:10px; letter-spacing:.07em; white-space:nowrap;
@@ -734,6 +738,14 @@
       <div class="event-body">
         <span id="event-text" class="event-text"></span>
         <span id="event-count" class="event-count"></span>
+      </div>
+    </div>
+    <!-- ===== BANNER PREMIO ÁLBUM ===== -->
+    <div id="album-prize-banner" class="event-banner prize-banner">
+      <div class="event-trophy"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" aria-hidden="true"><path d="M12 2l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 23l-6 -2.6 1.4-6.8L2.3 9l6.9-.7z"/></svg></div>
+      <div class="event-body">
+        <span class="event-text"><b>¡Reto del álbum!</b> El primero en completar el álbum gana una carta promo especial suya.</span>
+        <span class="event-count">Premio único · solo para el primero en lograrlo</span>
       </div>
     </div>
     <!-- ===== ÁLBUM ===== -->
