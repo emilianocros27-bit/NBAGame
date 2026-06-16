@@ -396,7 +396,7 @@
     display:grid; place-items:center;
     background:radial-gradient(70% 55% at 50% 38%, var(--c1,#386cff), #06070b 82%);
     transition:opacity .35s ease, transform .35s ease;}
-  .reveal-clues.out{opacity:0; transform:scale(1.06);}
+  .reveal-clues.out{opacity:0; transform:scale(1.06); pointer-events:none;}
   .rc-line{position:absolute; top:6%; bottom:6%; width:6px; border-radius:4px; opacity:0; transition:opacity .5s;}
   .rc-l{left:16%;} .rc-r{right:16%;}
   .reveal-clues.show-pos .rc-line{opacity:1;}
@@ -2127,9 +2127,10 @@
   }
 
   const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c"};
-  let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null;
+  let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null, revealTimers=[];
+  function clearRevealTimers(){ revealTimers.forEach(clearTimeout); revealTimers=[]; }
   function runOpener(cards, kind){
-    clearTimeout(tearTimer); tearTimer=null; openerBusy=false;
+    clearTimeout(tearTimer); tearTimer=null; clearRevealTimers(); openerBusy=false;
     openerQueue=cards; openerIdx=0;
     // precarga las fotos del sobre para que no tarden en aparecer al revelar
     cards.forEach(c=>{ const src=(c.variant==="finals" && FINALS_CARD[c.p.slug]) ? FINALS_CARD[c.p.slug] : c.p.foto; if(src){ const im=new Image(); im.src=src; } });
@@ -2213,12 +2214,13 @@
     const clues=wrap.querySelector(".reveal-clues");
     const fin=wrap.querySelector(".reveal-final");
     const step = tier==="gold" ? 1300 : 950;
+    clearRevealTimers();
     openerBusy=true;
     $("#opener-hint").textContent="…";
     requestAnimationFrame(()=>clues.classList.add("show-pos"));
-    setTimeout(()=>clues.classList.add("show-team"), step);
-    setTimeout(()=>clues.classList.add("show-ovr"), step*2);
-    setTimeout(()=>{
+    revealTimers.push(setTimeout(()=>clues.classList.add("show-team"), step));
+    revealTimers.push(setTimeout(()=>clues.classList.add("show-ovr"), step*2));
+    revealTimers.push(setTimeout(()=>{
       clues.classList.add("out");
       fin.classList.add("show");
       const el=fin.querySelector(".card,.psa,.pcard"); if(el) el.classList.add("flip-in");
@@ -2226,7 +2228,7 @@
       setTimeout(()=>wrap.classList.remove("goldpop"), 900);
       openerBusy=false;
       setRevealHint();
-    }, step*3);
+    }, step*3));
   }
 
   /* =====================================================
@@ -2505,7 +2507,7 @@
   openPack=function(k){ lastPackKind=k; _openPack(k); };
   function closeOpener(){
     const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true");
-    clearTimeout(tearTimer); tearTimer=null;
+    clearTimeout(tearTimer); tearTimer=null; clearRevealTimers();
     openerBusy=false; openerPhase="reveal"; openerQueue=[]; openerIdx=0;
   }
 
