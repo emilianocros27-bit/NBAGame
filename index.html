@@ -572,13 +572,14 @@
   .of-title{position:relative; font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:.01em;
     font-size:clamp(22px,5vw,30px); margin:12px 0 4px;}
   .of-sub{position:relative; color:var(--muted); font-size:13.5px; margin-bottom:18px; max-width:520px;}
-  .of-cards{position:relative; display:flex; gap:0; padding:6px 0 16px; min-height:170px;}
-  .of-cards .pcard{width:128px; flex:0 0 auto; margin-left:-42px; transition:transform .25s, margin .25s;
+  .of-cards{position:relative; display:flex; justify-content:flex-start; gap:0; padding:10px 0 18px;}
+  .of-cards .pcard{width:120px; flex:0 0 auto; margin-left:-26px; transition:transform .25s, margin .25s;
     box-shadow:0 16px 34px rgba(0,0,0,.55);}
   .of-cards .pcard:first-child{margin-left:0;}
-  .of-cards .pcard:nth-child(odd){transform:rotate(-4deg) translateY(6px);}
-  .of-cards .pcard:nth-child(even){transform:rotate(3deg);}
-  .of-cards:hover .pcard{margin-left:6px;}
+  .of-cards .pcard:nth-child(odd){transform:rotate(-3deg) translateY(4px);}
+  .of-cards .pcard:nth-child(even){transform:rotate(2.5deg);}
+  .of-cards .pcard:hover{transform:translateY(-8px) rotate(0); z-index:5;}
+  @media(max-width:560px){ .of-cards{overflow-x:auto; padding-bottom:8px;} .of-cards .pcard{width:104px; margin-left:-22px;} }
   .of-buy{position:relative; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
   .of-price{display:flex; align-items:baseline; gap:4px; font-family:var(--display);}
   .of-price b{font-size:38px; font-weight:700; color:#fff; line-height:1;}
@@ -595,18 +596,20 @@
   .pcard .pc-foil{position:absolute; inset:0; mix-blend-mode:screen; pointer-events:none;
     background:linear-gradient(125deg, transparent 38%, rgba(255,255,255,.5) 48%, transparent 58%);
     opacity:.5; background-size:250% 250%;}
-  .pcard .pc-top{position:absolute; top:8px; right:9px; z-index:3; font-family:var(--display); font-weight:700;
-    font-size:22px; color:#fff; text-shadow:0 2px 8px #000;}
-  .pcard .pc-name{position:absolute; left:9px; right:9px; bottom:9px; z-index:3; font-size:11px; font-weight:700;
-    text-transform:uppercase; letter-spacing:.02em; color:#fff; text-shadow:0 2px 6px #000; line-height:1.15;}
-  .pcard .pc-grad{position:absolute; inset:auto 0 0 0; height:46%; z-index:2;
-    background:linear-gradient(to top, rgba(0,0,0,.82), transparent);}
-  /* estrellita PROMO abajo-izquierda */
-  .promo-badge{position:absolute; left:7px; bottom:7px; z-index:4; width:36px; height:36px;
-    filter:drop-shadow(0 2px 4px rgba(0,0,0,.7));}
-  .promo-badge svg{display:block; width:100%; height:100%;}
-  .promo-badge span{position:absolute; inset:0; display:grid; place-items:center;
-    font-family:var(--display); font-weight:700; font-size:6.5px; letter-spacing:.04em; color:#fff; transform:translateY(.5px);}
+  .pcard .pc-top{position:absolute; top:8px; right:10px; z-index:3; font-family:var(--display); font-weight:700;
+    font-size:21px; color:#fff; text-shadow:0 2px 8px #000;}
+  .pcard .pc-grad{position:absolute; inset:auto 0 0 0; height:42%; z-index:2;
+    background:linear-gradient(to top, rgba(0,0,0,.85), transparent);}
+  /* pie: badge PROMO + nombre, sin encimarse */
+  .pcard .pc-foot{position:absolute; left:7px; right:7px; bottom:7px; z-index:4;
+    display:flex; align-items:center; gap:6px;}
+  .promo-badge{flex:0 0 auto; display:inline-flex; align-items:center; gap:3px;
+    background:#0a0a0a; border:1px solid rgba(255,255,255,.32); border-radius:999px; padding:2.5px 6px 2.5px 5px;
+    box-shadow:0 1px 4px rgba(0,0,0,.6);}
+  .promo-badge svg{width:9px; height:9px; display:block; flex:0 0 auto;}
+  .promo-badge b{font-family:var(--display); font-weight:700; font-size:7px; letter-spacing:.08em; color:#fff;}
+  .pcard .pc-name{flex:1 1 auto; min-width:0; text-align:right; font-size:9px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.01em; color:#fff; text-shadow:0 1px 4px #000; line-height:1.1;}
   .shop-mine{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:14px;}
   .pf-section{margin-bottom:26px;}
   .pf-sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
@@ -2157,20 +2160,19 @@
      ===================================================== */
   function promoCardHTML(c, {owned=true}={}){
     const t=teamOf(c.equipo);
-    const badge=`<div class="promo-badge" title="Carta comprada (Promo)">
-        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#0a0a0a" stroke="#fff" stroke-width="1" d="M12 1.6l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 23l-6 -2.6 1.4-6.8L2.3 8.6l6.9-.7z"/></svg>
-        <span>PROMO</span></div>`;
+    const badge=`<span class="promo-badge" title="Carta comprada (Promo)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#0a0a0a" stroke="#fff" stroke-width="1.4" d="M12 1.6l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 23l-6 -2.6 1.4-6.8L2.3 8.6l6.9-.7z"/></svg>
+        <b>PROMO</b></span>`;
     if(!owned){
       return `<div class="pcard locked" style="--c1:${t.c1};--c2:${t.c2}">
-        <div class="pc-grad"></div><div class="pc-name">Por desbloquear</div></div>`;
+        <div class="pc-grad"></div><div class="pc-foot"><span class="pc-name">Por desbloquear</span></div></div>`;
     }
     return `<div class="pcard" style="--c1:${t.c1};--c2:${t.c2}" data-promo="${c.id}">
       <img src="${esc(c.foto)}" alt="${esc(c.nombre)}" onerror="this.style.opacity=0">
       <div class="pc-foil"></div>
       <div class="pc-grad"></div>
       <div class="pc-top">${c.media}</div>
-      ${badge}
-      <div class="pc-name">${esc(c.nombre)}</div>
+      <div class="pc-foot">${badge}<span class="pc-name">${esc(c.nombre)}</span></div>
     </div>`;
   }
   function renderTienda(){
