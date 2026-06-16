@@ -597,6 +597,7 @@
     border:2px solid transparent; background:linear-gradient(160deg,var(--c1,#444),var(--c2,#111));
     box-shadow:0 10px 26px rgba(0,0,0,.45);}
   .pcard>img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center;}
+  .pcard.pc-contain>img{object-fit:contain; object-position:center 42%; padding:8% 8% 16%;}
   .pcard .pc-foil{position:absolute; inset:0; mix-blend-mode:screen; pointer-events:none;
     background:linear-gradient(125deg, transparent 38%, rgba(255,255,255,.5) 48%, transparent 58%);
     opacity:.5; background-size:250% 250%;}
@@ -833,24 +834,7 @@
         <p>Ofertas exclusivas por tiempo limitado. Cartas que no salen en sobres.</p>
       </div></div>
 
-      <article class="shop-offer">
-        <div class="of-glow"></div>
-        <div class="of-head">
-          <span class="of-finals">
-            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M3 7l4 4 5-6 5 6 4-4-1.5 11h-15L3 7z"/><rect x="4.5" y="18.5" width="15" height="2.4" rx="1" fill="currentColor"/></svg>
-            NBA Finals 2026
-          </span>
-          <span class="of-tag">Exclusiva</span>
-        </div>
-        <h3 class="of-title">Edición Promo · Knicks Mythic</h3>
-        <p class="of-sub">Cartas de colección de los finalistas, en su versión más rara. Solo aquí. No aparecen en ningún sobre.</p>
-        <div class="of-cards" id="of-cards"></div>
-        <div class="of-buy">
-          <div class="of-price"><b>60</b><span class="cur">pesos</span></div>
-          <button class="btn btn-primary" id="of-buy-btn">Reclamar</button>
-          <span class="tag" id="of-owned-tag" style="display:none">Ya la tienes</span>
-        </div>
-      </article>
+      <div id="shop-offers"></div>
 
       <div class="pf-sec-head"><h3>Canjear código</h3></div>
       <form class="shop-redeem" id="redeem-form">
@@ -1102,17 +1086,23 @@
     const n = grantPromo(ids);
     return n ? `OK: ${n} carta(s) promo otorgada(s)` : "Nada que otorgar (id inválido o ya la tiene)";
   }
-  // Genera un código de UN SOLO USO para la oferta (o las cartas que pases).
-  // Uso: DunkDev.makeCode()  -> imprime el código listo para copiar.
-  async function makeCodeDev(opts){
+  // Genera un código de UN SOLO USO para un PAQUETE concreto.
+  // Uso: DunkDev.makeCode("wembi")  |  DunkDev.makeCode("knicks")  |  DunkDev.makeCode()=todo
+  async function makeCodeDev(arg){
     if(!window.DunkFire || !window.DunkFire.makeCode){ console.warn("Necesitas conexión/Firebase para generar códigos."); return; }
-    const cards = (opts && opts.cards && opts.cards.length) ? opts.cards : PROMO.map(c=>c.id);
+    let cards;
+    if(typeof arg==="string"){
+      const o=OFFER_BY[arg];
+      if(!o){ console.warn('Paquete no encontrado: "'+arg+'". Disponibles: '+OFFERS.map(o=>'"'+o.id+'"').join(", ")); return; }
+      cards = o.cards.slice();
+    } else if(arg && arg.cards && arg.cards.length){ cards = arg.cards; }
+    else { cards = PROMO.map(c=>c.id); }
     const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
     const rnd=n=>Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
     const code = `DUNK-${rnd(4)}-${rnd(4)}`;
     try{ await window.DunkFire.makeCode(code, cards); }
     catch(e){ console.warn("No se pudo generar (¿reglas de Firestore?):", e); return; }
-    console.log("%c CÓDIGO (1 uso): "+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
+    console.log("%c CÓDIGO (1 uso) "+(typeof arg==="string"?"["+arg+"] ":"")+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
     return code;
   }
   window.DunkDev = { giveAll, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev };
@@ -1179,8 +1169,19 @@
     { id:"brunson-darkrai",   slug:"jalen-brunson",      nombre:"Brunson · Darkrai",    equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-darkrai.jpg" },
     { id:"towns-jynx",        slug:"karl-anthony-towns", nombre:"Towns · Jynx",         equipo:"New York Knicks", media:96, foto:"tienda-cards/towns-jynx.jpg" },
     { id:"brunson-meditite",  slug:"jalen-brunson",      nombre:"Brunson · Meditite",   equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-meditite.jpg" },
+    { id:"wembi",             slug:"victor-wembanyama",  nombre:"Wembi",                equipo:"San Antonio Spurs", media:97, foto:"tienda-cards/wembi.png", fit:"contain" },
   ];
   const PROMO_BY = Object.fromEntries(PROMO.map(c=>[c.id,c]));
+  // PAQUETES de la tienda (cada uno con su precio y código propio)
+  const OFFERS = [
+    { id:"knicks", tagline:"NBA Finals 2026", title:"Edición Promo · Knicks Mythic",
+      sub:"Cartas de colección de los finalistas, en su versión más rara. Solo aquí.",
+      price:60, cards:["brunson-lucario","towns-incineroar","brunson-darkrai","towns-jynx","brunson-meditite"] },
+    { id:"wembi", tagline:"Edición especial", title:"Wembi",
+      sub:"La carta caricatura exclusiva de Wembanyama. Única en su tipo.",
+      price:15, cards:["wembi"] },
+  ];
+  const OFFER_BY = Object.fromEntries(OFFERS.map(o=>[o.id,o]));
   const promosForSlug = s => PROMO.filter(c=>c.slug===s && ownsPromo(c.id));
   const chosenPromo = s => {
     const d = state.display && state.display[s];
@@ -1188,7 +1189,7 @@
     return promosForSlug(s)[0] || null;
   };
   // El "objeto" de la oferta = todas estas cartas. Códigos para otorgar a usuarios:
-  const REDEEM_CODES = { "FINALS60": PROMO.map(c=>c.id), "KNICKS": PROMO.map(c=>c.id) };
+  const REDEEM_CODES = { "FINALS60": OFFER_BY.knicks.cards, "KNICKS": OFFER_BY.knicks.cards, "WEMBI": OFFER_BY.wembi.cards };
   const ownsPromo = id => ((state.promo && state.promo[id])||0) > 0;
   function grantPromo(ids){
     if(!state.promo) state.promo={};
@@ -2209,7 +2210,7 @@
       return `<div class="pcard locked" style="--c1:${t.c1};--c2:${t.c2}">
         <div class="pc-grad"></div><div class="pc-foot"><span class="pc-name">Por desbloquear</span></div></div>`;
     }
-    return `<div class="pcard" style="--c1:${t.c1};--c2:${t.c2}" data-promo="${c.id}">
+    return `<div class="pcard ${c.fit==='contain'?'pc-contain':''}" style="--c1:${t.c1};--c2:${t.c2}" data-promo="${c.id}">
       <img src="${esc(c.foto)}" alt="${esc(c.nombre)}" onerror="this.style.opacity=0">
       <div class="pc-foil"></div>
       <div class="pc-grad"></div>
@@ -2217,21 +2218,40 @@
       <div class="pc-foot">${badge}<span class="pc-name">${esc(c.nombre)}</span></div>
     </div>`;
   }
+  function offerHTML(o){
+    const haveAll = o.cards.every(id=>ownsPromo(id));
+    const cards = o.cards.map(id=>promoCardHTML(PROMO_BY[id],{owned:true})).join("");
+    return `<article class="shop-offer">
+      <div class="of-glow"></div>
+      <div class="of-head">
+        <span class="of-finals">
+          <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M3 7l4 4 5-6 5 6 4-4-1.5 11h-15L3 7z"/><rect x="4.5" y="18.5" width="15" height="2.4" rx="1" fill="currentColor"/></svg>
+          ${esc(o.tagline)}
+        </span>
+        <span class="of-tag">Exclusiva</span>
+      </div>
+      <h3 class="of-title">${esc(o.title)}</h3>
+      <p class="of-sub">${esc(o.sub)}</p>
+      <div class="of-cards">${cards}</div>
+      <div class="of-buy">
+        <div class="of-price"><b>${o.price}</b><span class="cur">pesos</span></div>
+        ${haveAll ? `<span class="tag">Ya la tienes</span>`
+                  : `<button class="btn btn-primary" data-claim="${o.id}">Reclamar</button>`}
+      </div>
+    </article>`;
+  }
   function renderTienda(){
-    const oc=$("#of-cards"); if(oc) oc.innerHTML = PROMO.map(c=>promoCardHTML(c,{owned:true})).join("");
-    const haveAll = PROMO.every(c=>ownsPromo(c.id));
-    const tag=$("#of-owned-tag"), btn=$("#of-buy-btn");
-    if(tag) tag.style.display = haveAll ? "" : "none";
-    if(btn) btn.style.display = haveAll ? "none" : "";
+    const wrap=$("#shop-offers"); if(wrap) wrap.innerHTML = OFFERS.map(offerHTML).join("");
     const mine=$("#shop-mine");
     if(mine){
       const owned=PROMO.filter(c=>ownsPromo(c.id));
       mine.innerHTML = owned.length ? owned.map(c=>promoCardHTML(c,{owned:true})).join("")
-        : `<div class="pf-empty">Aún no tienes cartas promo. Cómpralas arriba o canjea tu código.</div>`;
+        : `<div class="pf-empty">Aún no tienes cartas promo. Recláma​las arriba con tu código.</div>`;
     }
   }
-  function claimOffer(){
-    if(PROMO.every(c=>ownsPromo(c.id))){ toast("Ya tienes esta oferta completa"); return; }
+  function claimOffer(offerId){
+    const o = OFFER_BY[offerId];
+    if(o && o.cards.every(id=>ownsPromo(id))){ toast("Ya tienes esta oferta completa"); return; }
     const code = prompt("Pega aquí tu código para reclamar las cartas:");
     if(code==null) return;
     redeemCode(code);
@@ -2277,7 +2297,7 @@
     $("#bell").addEventListener("click", openMessages);
 
     // tienda
-    $("#of-buy-btn")?.addEventListener("click", claimOffer);
+    $("#shop-offers")?.addEventListener("click", e=>{ const b=e.target.closest("[data-claim]"); if(b) claimOffer(b.dataset.claim); });
     $("#redeem-form")?.addEventListener("submit", e=>{ e.preventDefault(); redeemCode($("#redeem-input").value); $("#redeem-input").value=""; });
 
     // álbum
