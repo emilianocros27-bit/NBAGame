@@ -833,7 +833,7 @@
         <div class="of-cards" id="of-cards"></div>
         <div class="of-buy">
           <div class="of-price"><b>60</b><span class="cur">pesos</span></div>
-          <button class="btn btn-primary" id="of-buy-btn">Comprar oferta</button>
+          <button class="btn btn-primary" id="of-buy-btn">Reclamar</button>
           <span class="tag" id="of-owned-tag" style="display:none">Ya la tienes</span>
         </div>
       </article>
@@ -1088,7 +1088,20 @@
     const n = grantPromo(ids);
     return n ? `OK: ${n} carta(s) promo otorgada(s)` : "Nada que otorgar (id inválido o ya la tiene)";
   }
-  window.DunkDev = { giveAll, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev };
+  // Genera un código de UN SOLO USO para la oferta (o las cartas que pases).
+  // Uso: DunkDev.makeCode()  -> imprime el código listo para copiar.
+  async function makeCodeDev(opts){
+    if(!window.DunkFire || !window.DunkFire.makeCode){ console.warn("Necesitas conexión/Firebase para generar códigos."); return; }
+    const cards = (opts && opts.cards && opts.cards.length) ? opts.cards : PROMO.map(c=>c.id);
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const rnd=n=>Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+    const code = `DUNK-${rnd(4)}-${rnd(4)}`;
+    try{ await window.DunkFire.makeCode(code, cards); }
+    catch(e){ console.warn("No se pudo generar (¿reglas de Firestore?):", e); return; }
+    console.log("%c CÓDIGO (1 uso): "+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
+    return code;
+  }
+  window.DunkDev = { giveAll, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
@@ -2188,21 +2201,31 @@
         : `<div class="pf-empty">Aún no tienes cartas promo. Cómpralas arriba o canjea tu código.</div>`;
     }
   }
-  function buyOffer(){
+  function claimOffer(){
     if(PROMO.every(c=>ownsPromo(c.id))){ toast("Ya tienes esta oferta completa"); return; }
-    const code = prompt("Tras tu pago recibirás un código.\nIngresa tu código de compra para desbloquear la oferta:");
+    const code = prompt("Pega aquí tu código para reclamar las cartas:");
     if(code==null) return;
     redeemCode(code);
   }
-  function redeemCode(raw){
+  async function redeemCode(raw){
     const code = String(raw||"").trim().toUpperCase();
     if(!code) return;
-    const ids = REDEEM_CODES[code];
-    if(!ids){ toast("Código no válido"); return; }
-    const before = ids.filter(id=>ownsPromo(id)).length;
-    if(before===ids.length){ toast("Ese código ya fue canjeado"); return; }
-    const n = grantPromo(ids.filter(id=>!ownsPromo(id)));
-    if(n) toast(`¡Canjeado! Recibiste <b>${n}</b> carta${n>1?'s':''} promo`);
+    // 1) códigos fijos (multiuso, para pruebas del dev)
+    if(REDEEM_CODES[code]){
+      const ids=REDEEM_CODES[code];
+      if(ids.every(id=>ownsPromo(id))){ toast("Ese código ya fue canjeado"); return; }
+      const n=grantPromo(ids.filter(id=>!ownsPromo(id)));
+      if(n) toast(`¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''} promo`);
+      return;
+    }
+    // 2) código de UN SOLO USO (nube)
+    if(!currentUid || !window.DunkFire || !window.DunkFire.claimCode){ toast("Inicia sesión para reclamar tu código"); return; }
+    let res;
+    try{ res=await window.DunkFire.claimCode(code, currentUid); }
+    catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo reclamar, intenta de nuevo"); return; }
+    if(!res || !res.ok){ toast(res && res.reason==="used" ? "Ese código ya fue usado" : "Código no válido"); return; }
+    const n=grantPromo(res.cards||[]);
+    toast(n ? `¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''} promo` : "Código válido, pero ya tenías esas cartas");
   }
 
   /* =====================================================
@@ -2225,7 +2248,7 @@
     $("#bell").addEventListener("click", openMessages);
 
     // tienda
-    $("#of-buy-btn")?.addEventListener("click", buyOffer);
+    $("#of-buy-btn")?.addEventListener("click", claimOffer);
     $("#redeem-form")?.addEventListener("submit", e=>{ e.preventDefault(); redeemCode($("#redeem-input").value); $("#redeem-input").value=""; });
 
     // álbum
@@ -2652,7 +2675,7 @@ window.MiniGame = (function(){
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCahATuEFQDCtRhttn4GqkurK-CVBsp0O8",
@@ -2716,6 +2739,19 @@ window.MiniGame = (function(){
     listTrades: async (me)=>{ const qs=await getDocs(query(collection(db,"trades"), where("parties","array-contains",me))); return qs.docs.map(d=>Object.assign({id:d.id}, d.data())); },
     updateTrade:(id,data)=>updateDoc(doc(db,"trades",id), data),
     deleteTrade:(id)=>deleteDoc(doc(db,"trades",id)),
+    // ---- CÓDIGOS DE UN SOLO USO ----
+    makeCode: async (code, cards)=>{ await setDoc(doc(db,"codes",code), { cards, used:false, createdAt:Date.now() }); return code; },
+    claimCode: async (code, uid)=>{
+      return await runTransaction(db, async (tx)=>{
+        const ref=doc(db,"codes",code);
+        const snap=await tx.get(ref);
+        if(!snap.exists()) return { ok:false, reason:"invalid" };
+        const d=snap.data();
+        if(d.used) return { ok:false, reason:"used" };
+        tx.update(ref, { used:true, usedBy:uid, usedAt:Date.now() });
+        return { ok:true, cards:d.cards||[] };
+      });
+    },
     mapErr
   };
   window.dispatchEvent(new Event("dunkfire-ready"));
