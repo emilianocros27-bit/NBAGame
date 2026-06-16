@@ -1,3 +1,5 @@
 node_modules/
 .data/
 *.log
+tienda-cards/**/.DS_Store
+.DS_Store
