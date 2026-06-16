@@ -556,6 +556,58 @@
     .pf-actions{flex:1 1 100%; width:100%;}
     .pf-actions .btn{flex:1 1 auto;}
   }
+  /* ===== TIENDA ===== */
+  .shop-offer{position:relative; overflow:hidden; border-radius:22px; padding:22px; margin-bottom:26px;
+    background:radial-gradient(120% 140% at 80% 0%, rgba(242,85,44,.22), transparent 55%), linear-gradient(160deg,#13060a,#0a0a12 70%);
+    border:1px solid var(--line-strong); box-shadow:0 20px 50px rgba(0,0,0,.5);}
+  .shop-offer .of-glow{position:absolute; inset:-40% 40% auto -10%; height:60%;
+    background:radial-gradient(circle, rgba(242,85,44,.35), transparent 70%); filter:blur(30px); pointer-events:none;}
+  .of-head{display:flex; align-items:center; gap:12px; margin-bottom:4px; position:relative;}
+  .of-finals{display:inline-flex; align-items:center; gap:7px; font-family:var(--display); font-weight:700;
+    font-size:12px; letter-spacing:.14em; text-transform:uppercase; color:#ffd76b;
+    border:1px solid rgba(255,215,107,.4); padding:6px 11px; border-radius:999px; background:rgba(255,215,107,.07);}
+  .of-finals svg{color:#ffd76b}
+  .of-tag{font-family:var(--display); font-weight:700; font-size:11px; letter-spacing:.16em; text-transform:uppercase;
+    color:#fff; background:var(--accent); padding:6px 11px; border-radius:999px;}
+  .of-title{position:relative; font-family:var(--display); font-weight:700; text-transform:uppercase; letter-spacing:.01em;
+    font-size:clamp(22px,5vw,30px); margin:12px 0 4px;}
+  .of-sub{position:relative; color:var(--muted); font-size:13.5px; margin-bottom:18px; max-width:520px;}
+  .of-cards{position:relative; display:flex; gap:0; padding:6px 0 16px; min-height:170px;}
+  .of-cards .pcard{width:128px; flex:0 0 auto; margin-left:-42px; transition:transform .25s, margin .25s;
+    box-shadow:0 16px 34px rgba(0,0,0,.55);}
+  .of-cards .pcard:first-child{margin-left:0;}
+  .of-cards .pcard:nth-child(odd){transform:rotate(-4deg) translateY(6px);}
+  .of-cards .pcard:nth-child(even){transform:rotate(3deg);}
+  .of-cards:hover .pcard{margin-left:6px;}
+  .of-buy{position:relative; display:flex; align-items:center; gap:14px; flex-wrap:wrap;}
+  .of-price{display:flex; align-items:baseline; gap:4px; font-family:var(--display);}
+  .of-price b{font-size:38px; font-weight:700; color:#fff; line-height:1;}
+  .of-price .cur{font-size:15px; font-weight:600; color:var(--muted);}
+  .of-buy .btn{padding:14px 26px; font-size:15px;}
+  .shop-redeem{display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-bottom:30px;}
+  .shop-redeem input{flex:1 1 200px; padding:13px 15px; border-radius:13px; border:1px solid var(--line-strong);
+    background:var(--surface); color:var(--text); font-size:14px; letter-spacing:.08em; text-transform:uppercase;}
+  /* tarjeta promo */
+  .pcard{position:relative; aspect-ratio:3/4; border-radius:16px; overflow:hidden; isolation:isolate;
+    border:2px solid transparent; background:linear-gradient(160deg,var(--c1,#444),var(--c2,#111));
+    box-shadow:0 10px 26px rgba(0,0,0,.45);}
+  .pcard>img{position:absolute; inset:0; width:100%; height:100%; object-fit:cover; object-position:top center;}
+  .pcard .pc-foil{position:absolute; inset:0; mix-blend-mode:screen; pointer-events:none;
+    background:linear-gradient(125deg, transparent 38%, rgba(255,255,255,.5) 48%, transparent 58%);
+    opacity:.5; background-size:250% 250%;}
+  .pcard .pc-top{position:absolute; top:8px; right:9px; z-index:3; font-family:var(--display); font-weight:700;
+    font-size:22px; color:#fff; text-shadow:0 2px 8px #000;}
+  .pcard .pc-name{position:absolute; left:9px; right:9px; bottom:9px; z-index:3; font-size:11px; font-weight:700;
+    text-transform:uppercase; letter-spacing:.02em; color:#fff; text-shadow:0 2px 6px #000; line-height:1.15;}
+  .pcard .pc-grad{position:absolute; inset:auto 0 0 0; height:46%; z-index:2;
+    background:linear-gradient(to top, rgba(0,0,0,.82), transparent);}
+  /* estrellita PROMO abajo-izquierda */
+  .promo-badge{position:absolute; left:7px; bottom:7px; z-index:4; width:36px; height:36px;
+    filter:drop-shadow(0 2px 4px rgba(0,0,0,.7));}
+  .promo-badge svg{display:block; width:100%; height:100%;}
+  .promo-badge span{position:absolute; inset:0; display:grid; place-items:center;
+    font-family:var(--display); font-weight:700; font-size:6.5px; letter-spacing:.04em; color:#fff; transform:translateY(.5px);}
+  .shop-mine{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:14px;}
   .pf-section{margin-bottom:26px;}
   .pf-sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
   .pf-sec-head h3{font-size:18px; text-transform:uppercase; letter-spacing:.02em;}
@@ -627,6 +679,7 @@
       <nav class="tabs" role="tablist" aria-label="Modos">
         <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
         <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
+        <button class="tab" role="tab" data-view="tienda" aria-selected="false">Tienda</button>
         <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
         <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
         <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
@@ -754,6 +807,42 @@
         </div>
       </div>
       <div class="pack-stats">Sobres abiertos: <b id="packs-opened">0</b> · Cartas obtenidas: <b id="cards-total">0</b></div>
+    </section>
+
+    <!-- ===== TIENDA ===== -->
+    <section class="view" id="view-tienda" role="tabpanel">
+      <div class="view-head"><div>
+        <h2>Tienda</h2>
+        <p>Ofertas exclusivas por tiempo limitado. Cartas que no salen en sobres.</p>
+      </div></div>
+
+      <article class="shop-offer">
+        <div class="of-glow"></div>
+        <div class="of-head">
+          <span class="of-finals">
+            <svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M3 7l4 4 5-6 5 6 4-4-1.5 11h-15L3 7z"/><rect x="4.5" y="18.5" width="15" height="2.4" rx="1" fill="currentColor"/></svg>
+            NBA Finals 2026
+          </span>
+          <span class="of-tag">Exclusiva</span>
+        </div>
+        <h3 class="of-title">Edición Promo · Knicks Mythic</h3>
+        <p class="of-sub">Cartas de colección de los finalistas, en su versión más rara. Solo aquí. No aparecen en ningún sobre.</p>
+        <div class="of-cards" id="of-cards"></div>
+        <div class="of-buy">
+          <div class="of-price"><b>60</b><span class="cur">pesos</span></div>
+          <button class="btn btn-primary" id="of-buy-btn">Comprar oferta</button>
+          <span class="tag" id="of-owned-tag" style="display:none">Ya la tienes</span>
+        </div>
+      </article>
+
+      <div class="pf-sec-head"><h3>Canjear código</h3></div>
+      <form class="shop-redeem" id="redeem-form">
+        <input id="redeem-input" placeholder="Código de compra" autocomplete="off" maxlength="24">
+        <button class="btn btn-ghost" type="submit">Canjear</button>
+      </form>
+
+      <div class="pf-sec-head"><h3>Tus cartas promo</h3></div>
+      <div class="shop-mine" id="shop-mine"></div>
     </section>
 
     <!-- ===== INTERCAMBIOS ===== -->
@@ -888,6 +977,7 @@
   <nav class="bottom-nav" role="tablist" aria-label="Modos">
     <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
     <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
+    <button class="tab" role="tab" data-view="tienda" aria-selected="false">Tienda</button>
     <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
     <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
     <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
@@ -965,7 +1055,7 @@
   const LS = "dunk_nba_v1";
   let PLAYERS = [];
   let BY = {};                 // slug -> player
-  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, graded:{}, display:{}, coins:300 }; }
+  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, graded:{}, display:{}, promo:{}, coins:300 }; }
   let state = defaultState();
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
@@ -990,7 +1080,12 @@
     return "OK: todas las cartas + Finals + PSA 1-10";
   }
   function resetAccount(){ applyState(defaultState()); save(); renderAll(); return "OK: cuenta reiniciada (sin cartas, 300 balones)"; }
-  window.DunkDev = { giveAll, coins:(n)=>addCoins(n), reset:resetAccount };
+  function givePromoDev(id){
+    const ids = id ? [id] : PROMO.map(c=>c.id);
+    const n = grantPromo(ids);
+    return n ? `OK: ${n} carta(s) promo otorgada(s)` : "Nada que otorgar (id inválido o ya la tiene)";
+  }
+  window.DunkDev = { giveAll, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
@@ -1046,6 +1141,25 @@
     "og-anunoby":"finals-cards/Knicks/og-anunoby.jpg",
   };
   const FINALS_FOCO = {};   // encuadre por carta Finals si hace falta (object-position)
+
+  /* ===== CARTAS PROMO (solo tienda) ===== */
+  const PROMO = [
+    { id:"brunson-lucario",   nombre:"Brunson · Lucario",    equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-lucario.jpg" },
+    { id:"towns-incineroar",  nombre:"Towns · Incineroar",   equipo:"New York Knicks", media:96, foto:"tienda-cards/towns-incineroar.jpg" },
+    { id:"brunson-darkrai",   nombre:"Brunson · Darkrai",    equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-darkrai.jpg" },
+    { id:"towns-jynx",        nombre:"Towns · Jynx",         equipo:"New York Knicks", media:96, foto:"tienda-cards/towns-jynx.jpg" },
+    { id:"brunson-meditite",  nombre:"Brunson · Meditite",   equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-meditite.jpg" },
+  ];
+  const PROMO_BY = Object.fromEntries(PROMO.map(c=>[c.id,c]));
+  // El "objeto" de la oferta = todas estas cartas. Códigos para otorgar a usuarios:
+  const REDEEM_CODES = { "FINALS60": PROMO.map(c=>c.id), "KNICKS": PROMO.map(c=>c.id) };
+  const ownsPromo = id => ((state.promo && state.promo[id])||0) > 0;
+  function grantPromo(ids){
+    if(!state.promo) state.promo={};
+    let n=0; (ids||[]).forEach(id=>{ if(PROMO_BY[id]){ state.promo[id]=(state.promo[id]||0)+1; n++; } });
+    if(n){ save(); renderTienda(); }
+    return n;
+  }
   const ownsNormal = s => (state.owned[s]||0)>0;
   const ownsFinals = s => (state.finals && state.finals[s]||0)>0;
   const gradesOf = s => (state.graded && state.graded[s]) || [];
@@ -1069,7 +1183,7 @@
 
   function load(){ try{ const r=JSON.parse(localStorage.getItem(LS)); if(r){ state=Object.assign(state,r);} }catch(e){}
     if(!state.finals) state.finals={}; if(!state.graded) state.graded={}; if(!state.display) state.display={}; if(!state.messages) state.messages=[];
-    if(typeof state.coins!=="number") state.coins=300; }
+    if(!state.promo) state.promo={}; if(typeof state.coins!=="number") state.coins=300; }
   function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} scheduleCloud(); }
 
   /* ===== CUENTAS / NUBE (Firebase Auth + Firestore) ===== */
@@ -1082,7 +1196,7 @@
   function applyState(obj){
     state = Object.assign(defaultState(), obj || {});
     if(!state.finals) state.finals={}; if(!state.graded) state.graded={}; if(!state.display) state.display={};
-    if(!state.messages) state.messages=[]; if(typeof state.coins!=="number") state.coins=300;
+    if(!state.messages) state.messages=[]; if(!state.promo) state.promo={}; if(typeof state.coins!=="number") state.coins=300;
   }
   function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); }
   function updateAccountUI(){
@@ -2039,6 +2153,57 @@
   }
 
   /* =====================================================
+     TIENDA
+     ===================================================== */
+  function promoCardHTML(c, {owned=true}={}){
+    const t=teamOf(c.equipo);
+    const badge=`<div class="promo-badge" title="Carta comprada (Promo)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path fill="#0a0a0a" stroke="#fff" stroke-width="1" d="M12 1.6l2.9 6.3 6.9.7-5.1 4.6 1.4 6.8L12 23l-6 -2.6 1.4-6.8L2.3 8.6l6.9-.7z"/></svg>
+        <span>PROMO</span></div>`;
+    if(!owned){
+      return `<div class="pcard locked" style="--c1:${t.c1};--c2:${t.c2}">
+        <div class="pc-grad"></div><div class="pc-name">Por desbloquear</div></div>`;
+    }
+    return `<div class="pcard" style="--c1:${t.c1};--c2:${t.c2}" data-promo="${c.id}">
+      <img src="${esc(c.foto)}" alt="${esc(c.nombre)}" onerror="this.style.opacity=0">
+      <div class="pc-foil"></div>
+      <div class="pc-grad"></div>
+      <div class="pc-top">${c.media}</div>
+      ${badge}
+      <div class="pc-name">${esc(c.nombre)}</div>
+    </div>`;
+  }
+  function renderTienda(){
+    const oc=$("#of-cards"); if(oc) oc.innerHTML = PROMO.map(c=>promoCardHTML(c,{owned:true})).join("");
+    const haveAll = PROMO.every(c=>ownsPromo(c.id));
+    const tag=$("#of-owned-tag"), btn=$("#of-buy-btn");
+    if(tag) tag.style.display = haveAll ? "" : "none";
+    if(btn) btn.style.display = haveAll ? "none" : "";
+    const mine=$("#shop-mine");
+    if(mine){
+      const owned=PROMO.filter(c=>ownsPromo(c.id));
+      mine.innerHTML = owned.length ? owned.map(c=>promoCardHTML(c,{owned:true})).join("")
+        : `<div class="pf-empty">Aún no tienes cartas promo. Cómpralas arriba o canjea tu código.</div>`;
+    }
+  }
+  function buyOffer(){
+    if(PROMO.every(c=>ownsPromo(c.id))){ toast("Ya tienes esta oferta completa"); return; }
+    const code = prompt("Tras tu pago recibirás un código.\nIngresa tu código de compra para desbloquear la oferta:");
+    if(code==null) return;
+    redeemCode(code);
+  }
+  function redeemCode(raw){
+    const code = String(raw||"").trim().toUpperCase();
+    if(!code) return;
+    const ids = REDEEM_CODES[code];
+    if(!ids){ toast("Código no válido"); return; }
+    const before = ids.filter(id=>ownsPromo(id)).length;
+    if(before===ids.length){ toast("Ese código ya fue canjeado"); return; }
+    const n = grantPromo(ids.filter(id=>!ownsPromo(id)));
+    if(n) toast(`¡Canjeado! Recibiste <b>${n}</b> carta${n>1?'s':''} promo`);
+  }
+
+  /* =====================================================
      NAV / TOAST / EVENTOS
      ===================================================== */
   function showView(v){
@@ -2046,6 +2211,7 @@
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
     if(v==="quinteto") renderSlots();
     if(v==="trueques") renderTrades();
+    if(v==="tienda") renderTienda();
     if(window.MiniGame){ if(v==="juego") window.MiniGame.start(); else window.MiniGame.stop(); }
     window.scrollTo({top:0, behavior:"instant"});
   }
@@ -2055,6 +2221,10 @@
   function bindEvents(){
     $$(".tab").forEach(t=>t.addEventListener("click",()=>showView(t.dataset.view)));
     $("#bell").addEventListener("click", openMessages);
+
+    // tienda
+    $("#of-buy-btn")?.addEventListener("click", buyOffer);
+    $("#redeem-form")?.addEventListener("submit", e=>{ e.preventDefault(); redeemCode($("#redeem-input").value); $("#redeem-input").value=""; });
 
     // álbum
     $("#search").addEventListener("input", e=>{ albumFilter.q=e.target.value; renderAlbum(); });
