@@ -1724,7 +1724,7 @@
     const q = albumFilter.q.trim().toLowerCase();
     if(q) list = list.filter(p => p.nombre.toLowerCase().includes(q) || p.equipo.toLowerCase().includes(q));
     if(albumFilter.team) list = list.filter(p => p.equipo === albumFilter.team);
-    if(albumFilter.own==="owned") list = list.filter(p => ownsAny(p.slug));
+    if(albumFilter.own==="owned") list = list.filter(p => ownsAny(p.slug) || promosForSlug(p.slug).length);
 
     const s = albumFilter.sort;
     list.sort((a,b)=>{
@@ -1735,24 +1735,18 @@
       return 0;
     });
 
-    // cartas promo que el usuario posee (se muestran junto a las normales)
-    let promos = PROMO.filter(c => ownsPromo(c.id));
-    if(q) promos = promos.filter(c => c.nombre.toLowerCase().includes(q) || c.equipo.toLowerCase().includes(q));
-    if(albumFilter.team) promos = promos.filter(c => c.equipo === albumFilter.team);
-
-    if(!list.length && !promos.length){
+    if(!list.length){
       grid.innerHTML = `<div class="empty"><h3>Nada por aquí</h3>
         <p>${albumFilter.own==="owned" ? "Aún no tienes cartas con este filtro. Abre un sobre para empezar." : "Ningún jugador coincide con tu búsqueda."}</p></div>`;
       return;
     }
-    const promoHTML = promos.map(c => promoCardHTML(c, {owned:true})).join("");
     const playersHTML = list.map(p => {
-      let v = displayVariant(p.slug);
-      if(v==="promo") v = ownsNormal(p.slug)?"normal" : ownsFinals(p.slug)?"finals" : ownsGraded(p.slug)?"graded" : null;
+      let v = displayVariant(p.slug);   // puede ser "promo" si lo elegiste como versión a exponer
+      if(!v && promosForSlug(p.slug).length) v = "promo";   // solo tiene la promo
       const count = v==="finals" ? (state.finals[p.slug]||0) : (state.owned[p.slug]||0);
       return cardHTML(p, {owned:!!v, count, variant:v||"normal", grade: v==="graded"?displayGrade(p.slug):null});
     }).join("");
-    grid.innerHTML = promoHTML + playersHTML;
+    grid.innerHTML = playersHTML;
   }
 
   /* tilt + lámina siguiendo el puntero (delegado, sin re-render) */
