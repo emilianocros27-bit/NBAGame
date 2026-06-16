@@ -642,9 +642,8 @@
   .t-chips{display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;}
   .t-chip{font-size:12px; font-weight:700; padding:4px 9px; border-radius:999px; color:#fff;
     background:linear-gradient(135deg, var(--c1,#444), var(--c2,#222)); white-space:nowrap;}
-  .t-cardwrap{width:108px; flex:0 0 auto;}
-  .t-cardwrap .card{width:100%; cursor:default;}
-  .t-cardwrap .card{pointer-events:none;}
+  .t-cardwrap{width:108px; height:150px; flex:0 0 auto; overflow:hidden;}
+  .t-cardwrap .card{width:150px; transform:scale(.72); transform-origin:top left; pointer-events:none; cursor:default;}
   .t-empty{color:var(--muted-2);}
   .t-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
   .t-actions .btn{padding:8px 14px; font-size:13px;}
