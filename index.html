@@ -1172,13 +1172,19 @@
 
   /* ===== CARTAS PROMO (solo tienda) ===== */
   const PROMO = [
-    { id:"brunson-lucario",   nombre:"Brunson · Lucario",    equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-lucario.jpg" },
-    { id:"towns-incineroar",  nombre:"Towns · Incineroar",   equipo:"New York Knicks", media:96, foto:"tienda-cards/towns-incineroar.jpg" },
-    { id:"brunson-darkrai",   nombre:"Brunson · Darkrai",    equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-darkrai.jpg" },
-    { id:"towns-jynx",        nombre:"Towns · Jynx",         equipo:"New York Knicks", media:96, foto:"tienda-cards/towns-jynx.jpg" },
-    { id:"brunson-meditite",  nombre:"Brunson · Meditite",   equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-meditite.jpg" },
+    { id:"brunson-lucario",   slug:"jalen-brunson",      nombre:"Brunson · Lucario",    equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-lucario.jpg" },
+    { id:"towns-incineroar",  slug:"karl-anthony-towns", nombre:"Towns · Incineroar",   equipo:"New York Knicks", media:96, foto:"tienda-cards/towns-incineroar.jpg" },
+    { id:"brunson-darkrai",   slug:"jalen-brunson",      nombre:"Brunson · Darkrai",    equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-darkrai.jpg" },
+    { id:"towns-jynx",        slug:"karl-anthony-towns", nombre:"Towns · Jynx",         equipo:"New York Knicks", media:96, foto:"tienda-cards/towns-jynx.jpg" },
+    { id:"brunson-meditite",  slug:"jalen-brunson",      nombre:"Brunson · Meditite",   equipo:"New York Knicks", media:95, foto:"tienda-cards/brunson-meditite.jpg" },
   ];
   const PROMO_BY = Object.fromEntries(PROMO.map(c=>[c.id,c]));
+  const promosForSlug = s => PROMO.filter(c=>c.slug===s && ownsPromo(c.id));
+  const chosenPromo = s => {
+    const d = state.display && state.display[s];
+    if(typeof d==="string" && d.indexOf("promo:")===0){ const id=d.slice(6); if(ownsPromo(id)) return PROMO_BY[id]; }
+    return promosForSlug(s)[0] || null;
+  };
   // El "objeto" de la oferta = todas estas cartas. Códigos para otorgar a usuarios:
   const REDEEM_CODES = { "FINALS60": PROMO.map(c=>c.id), "KNICKS": PROMO.map(c=>c.id) };
   const ownsPromo = id => ((state.promo && state.promo[id])||0) > 0;
@@ -1196,6 +1202,7 @@
   const ownsAny = s => ownsNormal(s) || ownsFinals(s) || ownsGraded(s);
   function displayVariant(s){
     const d = state.display && state.display[s];
+    if(typeof d==="string" && d.indexOf("promo:")===0){ const id=d.slice(6); if(ownsPromo(id)) return "promo"; }
     if(typeof d==="string" && d.indexOf("graded")===0 && ownsGraded(s)) return "graded";
     if(d==="finals" && ownsFinals(s)) return "finals";
     if(ownsNormal(s)) return "normal";
@@ -1661,6 +1668,8 @@
           <div class="card-info"><h3>Por descubrir</h3><p>${esc(p.equipo)}</p></div>
         </div></div>`;
     }
+    // ---- CARTA PROMO (skin de tienda) ----
+    if(variant==="promo"){ const pc=chosenPromo(p.slug); if(pc) return promoCardHTML(pc,{owned:true}); }
     // ---- CARTA GRADUADA (slab tipo PSA) ----
     if(variant==="graded" && ownsGraded(p.slug)){
       const g = (typeof grade==="number") ? grade : bestGrade(p.slug);
@@ -1738,7 +1747,8 @@
     }
     const promoHTML = promos.map(c => promoCardHTML(c, {owned:true})).join("");
     const playersHTML = list.map(p => {
-      const v = displayVariant(p.slug);
+      let v = displayVariant(p.slug);
+      if(v==="promo") v = ownsNormal(p.slug)?"normal" : ownsFinals(p.slug)?"finals" : ownsGraded(p.slug)?"graded" : null;
       const count = v==="finals" ? (state.finals[p.slug]||0) : (state.owned[p.slug]||0);
       return cardHTML(p, {owned:!!v, count, variant:v||"normal", grade: v==="graded"?displayGrade(p.slug):null});
     }).join("");
@@ -1767,14 +1777,15 @@
      ===================================================== */
   function openDetail(slug){
     const p = BY[slug]; if(!p) return;
-    const v = displayVariant(slug) || "normal";
+    const v = displayVariant(slug) || (promosForSlug(slug).length ? "promo" : "normal");
     const inLineup = lineup.includes(slug);
     const gv = v==="graded" ? displayGrade(slug) : null;
-    const selKey = v==="graded" ? ("graded:"+gv) : v;
+    const selKey = v==="graded" ? ("graded:"+gv) : v==="promo" ? (state.display[slug]||"") : v;
     const variants = [];
     if(ownsNormal(slug)) variants.push({key:"normal", variant:"normal", grade:null, label:"Normal"});
     if(ownsFinals(slug)) variants.push({key:"finals", variant:"finals", grade:null, label:"Finals"});
     [...new Set(gradesOf(slug))].sort((a,b)=>b-a).forEach(g=> variants.push({key:"graded:"+g, variant:"graded", grade:g, label:"PSA "+g}));
+    promosForSlug(slug).forEach(pc=> variants.push({key:"promo:"+pc.id, promo:pc, label:"Promo"}));
     const cnt = v==="finals" ? (state.finals[slug]||0) : v==="graded" ? gradesOf(slug).length : (state.owned[slug]||0);
     const body = $("#sheet-body");
     body.innerHTML = `
@@ -1787,7 +1798,7 @@
           ${variants.length>1 ? `<div class="ver-label">Tus versiones · elige cuál exponer</div>
             <div class="ver-row">${variants.map(ent=>`
               <div class="ver ${ent.key===selKey?'sel':''}" data-ver="${ent.key}" role="button" tabindex="0">
-                ${cardHTML(p,{owned:true,count:0,variant:ent.variant,grade:ent.grade})}
+                ${ent.promo ? promoCardHTML(ent.promo,{owned:true}) : cardHTML(p,{owned:true,count:0,variant:ent.variant,grade:ent.grade})}
                 <span class="ver-name">${ent.label}</span>
               </div>`).join("")}</div>` : ""}
           <div class="detail-grid">
@@ -2279,6 +2290,8 @@
       albumFilter.own=b.dataset.own; renderAlbum();
     }));
     $("#album-grid").addEventListener("click", e=>{
+      const pc=e.target.closest(".pcard[data-promo]");
+      if(pc){ const c=PROMO_BY[pc.dataset.promo]; if(c) openDetail(c.slug); return; }
       const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
     });
     bindTilt($("#album-grid"));
