@@ -2129,6 +2129,7 @@
   const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c"};
   let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null;
   function runOpener(cards, kind){
+    clearTimeout(tearTimer); tearTimer=null; openerBusy=false;
     openerQueue=cards; openerIdx=0;
     // precarga las fotos del sobre para que no tarden en aparecer al revelar
     cards.forEach(c=>{ const src=(c.variant==="finals" && FINALS_CARD[c.p.slug]) ? FINALS_CARD[c.p.slug] : c.p.foto; if(src){ const im=new Image(); im.src=src; } });
@@ -2502,7 +2503,11 @@
   let lastPackKind="std";
   const _openPack=openPack;
   openPack=function(k){ lastPackKind=k; _openPack(k); };
-  function closeOpener(){ const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true"); }
+  function closeOpener(){
+    const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true");
+    clearTimeout(tearTimer); tearTimer=null;
+    openerBusy=false; openerPhase="reveal"; openerQueue=[]; openerIdx=0;
+  }
 
   /* =====================================================
      ARRANQUE
