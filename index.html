@@ -2878,7 +2878,20 @@ window.MiniGame = (function(){
     cv.addEventListener('touchstart',down,{passive:false});
     window.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up,{passive:false});
     document.getElementById('mg-again').addEventListener('click',startGame);
-    window.addEventListener('resize',()=>{ if(active){ resize(); if(ball&&!ball.flying){ ball.x=W/2; ball.y=GROUND()-H*0.20; } } });
+    window.addEventListener('resize',()=>{
+      if(!active) return;
+      const oldW=W, oldH=H;
+      resize();
+      if(ball){
+        ball.r=22*S;
+        if(!ball.flying){ ball.x=W/2; ball.y=GROUND()-H*0.20; }
+        else if(oldW&&oldH){ ball.x=ball.x*W/oldW; ball.y=ball.y*H/oldH; }
+      }
+      if(hoop&&oldW&&oldH){
+        hoop.x=hoop.x*W/oldW; hoop.y=hoop.y*H/oldH; hoop.rimY=hoop.rimY*H/oldH;
+        hoop.r=34*S; buildNet(hoop);
+      }
+    });
   }
   return {
     start(){ init(); active=true; resize(); startGame(); if(!rafId) loop(); },
