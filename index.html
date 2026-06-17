@@ -1416,8 +1416,6 @@
   // El "objeto" de la oferta = todas estas cartas. Códigos para otorgar a usuarios:
   const REDEEM_CODES = {
     "FINALS60": OFFER_BY.knicks.cards, "KNICKS": OFFER_BY.knicks.cards, "WEMBI": OFFER_BY.wembi.cards,
-    // Paquete de recuperación: todas las básicas + Finals de Brunson y De'Aaron Fox
-    "ELIASYOYA": { basics:true, finals:["jalen-brunson","deaaron-fox"] },
   };
   const ownsPromo = id => ((state.promo && state.promo[id])||0) > 0;
   function grantPromo(ids){
