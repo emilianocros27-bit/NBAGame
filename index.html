@@ -1426,9 +1426,9 @@
   function save(){ try{ localStorage.setItem(LS, JSON.stringify(state)); }catch(e){} scheduleCloud(); }
 
   /* ===== CUENTAS / NUBE (Firebase Auth + Firestore) ===== */
-  let authUser = null, currentUid = null, cloudT = null;
+  let authUser = null, currentUid = null, cloudT = null, cloudReady = false;
   function scheduleCloud(){
-    if(!currentUid || !window.DunkFire) return;
+    if(!currentUid || !window.DunkFire || !cloudReady) return;
     clearTimeout(cloudT);
     cloudT = setTimeout(()=>{ window.DunkFire.saveState(currentUid, state).catch(()=>{}); }, 700);
   }
@@ -1451,9 +1451,16 @@
   // Firebase notifica el estado de sesión: al cargar, al entrar y al salir
   async function handleAuth(user){
     if(user){
-      authUser = user.email; currentUid = user.uid;
-      let cloud = null;
-      try{ cloud = await window.DunkFire.loadSave(user.uid); }catch(e){}
+      authUser = user.email; currentUid = user.uid; cloudReady = false;
+      let cloud = null, loadOk = true;
+      // loadSave devuelve null si el usuario es nuevo, pero LANZA error si la carga falla.
+      try{ cloud = await window.DunkFire.loadSave(user.uid); }catch(e){ loadOk = false; }
+      if(!loadOk){
+        // No se pudo leer la nube (conexión/permiso): NO sobrescribir, o se borrarían las cartas.
+        toast("No se pudo cargar tu progreso. Revisa tu conexión y vuelve a entrar.");
+        authUser = null; currentUid = null; updateAccountUI(); return;
+      }
+      cloudReady = true;
       if(cloud){ applyState(cloud); }
       else { applyState(defaultState()); try{ await window.DunkFire.saveState(user.uid, state); }catch(e){} }
       try{ myProfile = await window.DunkFire.getProfile(user.uid); }catch(e){ myProfile=null; }
@@ -1463,7 +1470,7 @@
       ensurePsaEvent();
       save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll(); renderPsaBadge();
     } else {
-      authUser=null; currentUid=null; myProfile=null; updateAccountUI(); showAuth();
+      authUser=null; currentUid=null; cloudReady=false; myProfile=null; updateAccountUI(); showAuth();
     }
   }
   function startSession(){
