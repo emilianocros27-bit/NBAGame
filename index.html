@@ -1258,7 +1258,9 @@
   function spendCoins(n){ if((state.coins||0) < n) return false; state.coins -= n; save(); renderCoins(); return true; }
   // puente para el minijuego "Encestes" (vive en otro script)
   window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT,
-    getBest:()=>state.bestScore||0, setBest:(v)=>{ state.bestScore=v; save(); } };
+    // récord robusto: máx(nube, respaldo local), monotónico (nunca baja) → no se reinicia ni se farmea
+    getBest:()=>{ let ls=0; try{ ls=+(localStorage.getItem('basket_best')||0); }catch(e){} return Math.max(state.bestScore||0, ls||0); },
+    setBest:(v)=>{ v=Math.max(state.bestScore||0, v||0); state.bestScore=v; try{ localStorage.setItem('basket_best',v); }catch(e){} save(); } };
   // ---- DEV: dar todo para testear (consola: DunkDev.giveAll()) ----
   function giveAll(){
     PLAYERS.forEach(p=>{ state.owned[p.slug]=1; });
@@ -2940,9 +2942,14 @@ window.MiniGame = (function(){
   }
 
   function newHoop(){
-    const r = 44 * S, margin = 60 * S;
-    const x = margin + Math.random() * (W - margin * 2);
-    const y = 120 * S + Math.random() * (H * 0.30);
+    const r = 44 * S, margin = 70 * S;
+    // altura en una banda jugable (ni pegada al techo ni demasiado abajo)
+    const yMin = 150 * S, yMax = yMin + H * 0.24;
+    const y = yMin + Math.random() * (yMax - yMin);
+    // cuanto más alto el aro, más centrado sale → siempre alcanzable desde el lanzamiento
+    const hf = (yMax > yMin) ? (yMax - y) / (yMax - yMin) : 0;     // 0 = bajo, 1 = alto
+    const maxOff = (W / 2 - margin) * (1 - 0.5 * hf);
+    const x = Math.max(margin, Math.min(W - margin, W / 2 + (Math.random() * 2 - 1) * maxOff));
     const moving = score >= 5;
     hoop = { x, y, r, rimY: y, vx: moving ? (Math.random() < .5 ? -1 : 1) * (0.6 + Math.random() * 0.9) * S : 0, scored: false, golden: Math.random()<0.18 };
     buildNet(hoop);
@@ -3035,7 +3042,7 @@ window.MiniGame = (function(){
 
   function update(){
     if(running && ball.flying){
-      ball.py=ball.y;   // y previa, para colisión por barrido
+      ball.px=ball.x; ball.py=ball.y;   // posición previa, para colisión por barrido
       ball.vy+=GRAV*S; ball.x+=ball.vx; ball.y+=ball.vy; ball.rot+=ball.vrot;
       ball.trail.push({x:ball.x,y:ball.y}); if(ball.trail.length>9) ball.trail.shift();
       if(ball.x-ball.r<0){ ball.x=ball.r; ball.vx*=-0.7; }
@@ -3051,10 +3058,16 @@ window.MiniGame = (function(){
   function checkHoop(){
     if(!ball.canScore) return;
     const dx=ball.x-hoop.x, withinX=Math.abs(dx)<hoop.r*0.8, atRim=Math.abs(ball.y-hoop.rimY)<12*S;
-    // barrido: ¿cruzó el plano del aro hacia abajo en este frame? (atrapa tiros rápidos que saltarían la banda)
-    const crossedDown = (typeof ball.py==='number') && ball.py<=hoop.rimY && ball.y>=hoop.rimY;
-    if(withinX&&ball.vy>0&&(atRim||crossedDown)){ scoreBasket(); return; }
-    if(withinX&&atRim&&ball.vy<0){ ball.canScore=false; ball.vy=Math.abs(ball.vy)*0.5; ball.y=hoop.rimY+12*S; return; }
+    // CANASTA: ¿la pelota cruzó el plano del aro hacia abajo este frame? (barrido interpolado: atrapa tiros muy rápidos)
+    if(ball.vy>0 && typeof ball.py==='number' && ball.py<=hoop.rimY && ball.y>=hoop.rimY){
+      const span=(ball.y-ball.py)||1, t=(hoop.rimY-ball.py)/span;                 // fracción del frame donde y==rimY
+      const crossX=(typeof ball.px==='number') ? ball.px+(ball.x-ball.px)*t : ball.x;
+      if(Math.abs(crossX-hoop.x) < hoop.r*0.85){ scoreBasket(); return; }          // cruzó dentro de la boca → cuenta
+    }
+    // entrada lenta normal (sin barrido)
+    if(withinX&&atRim&&ball.vy>0){ scoreBasket(); return; }
+    // toca el aro por debajo subiendo: rebota, pero SIGUE pudiendo encestar al caer (no se inhabilita)
+    if(withinX&&atRim&&ball.vy<0){ ball.vy=Math.abs(ball.vy)*0.5; ball.y=hoop.rimY+12*S; return; }
     const posts=[hoop.x-hoop.r, hoop.x+hoop.r];
     for(const px of posts){ const ddx=ball.x-px, ddy=ball.y-hoop.rimY, dist=Math.hypot(ddx,ddy);
       if(dist<ball.r+4*S){ ball.touchedRim=true; const ang=Math.atan2(ddy,ddx), overlap=ball.r+4*S-dist;
