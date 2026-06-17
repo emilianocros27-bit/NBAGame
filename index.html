@@ -1302,7 +1302,21 @@
     console.log("%c CÓDIGO (1 uso) "+(typeof arg==="string"?"["+arg+"] ":"")+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
     return code;
   }
-  window.DunkDev = { giveAll, giveBasicsAndFinals, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev };
+  // Genera un código de UN SOLO USO para un paquete a medida.
+  // Uso: DunkDev.makeBundleCode({ basics:true, finals:["jalen-brunson","deaaron-fox"] })
+  async function makeBundleCodeDev(payload){
+    if(!window.DunkFire || !window.DunkFire.makeCode){ console.warn("Necesitas conexión/Firebase para generar códigos."); return; }
+    const p = payload || {};
+    const bundle = { basics: !!p.basics, finals: p.finals||[], promo: p.promo||[] };
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const rnd=n=>Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+    const code = `DUNK-${rnd(4)}-${rnd(4)}`;
+    try{ await window.DunkFire.makeCode(code, bundle); }
+    catch(e){ console.warn("No se pudo generar (¿reglas de Firestore?):", e); return; }
+    console.log("%c CÓDIGO (1 uso) "+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
+    return code;
+  }
+  window.DunkDev = { giveAll, giveBasicsAndFinals, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev, makeBundleCode:makeBundleCodeDev };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
@@ -1405,6 +1419,21 @@
     if(!state.promo) state.promo={};
     let n=0; (ids||[]).forEach(id=>{ if(PROMO_BY[id]){ state.promo[id]=(state.promo[id]||0)+1; n++; } });
     if(n){ save(); renderTienda(); }
+    return n;
+  }
+  // Otorga un "paquete": admite un array de ids promo (compatibilidad con códigos viejos)
+  // o un objeto { basics:true, finals:[slugs], promo:[ids] }.
+  function grantBundle(payload){
+    if(Array.isArray(payload)) return grantPromo(payload);
+    if(!payload || typeof payload!=="object") return 0;
+    let n=0;
+    if(payload.basics){
+      PLAYERS.forEach(p=>{ if(!((state.owned[p.slug]||0)>0)){ state.owned[p.slug]=1; n++; } });
+      state.totalCards = Math.max(state.totalCards||0, PLAYERS.length);
+    }
+    (payload.finals||[]).forEach(s=>{ if(FINALS_CARD[s]){ state.finals[s]=(state.finals[s]||0)+1; n++; } });
+    if(payload.promo && payload.promo.length){ n += grantPromo(payload.promo); }
+    if(n){ save(); checkTeamRewards(); renderAll(); }
     return n;
   }
   const ownsNormal = s => (state.owned[s]||0)>0;
@@ -2730,8 +2759,8 @@
     try{ res=await window.DunkFire.claimCode(code, currentUid); }
     catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo reclamar, intenta de nuevo"); return; }
     if(!res || !res.ok){ toast(res && res.reason==="used" ? "Ese código ya fue usado" : "Código no válido"); return; }
-    const n=grantPromo(res.cards||[]);
-    toast(n ? `¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''} promo` : "Código válido, pero ya tenías esas cartas");
+    const n=grantBundle(res.cards||[]);
+    toast(n ? `¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''}` : "Código válido, pero ya tenías esas cartas");
   }
 
   /* =====================================================
