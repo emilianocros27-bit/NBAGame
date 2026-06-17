@@ -1917,8 +1917,8 @@
     // Todas salen por igual; solo las de 90+ son más difíciles.
     let w = 1;
     const o = ovr(p);
-    if(o >= 95) w = 0.10;                // súper estrellas (95+): muy raras (~10x)
-    else if(o >= 90) w = 0.30;           // estrellas 90+: raras (~3x)
+    if(o >= 95) w = 0.04;                // súper estrellas (95+): rarísimas
+    else if(o >= 90) w = 0.12;           // estrellas 90+: bastante raras
     const owned = state.owned[p.slug] || 0;
     if(owned === 0) w *= 1.5;            // favorece cartas que aún no tienes (variedad)
     else w /= (1 + owned);               // penaliza las repetidas
@@ -2189,8 +2189,9 @@
     const cnt = variant==="finals" ? (state.finals[p.slug]||1) : (state.owned[p.slug]||1);
     const wrap=$("#opener-card");
     const cardEl = cardHTML(p,{owned:true,count:cnt,variant});
-    const tier = (variant==="finals"||variant==="graded"||ovr(p)>=90) ? "gold"
-               : (ovr(p)>=84) ? "silver" : "bronze";
+    // dorado SOLO para cartas Finals; el resto de estrellas en plateado
+    const tier = (variant==="finals") ? "gold"
+               : (variant==="graded" || ovr(p)>=88) ? "silver" : "bronze";
     // cartas bajas: volteo directo (como en FC, sin animación larga)
     if(tier==="bronze"){
       wrap.innerHTML=cardEl;
