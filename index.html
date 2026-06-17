@@ -843,8 +843,8 @@
     <div id="album-prize-banner" class="event-banner prize-banner">
       <div class="event-trophy"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" aria-hidden="true"><path d="M12 2.2l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.25l-5.92 3.11 1.13-6.57L2.43 9.14l6.6-.96L12 2.2z"/></svg></div>
       <div class="event-body">
-        <span class="event-text"><b>¡Reto del álbum!</b> El primero en completar el álbum gana una carta promo especial suya.</span>
-        <span class="event-count">Premio único · solo para el primero en lograrlo</span>
+        <span class="event-text"><b>¡Reto del álbum!</b> El 1º lugar ya fue reclamado. Aún quedan premios para el <b>2º</b> y <b>3º</b> en completar el álbum: una carta promo especial suya.</span>
+        <span class="event-count">Quedan 2 premios · 2º y 3º lugar</span>
       </div>
     </div>
     <!-- ===== BANNER EVENTO FINALES ===== -->
@@ -1181,7 +1181,7 @@
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
   const PACK_COST = { std:150, elite:600, finals:1200, psa:1000, reward:0 };
-  const COINS_PER_POINT = 10;           // cada punto del minijuego = 10 monedas
+  const COINS_PER_POINT = 5;            // canasta básica (2 pts) = 10 balones
   function renderCoins(){
     const els = document.querySelectorAll(".coin-amount");
     els.forEach(e=> e.textContent = (state.coins||0).toLocaleString("es"));

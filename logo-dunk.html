@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Logo DUNK — descargar</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{ --accent:#f2552c; --accent-soft:#ff8a5c; --accent-dark:#b8300f; }
+  *{box-sizing:border-box; margin:0; padding:0;}
+  body{font-family:'Oswald',system-ui,sans-serif; background:#0c0a16; color:#fff;
+    min-height:100vh; display:flex; flex-direction:column; align-items:center; gap:24px; padding:32px 16px;}
+  h1{font-weight:600; font-size:18px; letter-spacing:.12em; text-transform:uppercase; color:#cfc9e6;}
+  .stage{padding:30px; border-radius:20px; background:#15121f; border:1px solid #2a2740;}
+  .stage.light{background:#f4f1ea;}
+  .stage.trans{background:
+    linear-gradient(45deg,#23202f 25%,transparent 25%) -10px 0/20px 20px,
+    linear-gradient(-45deg,#23202f 25%,transparent 25%) -10px 0/20px 20px,
+    linear-gradient(45deg,transparent 75%,#23202f 75%) -10px 0/20px 20px,
+    linear-gradient(-45deg,transparent 75%,#23202f 75%) -10px 0/20px 20px,#1a1726;}
+  canvas{display:block; width:280px; height:auto;}
+  .controls{display:flex; gap:10px; flex-wrap:wrap; justify-content:center; max-width:520px;}
+  button{font-family:'Oswald',sans-serif; font-weight:600; font-size:14px; letter-spacing:.04em;
+    padding:12px 18px; border-radius:11px; border:1px solid #3a3654; background:#211d33; color:#fff; cursor:pointer;}
+  button.primary{background:var(--accent); border-color:var(--accent); color:#fff; font-weight:700;}
+  button:hover{filter:brightness(1.1);}
+  .hint{font-size:12.5px; color:#8b86a3; text-align:center; max-width:420px; line-height:1.5;}
+</style>
+</head>
+<body>
+  <h1>Logo DUNK</h1>
+  <div class="stage trans" id="stage">
+    <canvas id="cv" width="800" height="1040"></canvas>
+  </div>
+  <div class="controls">
+    <button class="primary" id="dl">Descargar PNG (transparente)</button>
+    <button id="bgTrans">Fondo transparente</button>
+    <button id="bgDark">Fondo oscuro</button>
+    <button id="bgLight">Fondo claro</button>
+  </div>
+  <p class="hint">El PNG se descarga con fondo transparente y en alta resolución (800×1040). Los botones de fondo son solo para previsualizar; la descarga siempre es transparente.</p>
+
+<script>
+const cv = document.getElementById('cv');
+const ctx = cv.getContext('2d');
+const W = cv.width, H = cv.height;
+const ACCENT='#f2552c', SOFT='#ff8a5c', DARK='#b8300f';
+
+function roundRect(x,y,w,h,r){
+  ctx.beginPath();
+  ctx.moveTo(x+r,y);
+  ctx.arcTo(x+w,y,x+w,y+h,r);
+  ctx.arcTo(x+w,y+h,x,y+h,r);
+  ctx.arcTo(x,y+h,x,y,r);
+  ctx.arcTo(x,y,x+w,y,r);
+  ctx.closePath();
+}
+
+function drawLogo(){
+  ctx.clearRect(0,0,W,H);
+
+  // ----- cuadro (mark) -----
+  const size = 460;
+  const x = (W - size)/2;
+  const y = 70;
+  const r = size*0.28;
+
+  // sombra suave
+  ctx.save();
+  ctx.shadowColor='rgba(242,85,44,.45)';
+  ctx.shadowBlur=60; ctx.shadowOffsetY=24;
+  roundRect(x,y,size,size,r); ctx.fillStyle=ACCENT; ctx.fill();
+  ctx.restore();
+
+  // gradiente naranja
+  roundRect(x,y,size,size,r); ctx.save(); ctx.clip();
+  const g = ctx.createRadialGradient(x+size*0.32, y+size*0.28, size*0.08, x+size*0.5, y+size*0.5, size*0.75);
+  g.addColorStop(0, SOFT); g.addColorStop(0.6, ACCENT); g.addColorStop(1, DARK);
+  ctx.fillStyle=g; ctx.fillRect(x,y,size,size);
+
+  // brillo superior
+  const hl = ctx.createLinearGradient(0,y,0,y+size*0.5);
+  hl.addColorStop(0,'rgba(255,255,255,.45)'); hl.addColorStop(1,'rgba(255,255,255,0)');
+  ctx.fillStyle=hl; ctx.fillRect(x,y,size,size*0.5);
+
+  // cruz negra (como el logo del juego)
+  ctx.fillStyle='rgba(0,0,0,.55)';
+  const bar = size*0.06;
+  ctx.fillRect(x + size/2 - bar/2, y, bar, size);          // vertical
+  ctx.fillRect(x, y + size/2 - bar/2, size, bar);          // horizontal
+  ctx.restore();
+
+  // ----- nombre DUNK -----
+  const cy = y + size + 175;
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.font = "700 170px Oswald, sans-serif";
+  const txtDUN = "DUN", txtK = "K";
+  const wDUN = ctx.measureText(txtDUN).width;
+  const wK = ctx.measureText(txtK).width;
+  const totalW = wDUN + wK;
+  const startX = W/2 - totalW/2;
+  // DUN en blanco
+  ctx.fillStyle='#ffffff';
+  ctx.textAlign='left';
+  ctx.fillText(txtDUN, startX, cy);
+  // K en naranja
+  ctx.fillStyle=ACCENT;
+  ctx.fillText(txtK, startX + wDUN, cy);
+
+  // subtítulo
+  ctx.textAlign='center';
+  ctx.fillStyle='rgba(255,255,255,.0)'; // (sin subtítulo; deja transparente)
+}
+
+function render(){ drawLogo(); }
+
+document.fonts.ready.then(()=>{
+  // asegurar que Oswald esté cargada antes de dibujar
+  document.fonts.load("700 170px Oswald").then(render).catch(render);
+});
+// primer intento por si las fuentes tardan
+setTimeout(render, 300);
+
+// descarga
+document.getElementById('dl').addEventListener('click', ()=>{
+  render(); // redibuja transparente
+  const a = document.createElement('a');
+  a.download = 'logo-dunk.png';
+  a.href = cv.toDataURL('image/png');
+  a.click();
+});
+
+// previsualización de fondo
+const stage = document.getElementById('stage');
+document.getElementById('bgTrans').onclick = ()=> stage.className='stage trans';
+document.getElementById('bgDark').onclick  = ()=> stage.className='stage';
+document.getElementById('bgLight').onclick = ()=> stage.className='stage light';
+</script>
+</body>
+</html>
