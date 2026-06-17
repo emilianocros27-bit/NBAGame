@@ -2940,7 +2940,7 @@ window.MiniGame = (function(){
   }
 
   function newHoop(){
-    const r = 34 * S, margin = 60 * S;
+    const r = 44 * S, margin = 60 * S;
     const x = margin + Math.random() * (W - margin * 2);
     const y = 120 * S + Math.random() * (H * 0.30);
     const moving = score >= 5;
@@ -2987,7 +2987,7 @@ window.MiniGame = (function(){
       for(let k=1;k<=NET_ROWS;k++) for(let c=0;c<NET_COLS;c++) satisfy(h.net[c][k],h.net[c+1][k],h.netRestH[k][c]);
     }
   }
-  function resetBall(){ ball={x:W/2,y:GROUND()-H*0.20,r:22*S,vx:0,vy:0,flying:false,rot:0,vrot:0,canScore:true,trail:[],touchedRim:false,done:false,frames:0}; }
+  function resetBall(){ ball={x:W/2,y:GROUND()-H*0.20,r:28*S,vx:0,vy:0,flying:false,rot:0,vrot:0,canScore:true,trail:[],touchedRim:false,done:false,frames:0}; }
 
   function startTimer(){
     clearInterval(timerId);
@@ -3250,8 +3250,8 @@ window.MiniGame = (function(){
       const k=oldS?S/oldS:1;
       if(hoop){ hoop.x*=W/oldW; hoop.y*=H/oldH; hoop.rimY=hoop.y; hoop.r*=k; if(hoop.vx) hoop.vx*=k; buildNet(hoop); }
       if(ball){
-        if(ball.flying){ ball.x*=W/oldW; ball.y*=H/oldH; ball.r=22*S; ball.vx*=k; ball.vy*=k; }
-        else { ball.x=W/2; ball.y=GROUND()-H*0.20; ball.r=22*S; }
+        if(ball.flying){ ball.x*=W/oldW; ball.y*=H/oldH; ball.r=28*S; ball.vx*=k; ball.vy*=k; }
+        else { ball.x=W/2; ball.y=GROUND()-H*0.20; ball.r=28*S; }
       }
     });
   }
