@@ -689,6 +689,14 @@
   .pcard .pc-name{flex:1 1 auto; min-width:0; text-align:right; font-size:9px; font-weight:700;
     text-transform:uppercase; letter-spacing:.01em; color:#fff; text-shadow:0 1px 4px #000; line-height:1.1;}
   .shop-mine{display:grid; grid-template-columns:repeat(auto-fill,minmax(120px,1fr)); gap:14px;}
+  /* ----- equipamiento (skin actual) ----- */
+  .equip-box{margin-bottom:30px;}
+  .equip-card{display:flex; align-items:center; gap:18px; background:var(--surface); border:1px solid var(--line-strong);
+    border-radius:18px; padding:16px 20px;}
+  .equip-info{display:flex; flex-direction:column; gap:2px;}
+  .equip-lbl{font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted);}
+  .equip-name{font-family:var(--display); font-weight:700; font-size:21px; letter-spacing:.01em;}
+  .equip-sub{font-size:12.5px; color:var(--muted);}
   /* ----- skins de balón ----- */
   .shop-skins{display:grid; grid-template-columns:repeat(auto-fill,minmax(140px,1fr)); gap:14px; margin-bottom:30px;}
   .skin-card{background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; padding:16px 14px;
@@ -931,6 +939,9 @@
       </div></div>
 
       <div id="shop-offers"></div>
+
+      <div class="pf-sec-head"><h3>Equipamiento</h3></div>
+      <div class="equip-box" id="equip-box"></div>
 
       <div class="pf-sec-head"><h3>Skins de balón</h3></div>
       <div class="shop-skins" id="shop-skins"></div>
@@ -2451,6 +2462,18 @@
   function skinBallSVG(s){
     return `<span class="skin-ball ${s.fire?'fire':''}" style="--b1:${s.g[0]};--b2:${s.g[1]};--b3:${s.g[2]};--seam:${s.seam}"><i></i><i></i></span>`;
   }
+  function renderEquip(){
+    const box=$("#equip-box"); if(!box) return;
+    const s=SKIN_BY[equippedSkinId()]||SKIN_BY.clasico;
+    box.innerHTML=`<div class="equip-card">
+      ${skinBallSVG(s)}
+      <div class="equip-info">
+        <span class="equip-lbl">Balón equipado</span>
+        <span class="equip-name">${esc(s.nombre)}</span>
+        <span class="equip-sub">${esc(s.desc)}</span>
+      </div>
+    </div>`;
+  }
   function renderSkins(){
     const wrap=$("#shop-skins"); if(!wrap) return;
     const eq=equippedSkinId();
@@ -2475,11 +2498,11 @@
   }
   function equipSkin(id){
     if(!ownsSkin(id)) return;
-    state.ballSkin=id; save(); syncBallSkin(); renderSkins();
+    state.ballSkin=id; save(); syncBallSkin(); renderSkins(); renderEquip();
   }
   function renderTienda(){
     const wrap=$("#shop-offers"); if(wrap) wrap.innerHTML = OFFERS.map(offerHTML).join("");
-    renderSkins();
+    renderEquip(); renderSkins();
     const mine=$("#shop-mine");
     if(mine){
       const owned=PROMO.filter(c=>ownsPromo(c.id));
