@@ -636,6 +636,22 @@
     box-shadow:0 6px 0 #b53517; transition:transform .08s, box-shadow .08s;}
   .mg-btn:active{transform:translateY(3px); box-shadow:0 3px 0 #b53517;}
   @media(max-width:640px){ .bottom-nav .tab{font-size:11.5px; padding:11px 3px; letter-spacing:.02em;} }
+  /* ----- tabla de clasificación ----- */
+  .lb{margin-top:26px;}
+  .lb-record{display:flex; align-items:center; gap:14px; padding:16px 20px; border-radius:18px; margin-bottom:18px;
+    background:linear-gradient(100deg, rgba(242,85,44,.22), rgba(242,85,44,.06) 60%, transparent);
+    border:1px solid rgba(242,85,44,.5);}
+  .lb-record-info{display:flex; flex-direction:column;}
+  .lb-record-lbl{font-size:11px; text-transform:uppercase; letter-spacing:.09em; color:var(--muted);}
+  .lb-record-val{font-family:var(--display); font-weight:700; font-size:20px; color:var(--accent);}
+  .lb-list{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px;}
+  .lb-row{display:flex; align-items:center; gap:12px; background:var(--surface); border:1px solid rgba(242,85,44,.28);
+    border-radius:13px; padding:11px 14px;}
+  .lb-row:nth-child(1){border-color:rgba(242,85,44,.6); background:linear-gradient(100deg, rgba(242,85,44,.14), transparent 70%);}
+  .lb-row.me{border-color:var(--accent); box-shadow:0 0 0 1px var(--accent);}
+  .lb-rank{font-family:var(--display); font-weight:700; font-size:16px; width:30px; flex:0 0 auto; color:var(--accent); text-align:center;}
+  .lb-name{flex:1 1 auto; min-width:0; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .lb-pts{font-family:var(--display); font-weight:700; font-size:17px; color:var(--accent); flex:0 0 auto;}
 
   /* ===== PERFIL / AMIGOS ===== */
   .pf-setup{max-width:460px; background:var(--surface); border:1px solid var(--line-strong); border-radius:16px; padding:22px;}
@@ -1048,6 +1064,14 @@
           <button id="mg-again" class="mg-btn">Jugar otra vez</button>
         </div>
       </div>
+
+      <div class="lb">
+        <div class="lb-record" id="lb-record">
+          <div class="lb-record-info"><span class="lb-record-lbl">Mejor récord</span><span class="lb-record-val" id="lb-top">—</span></div>
+        </div>
+        <div class="pf-sec-head"><h3>Clasificación · Encestes</h3></div>
+        <ol class="lb-list" id="lb-list"><li class="pf-empty" style="list-style:none">Cargando…</li></ol>
+      </div>
     </section>
 
     <!-- ===== PERFIL ===== -->
@@ -1447,6 +1471,7 @@
       try{ myProfile = await window.DunkFire.getProfile(user.uid); }catch(e){ myProfile=null; }
       try{ await settleTrades(); }catch(e){}   // aplica intercambios aceptados pendientes
       subscribeTrades();                       // escucha intercambios en vivo
+      subscribeScores();                       // tabla de clasificación en vivo
       ensurePsaEvent();
       save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll(); renderPsaBadge();
     } else {
@@ -1788,6 +1813,30 @@
     if(tradesSub || !currentUid || !window.DunkFire || !window.DunkFire.watchTrades) return;
     tradesSub = window.DunkFire.watchTrades(currentUid, list=>{ tradesCache=list; onTradesUpdate(list); });
   }
+
+  // ===== CLASIFICACIÓN (récords del minijuego) =====
+  let scoresSub=null, scoresCache=[];
+  function subscribeScores(){
+    if(scoresSub || !window.DunkFire || !window.DunkFire.watchScores) return;
+    scoresSub = window.DunkFire.watchScores(list=>{ scoresCache=list; renderLeaderboard(list); }, 3);
+  }
+  function myDisplayName(){ return (myProfile&&myProfile.username) ? "@"+myProfile.username : (authUser? authUser.split("@")[0] : "jugador"); }
+  function submitMyScore(score){
+    if(!currentUid || !window.DunkFire || !window.DunkFire.submitScore) return;
+    window.DunkFire.submitScore(currentUid, myDisplayName(), score).catch(()=>{});
+  }
+  function renderLeaderboard(list){
+    const top=$("#lb-top"), ol=$("#lb-list"); if(!ol) return;
+    list = (list||scoresCache||[]).slice().sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
+    if(top) top.textContent = list.length ? `${list[0].score} pts · ${esc(list[0].username||"jugador")}` : "—";
+    if(!list.length){ ol.innerHTML=`<li class="pf-empty" style="list-style:none">Aún no hay récords. ¡Sé el primero en jugar Encestes!</li>`; return; }
+    ol.innerHTML = list.map((r,i)=>`<li class="lb-row ${r.uid===currentUid?'me':''}">
+      <span class="lb-rank">${i+1}</span>
+      <span class="lb-name">${esc(r.username||"jugador")}${r.uid===currentUid?" (tú)":""}</span>
+      <span class="lb-pts">${r.score||0}</span>
+    </li>`).join("");
+  }
+  window.__submitScore = submitMyScore;
   async function onTradesUpdate(list){
     // 1) liquidar los terminados que aún no apliqué
     let changed=false;
@@ -2680,6 +2729,7 @@
     if(v==="quinteto") renderSlots();
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
+    if(v==="juego"){ subscribeScores(); renderLeaderboard(scoresCache); }
     if(window.MiniGame){ if(v==="juego") window.MiniGame.start(); else window.MiniGame.stop(); }
     window.scrollTo({top:0, behavior:"instant"});
   }
@@ -2912,6 +2962,7 @@ window.MiniGame = (function(){
     if(earned>0 && window.DunkEconomy){ window.DunkEconomy.add(earned);
       rw.innerHTML='<span class="coin-ico"></span> +'+earned+' balones'+(newBest?' · ¡Récord!':''); }
     else if(rw){ rw.textContent=''; }
+    if(score>0 && window.__submitScore) window.__submitScore(score);   // a la tabla global
     document.getElementById('mg-over').style.display='flex';
   }
   function updateHUD(){
@@ -3139,7 +3190,7 @@ window.MiniGame = (function(){
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, runTransaction, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, runTransaction, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCahATuEFQDCtRhttn4GqkurK-CVBsp0O8",
@@ -3205,6 +3256,17 @@ window.MiniGame = (function(){
       qs=> cb(qs.docs.map(d=>Object.assign({id:d.id}, d.data()))), ()=>{}),
     updateTrade:(id,data)=>updateDoc(doc(db,"trades",id), data),
     deleteTrade:(id)=>deleteDoc(doc(db,"trades",id)),
+    // ---- CLASIFICACIÓN (récords del minijuego) ----
+    submitScore: async (uid, username, score)=>{
+      return await runTransaction(db, async(tx)=>{
+        const ref=doc(db,"scores",uid); const s=await tx.get(ref);
+        const prev = s.exists() ? (s.data().score||0) : 0;
+        if(score>prev){ tx.set(ref, { uid, username, score, updated:Date.now() }); return true; }
+        return false;
+      });
+    },
+    watchScores: (cb, n)=> onSnapshot(query(collection(db,"scores"), orderBy("score","desc"), limit(n||20)),
+      qs=> cb(qs.docs.map(d=>d.data())), ()=>{}),
     // ---- CÓDIGOS DE UN SOLO USO ----
     makeCode: async (code, cards)=>{ await setDoc(doc(db,"codes",code), { cards, used:false, createdAt:Date.now() }); return code; },
     claimCode: async (code, uid)=>{
