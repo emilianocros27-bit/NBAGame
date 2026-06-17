@@ -258,10 +258,10 @@
   .event-text{font-size:14px; color:var(--text);}
   .event-text b{font-family:var(--display); font-weight:700; letter-spacing:.02em; color:var(--accent);}
   .event-count{font-size:11.5px; color:var(--muted); text-transform:uppercase; letter-spacing:.09em; font-weight:600;}
-  .prize-banner{border-color:rgba(255,200,80,.5);
-    background:linear-gradient(100deg, rgba(255,200,80,.18), rgba(255,200,80,.05) 55%, transparent);}
-  .prize-banner .event-trophy{color:#ffce5a; filter:drop-shadow(0 2px 8px rgba(255,200,80,.55));}
-  .prize-banner .event-text b{color:#ffce5a;}
+  .prize-banner{border-color:rgba(206,214,224,.55);
+    background:linear-gradient(100deg, rgba(206,214,224,.20), rgba(206,214,224,.05) 55%, transparent);}
+  .prize-banner .event-trophy{color:#d6dde6; filter:drop-shadow(0 2px 8px rgba(206,214,224,.5));}
+  .prize-banner .event-text b{color:#dfe5ec;}
   .card.finals .card-inner{box-shadow:inset 0 0 0 2px rgba(232,184,75,.9);}
   .card-finals{position:absolute; z-index:6; top:9px; left:50%; transform:translateX(-50%);
     font-family:var(--display); font-weight:700; font-size:10px; letter-spacing:.07em; white-space:nowrap;
@@ -389,6 +389,34 @@
   @keyframes flashUp{0%{opacity:0; transform:scale(.35)}38%{opacity:.95}100%{opacity:0; transform:scale(1.7)}}
   @media (prefers-reduced-motion: reduce){ .pack3d,.pack3d *{animation:none !important} }
 
+  /* ===== SALA DE INTERCAMBIO EN VIVO ===== */
+  .trade-room{position:fixed; inset:0; z-index:95; display:none; place-items:center; padding:18px;
+    background:radial-gradient(80% 70% at 50% 10%, #221a3a, #07060c 80%); backdrop-filter:blur(6px);}
+  .trade-room.show{display:grid; animation:fade .3s ease both;}
+  .tr-stage{width:min(96vw,560px); text-align:center;}
+  .tr-title{font-family:var(--display); font-weight:700; font-size:clamp(22px,6vw,32px); letter-spacing:.02em; text-transform:uppercase;}
+  .tr-sub{color:var(--muted); font-size:13px; margin-top:4px;}
+  .tr-board{display:grid; grid-template-columns:1fr auto 1fr; gap:10px; align-items:start; margin:22px 0 18px;}
+  .tr-side{display:flex; flex-direction:column; align-items:center; gap:10px; background:var(--surface);
+    border:1px solid var(--line-strong); border-radius:18px; padding:16px 12px;}
+  .tr-who{font-family:var(--display); font-weight:700; font-size:15px; letter-spacing:.02em; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .tr-slot{width:118px; aspect-ratio:3/4.15; border-radius:14px; border:1.5px dashed var(--line-strong);
+    display:grid; place-items:center; overflow:hidden; background:rgba(255,255,255,.03);}
+  .tr-slot .t-cardwrap{width:118px; height:auto;}
+  .tr-slot .t-cardwrap .card{transform:none;}
+  .tr-empty{color:var(--muted-2); font-size:12px;}
+  .tr-pickbtn{padding:9px 14px; font-size:13px;}
+  .tr-badge{font-family:var(--display); font-weight:600; font-size:11px; letter-spacing:.06em; text-transform:uppercase;
+    padding:4px 10px; border-radius:999px; background:rgba(255,255,255,.08); color:var(--muted);}
+  .tr-badge.ready{background:rgba(124,252,155,.18); color:#7CFC9B;}
+  .tr-mid{display:flex; flex-direction:column; align-items:center; justify-content:center; gap:8px; padding-top:30px;}
+  .tr-arrows{font-size:28px; color:var(--accent);}
+  .tr-fee{font-size:12px; color:#ffd76b; font-family:var(--display); font-weight:700; white-space:nowrap;}
+  .tr-actions{display:flex; gap:10px; justify-content:center;}
+  .tr-actions .btn{padding:12px 22px;}
+  .tr-hint{margin-top:14px; color:var(--muted); font-size:13px; min-height:18px;}
+  @media(max-width:430px){ .tr-slot{width:96px;} .tr-slot .t-cardwrap{width:96px;} }
+
   /* ===== REVELADO ESTILO FC (pistas: posición → equipo → media → volteo) ===== */
   .opener .bigcard{display:grid;}
   .opener .bigcard > *{grid-area:1/1;}
@@ -475,7 +503,7 @@
   .score-body .s-you{text-align:right}
 
   /* ============ MODAL DETALLE / PICKER ============ */
-  .sheet{position:fixed; inset:0; z-index:90; display:none; align-items:center; justify-content:center; padding:18px;
+  .sheet{position:fixed; inset:0; z-index:100; display:none; align-items:center; justify-content:center; padding:18px;
     background:rgba(6,7,10,.74); backdrop-filter:blur(7px); -webkit-backdrop-filter:blur(7px);}
   .sheet.show{display:flex; animation:fade .25s ease both}
   .sheet-card{position:relative; background:var(--bg-2); border:1px solid var(--line-strong); border-radius:22px;
@@ -843,8 +871,8 @@
     <div id="album-prize-banner" class="event-banner prize-banner">
       <div class="event-trophy"><svg viewBox="0 0 24 24" width="30" height="30" fill="currentColor" aria-hidden="true"><path d="M12 2.2l2.95 5.98 6.6.96-4.78 4.66 1.13 6.57L12 17.25l-5.92 3.11 1.13-6.57L2.43 9.14l6.6-.96L12 2.2z"/></svg></div>
       <div class="event-body">
-        <span class="event-text"><b>¡Reto del álbum!</b> El 1º lugar ya fue reclamado. Aún quedan premios para el <b>2º</b> y <b>3º</b> en completar el álbum: una carta promo especial suya.</span>
-        <span class="event-count">Quedan 2 premios · 2º y 3º lugar</span>
+        <span class="event-text"><b>¡Reto del álbum!</b> El 1º lugar ya fue reclamado. ¡Ahora compite por el <b>2º lugar</b>! El siguiente en completar el álbum gana una carta promo especial suya.</span>
+        <span class="event-count">Premio de plata · 2º lugar</span>
       </div>
     </div>
     <!-- ===== BANNER EVENTO FINALES ===== -->
@@ -1125,6 +1153,33 @@
     </div>
   </div>
 
+  <!-- sala de intercambio en vivo -->
+  <div class="trade-room" id="trade-room" aria-hidden="true">
+    <div class="tr-stage">
+      <div class="tr-title">Intercambio en vivo</div>
+      <div class="tr-sub" id="tr-sub">Cada quien elige 1 carta y confirma</div>
+      <div class="tr-board">
+        <div class="tr-side">
+          <div class="tr-who">Tú</div>
+          <div class="tr-slot" id="tr-my-slot"><span class="tr-empty">Sin carta</span></div>
+          <button class="btn btn-ghost tr-pickbtn" id="tr-pick">Elegir carta</button>
+          <div class="tr-badge" id="tr-my-state">Eligiendo…</div>
+        </div>
+        <div class="tr-mid"><div class="tr-arrows">⇅</div><div class="tr-fee" id="tr-fee"></div></div>
+        <div class="tr-side">
+          <div class="tr-who" id="tr-other-name">@jugador</div>
+          <div class="tr-slot" id="tr-their-slot"><span class="tr-empty">Esperando…</span></div>
+          <div class="tr-badge" id="tr-their-state">Eligiendo…</div>
+        </div>
+      </div>
+      <div class="tr-actions">
+        <button class="btn btn-primary" id="tr-confirm" disabled>Confirmar</button>
+        <button class="btn btn-ghost" id="tr-leave">Salir</button>
+      </div>
+      <div class="tr-hint" id="tr-hint"></div>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
 <script>
@@ -1391,6 +1446,7 @@
       else { applyState(defaultState()); try{ await window.DunkFire.saveState(user.uid, state); }catch(e){} }
       try{ myProfile = await window.DunkFire.getProfile(user.uid); }catch(e){ myProfile=null; }
       try{ await settleTrades(); }catch(e){}   // aplica intercambios aceptados pendientes
+      subscribeTrades();                       // escucha intercambios en vivo
       ensurePsaEvent();
       save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll(); renderPsaBadge();
     } else {
@@ -1700,7 +1756,7 @@
   }
 
   // ---- elegir cartas MIAS (para proponer u ofrecer) ----
-  function pickMyCards(title, cb){
+  function pickMyCards(title, cb, single){
     const owned=[];
     PLAYERS.forEach(p=>{ if((state.owned[p.slug]||0)>0) owned.push({slug:p.slug,variant:"normal",p});
       if((state.finals[p.slug]||0)>0) owned.push({slug:p.slug,variant:"finals",p}); });
@@ -1708,76 +1764,160 @@
     let sel=[];
     const body=$("#sheet-body");
     const cell=(o)=>`<div class="ver" data-slug="${o.slug}" data-variant="${o.variant}">${cardHTML(o.p,{owned:true,count:0,variant:o.variant})}<span class="ver-name">Elegir</span></div>`;
-    body.innerHTML=`<div class="picker-head"><h3>${esc(title)}</h3><span class="pf-link" id="pk-done">Listo</span></div>
-      <p style="padding:0 20px;color:var(--muted);font-size:13px" id="pk-info">Selecciona tus cartas. Comisión estimada según media y desbalance.</p>
+    body.innerHTML=`<div class="picker-head"><h3>${esc(title)}</h3>${single?"":'<span class="pf-link" id="pk-done">Listo</span>'}</div>
+      <p style="padding:0 20px;color:var(--muted);font-size:13px" id="pk-info">${single?"Toca una carta para elegirla.":"Selecciona tus cartas. Comisión estimada según media y desbalance."}</p>
       <div class="picker-grid"><div class="ver-row" id="pk-grid">${owned.map(cell).join("")||'<div class="pf-empty">No tienes cartas.</div>'}</div></div>`;
     body.querySelector("#pk-grid").addEventListener("click",e=>{
       const el=e.target.closest("[data-slug]"); if(!el) return;
+      if(single){ closeSheet(); cb([{slug:el.dataset.slug,variant:el.dataset.variant}]); return; }
       const key=el.dataset.slug+"|"+el.dataset.variant;
       const i=sel.findIndex(s=>s.slug+"|"+s.variant===key);
       if(i>=0){ sel.splice(i,1); el.classList.remove("sel"); el.querySelector(".ver-name").textContent="Elegir"; }
       else { sel.push({slug:el.dataset.slug,variant:el.dataset.variant}); el.classList.add("sel"); el.querySelector(".ver-name").textContent="Quitar"; }
     });
-    body.querySelector("#pk-done").addEventListener("click",()=>{ if(!sel.length){ toast("Elige al menos una carta"); return; } closeSheet(); cb(sel); });
+    body.querySelector("#pk-done")?.addEventListener("click",()=>{ if(!sel.length){ toast("Elige al menos una carta"); return; } closeSheet(); cb(sel); });
     showSheet();
   }
 
-  function proposeTrade(otherUid){
-    pickMyCards("Ofreces (tus cartas)", async (give)=>{
-      try{
-        await window.DunkFire.createTrade({ from:currentUid, to:otherUid, parties:[currentUid,otherUid], give, offer:[], status:"proposed", fee:0, appliedBy:{} });
-        toast("Propuesta enviada");
-      }catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo enviar"); }
-    });
+  // ===== INTERCAMBIO EN VIVO (1↔1) =====
+  let tradesSub=null, tradesCache=[], roomId=null, roomTrade=null, roomBeat=null, roomFinalizing=false;
+  const otherOf = t => t.from===currentUid ? t.to : t.from;
+  async function profName(uid){ try{ const p=await window.DunkFire.getProfile(uid); return "@"+(p&&p.username?p.username:"jugador"); }catch(e){ return "@jugador"; } }
+
+  function subscribeTrades(){
+    if(tradesSub || !currentUid || !window.DunkFire || !window.DunkFire.watchTrades) return;
+    tradesSub = window.DunkFire.watchTrades(currentUid, list=>{ tradesCache=list; onTradesUpdate(list); });
   }
-  function respondTrade(t){
-    pickMyCards("Tu contraoferta (tus cartas)", async (offer)=>{
-      const fee=tradeFee(t.give, offer);
-      try{ await window.DunkFire.updateTrade(t.id, { offer, fee, status:"offered" }); toast("Respuesta enviada"); renderTrades(); }
-      catch(e){ toast("No se pudo enviar"); }
-    });
+  async function onTradesUpdate(list){
+    // 1) liquidar los terminados que aún no apliqué
+    let changed=false;
+    for(const t of list){ if(t.status==="done" && !(t.appliedBy&&t.appliedBy[currentUid])){ await applyDone(t); changed=true; } }
+    if(changed){ save(); renderAll(); }
+    // 2) lista visible
+    if($("#view-trueques") && $("#view-trueques").classList.contains("active")) renderTrades(list);
+    // 3) sala en vivo
+    const active = list.find(t=> t.status==="active" && t.parties.includes(currentUid));
+    if(active){
+      if(roomId!==active.id) openTradeRoom(active.id);
+      renderRoom(active); maybeFinalize(active); checkPresence(active);
+    } else if(roomId){
+      const mine = list.find(t=>t.id===roomId);
+      if(!mine || mine.status==="cancelled"){ toast("Intercambio cancelado"); closeTradeRoom(); }
+      else if(mine.status==="done"){ closeTradeRoom(); toast("¡Intercambio completado!"); }
+    }
   }
-  async function acceptTrade(t){
-    if((state.coins||0) < (t.fee||0)){ toast("No te alcanzan los balones para la comisión"); return; }
-    try{ await window.DunkFire.updateTrade(t.id, { status:"accepted" }); await settleTrades(); renderAll(); renderTrades(); toast("¡Intercambio aceptado!"); }
+  async function applyDone(t){
+    const iAmFrom=t.from===currentUid;
+    const myGive=iAmFrom?(t.give||[]):(t.offer||[]);
+    const myGet =iAmFrom?(t.offer||[]):(t.give||[]);
+    myGive.forEach(c=>{ if(ownsCardVariant(c)) removeCardFromState(c); });
+    myGet.forEach(c=>addCardToState(c));
+    state.coins=Math.max(0,(state.coins||0)-(t.fee||0));
+    const ap=Object.assign({},t.appliedBy||{}); ap[currentUid]=true;
+    try{ await window.DunkFire.updateTrade(t.id,{appliedBy:ap}); }catch(e){}
+    if(ap[t.from]&&ap[t.to]){ try{ await window.DunkFire.deleteTrade(t.id); }catch(e){} }
+  }
+
+  async function proposeTrade(otherUid){
+    if(!currentUid){ toast("Inicia sesión para intercambiar"); return; }
+    try{
+      await window.DunkFire.createTrade({ from:currentUid, to:otherUid, parties:[currentUid,otherUid],
+        status:"invited", pick:{}, confirm:{}, presence:{}, fee:0, appliedBy:{} });
+      toast("Solicitud de intercambio enviada");
+    }catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo enviar"); }
+  }
+  async function acceptInvite(t){
+    const pres={}; pres[currentUid]=Date.now();
+    try{ await window.DunkFire.updateTrade(t.id, { status:"active", presence:pres }); }
     catch(e){ toast("No se pudo aceptar"); }
   }
-  async function rejectTrade(t){ try{ await window.DunkFire.deleteTrade(t.id); }catch(e){} renderTrades(); }
+  async function rejectTrade(t){ try{ await window.DunkFire.deleteTrade(t.id); }catch(e){} renderTrades(tradesCache); }
 
-  async function renderTrades(){
-    const wrap=$("#trades-list"); if(!wrap) return; wrap.innerHTML="";
+  async function renderTrades(list){
+    const wrap=$("#trades-list"); if(!wrap) return;
     if(!currentUid){ wrap.innerHTML=`<div class="pf-empty">Inicia sesión para intercambiar cartas con tus amigos.</div>`; return; }
-    try{ if(await settleTrades()) renderAll(); }catch(e){}   // aplica mi mitad de los aceptados al abrir
-    let trades=[]; try{ trades=await window.DunkFire.listTrades(currentUid); }catch(e){
-      if(/permission|insufficient/i.test(String(e&&e.message))){ wrap.innerHTML=`<div class="pf-empty">No se pudieron cargar los intercambios: faltan permisos en Firestore. Publica las reglas actualizadas.</div>`; return; } }
-    trades = trades.filter(t=>t.status!=="accepted" || !(t.appliedBy&&t.appliedBy[currentUid]));
-    if(!trades.length){ wrap.innerHTML=`<div class="pf-empty">Sin intercambios. Entra al perfil de un amigo y pulsa "Proponer intercambio".</div>`; return; }
-    // nombres de las otras personas
-    for(const t of trades){
-      const otherUid = t.from===currentUid ? t.to : t.from;
-      let oprof=null; try{ oprof=await window.DunkFire.getProfile(otherUid); }catch(e){}
-      const oname = "@"+(oprof&&oprof.username?oprof.username:"jugador");
-      const iAmFrom=t.from===currentUid;
-      const myGive = iAmFrom? t.give : t.offer, myGet = iAmFrom? t.offer : t.give;
+    list = (list||tradesCache).filter(t=>t.parties.includes(currentUid) && (t.status==="invited"||t.status==="active"));
+    if(!list.length){ wrap.innerHTML=`<div class="pf-empty">Sin solicitudes. Entra al perfil de un amigo y pulsa "Proponer intercambio".</div>`; return; }
+    wrap.innerHTML="";
+    for(const t of list){
+      const oname=await profName(otherOf(t)); const iAmFrom=t.from===currentUid;
+      let actions, sub;
+      if(t.status==="active"){ actions=`<span class="tag">En la sala…</span><button class="btn btn-ghost" data-act="reject">Cancelar</button>`; sub="Intercambio en curso"; }
+      else if(iAmFrom){ actions=`<span class="tag">Esperando que acepte</span><button class="btn btn-ghost" data-act="reject">Cancelar</button>`; sub="Solicitud enviada · 1↔1 en vivo"; }
+      else { actions=`<button class="btn btn-primary" data-act="accept">Aceptar</button><button class="btn btn-ghost" data-act="reject">Rechazar</button>`; sub="Te invitó a intercambiar · 1↔1 en vivo"; }
       const card=document.createElement("div"); card.className="t-card";
-      let actions="";
-      if(t.status==="proposed" && !iAmFrom) actions=`<button class="btn btn-primary" data-act="respond">Responder</button><button class="btn btn-ghost" data-act="reject">Rechazar</button>`;
-      else if(t.status==="proposed" && iAmFrom) actions=`<span class="tag">Esperando a ${esc(oname)}</span><button class="btn btn-ghost" data-act="reject">Cancelar</button>`;
-      else if(t.status==="offered" && iAmFrom) actions=`<button class="btn btn-primary" data-act="accept">Aceptar</button><button class="btn btn-ghost" data-act="reject">Rechazar</button>`;
-      else if(t.status==="offered" && !iAmFrom) actions=`<span class="tag">Esperando que acepten</span><button class="btn btn-ghost" data-act="reject">Cancelar</button>`;
-      else if(t.status==="accepted") actions=`<span class="tag">Completado</span>`;
-      const showFee = (t.status==="offered"||t.status==="accepted");
-      card.innerHTML=`
-        <div class="t-top">${esc(oname)} ${showFee?`<span class="t-fee"><span class="coin-ico"></span> ${t.fee}</span>`:""}</div>
-        <div class="t-rows">
-          <div class="t-side"><span class="t-lbl">Das</span><div class="t-chips">${tradeCardsMini(myGive)}</div></div>
-          <div class="t-side"><span class="t-lbl">Recibes</span><div class="t-chips">${tradeCardsMini(myGet)}</div></div>
-        </div>
+      card.innerHTML=`<div class="t-top">${esc(oname)}</div>
+        <p style="color:var(--muted);font-size:13px;margin:2px 0 10px">${sub}</p>
         <div class="t-actions">${actions}</div>`;
-      card.querySelector("[data-act='respond']")?.addEventListener("click",()=>respondTrade(t));
-      card.querySelector("[data-act='accept']")?.addEventListener("click",()=>acceptTrade(t));
+      card.querySelector("[data-act='accept']")?.addEventListener("click",()=>acceptInvite(t));
       card.querySelector("[data-act='reject']")?.addEventListener("click",()=>rejectTrade(t));
       wrap.appendChild(card);
+    }
+  }
+
+  // ---- sala ----
+  function openTradeRoom(id){
+    roomId=id; roomFinalizing=false;
+    const o=$("#trade-room"); o.classList.add("show"); o.setAttribute("aria-hidden","false");
+    clearInterval(roomBeat); beat(); roomBeat=setInterval(beat,3000);
+  }
+  function closeTradeRoom(){
+    roomId=null; roomTrade=null; roomFinalizing=false;
+    clearInterval(roomBeat); roomBeat=null;
+    const o=$("#trade-room"); o.classList.remove("show"); o.setAttribute("aria-hidden","true");
+  }
+  async function beat(){ if(!roomId) return; const u={}; u["presence."+currentUid]=Date.now(); try{ await window.DunkFire.updateTrade(roomId,u); }catch(e){} }
+  function feeOf(t){ const p=t.pick||{}; if(!p[t.from]||!p[t.to]) return 0; return tradeFee([p[t.from]],[p[t.to]]); }
+  function slotCard(c){ if(!c||!BY[c.slug]) return `<span class="tr-empty">—</span>`;
+    return `<div class="t-cardwrap">${cardHTML(BY[c.slug],{owned:true,count:0,variant:c.variant==="finals"?"finals":"normal"})}</div>`; }
+  function renderRoom(t){
+    roomTrade=t; const ou=otherOf(t);
+    profName(ou).then(n=>{ const el=$("#tr-other-name"); if(el) el.textContent=n; });
+    const pick=t.pick||{}, conf=t.confirm||{};
+    const myPick=pick[currentUid]||null, theirPick=pick[ou]||null;
+    $("#tr-my-slot").innerHTML = myPick? slotCard(myPick) : `<span class="tr-empty">Sin carta</span>`;
+    $("#tr-their-slot").innerHTML = theirPick? slotCard(theirPick) : `<span class="tr-empty">Esperando…</span>`;
+    const myC=!!conf[currentUid], theirC=!!conf[ou];
+    const ms=$("#tr-my-state"); ms.textContent=myC?"Confirmado ✓":"Eligiendo…"; ms.classList.toggle("ready",myC);
+    const ts=$("#tr-their-state"); ts.textContent=theirC?"Confirmado ✓":(theirPick?"Eligiendo…":"Sin carta"); ts.classList.toggle("ready",theirC);
+    const fee=feeOf(t);
+    $("#tr-fee").innerHTML = (myPick&&theirPick)? `Comisión<br><span class="coin-ico"></span> ${fee}` : "";
+    const cbtn=$("#tr-confirm"); cbtn.disabled = !myPick || myC; cbtn.textContent = myC?"Confirmado ✓":"Confirmar";
+    $("#tr-hint").textContent = (myC&&theirC)? "¡Intercambiando!" : myC? "Esperando al otro jugador…" : myPick? "Pulsa Confirmar" : "Elige tu carta para intercambiar";
+  }
+  function roomPick(){
+    if(!roomId||!roomTrade) return;
+    pickMyCards("Elige tu carta", async(sel)=>{
+      const card=sel[0]; if(!card) return; const t=roomTrade;
+      const u={}; u["pick."+currentUid]=card; u["confirm."+t.from]=false; u["confirm."+t.to]=false;
+      try{ await window.DunkFire.updateTrade(roomId,u); }catch(e){ toast("No se pudo"); }
+    }, true);
+  }
+  async function roomConfirm(){
+    if(!roomId||!roomTrade) return;
+    if(!(roomTrade.pick||{})[currentUid]){ toast("Elige una carta primero"); return; }
+    if((state.coins||0) < feeOf(roomTrade) && (roomTrade.pick||{})[otherOf(roomTrade)]){ toast("No te alcanzan los balones para la comisión"); return; }
+    const u={}; u["confirm."+currentUid]=true;
+    try{ await window.DunkFire.updateTrade(roomId,u); }catch(e){}
+  }
+  async function maybeFinalize(t){
+    if(roomFinalizing || currentUid!==t.from || t.status!=="active") return;
+    const p=t.pick||{}, c=t.confirm||{};
+    if(p[t.from]&&p[t.to]&&c[t.from]&&c[t.to]){
+      roomFinalizing=true;
+      try{ await window.DunkFire.updateTrade(t.id,{ status:"done", give:[p[t.from]], offer:[p[t.to]], fee:tradeFee([p[t.from]],[p[t.to]]) }); }
+      catch(e){ roomFinalizing=false; }
+    }
+  }
+  async function roomLeave(){
+    const id=roomId, st=roomTrade&&roomTrade.status;
+    closeTradeRoom();
+    if(id && st!=="done"){ try{ await window.DunkFire.updateTrade(id,{status:"cancelled"}); }catch(e){} }
+  }
+  function checkPresence(t){
+    const ou=otherOf(t), pres=t.presence||{}, last=pres[ou]||0;
+    if(last && Date.now()-last>16000 && t.status==="active"){
+      window.DunkFire.updateTrade(t.id,{status:"cancelled"}).catch(()=>{});
     }
   }
 
@@ -2557,6 +2697,11 @@
       const eq=e.target.closest("[data-skin-equip]"); if(eq){ equipSkin(eq.dataset.skinEquip); }
     });
     $("#redeem-form")?.addEventListener("submit", e=>{ e.preventDefault(); redeemCode($("#redeem-input").value); $("#redeem-input").value=""; });
+    // sala de intercambio
+    $("#tr-pick")?.addEventListener("click", roomPick);
+    $("#tr-confirm")?.addEventListener("click", roomConfirm);
+    $("#tr-leave")?.addEventListener("click", roomLeave);
+    window.addEventListener("beforeunload", ()=>{ if(roomId && roomTrade && roomTrade.status!=="done"){ try{ window.DunkFire.updateTrade(roomId,{status:"cancelled"}); }catch(e){} } });
 
     // álbum
     $("#search").addEventListener("input", e=>{ albumFilter.q=e.target.value; renderAlbum(); });
@@ -2994,7 +3139,7 @@ window.MiniGame = (function(){
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, runTransaction, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCahATuEFQDCtRhttn4GqkurK-CVBsp0O8",
@@ -3056,6 +3201,8 @@ window.MiniGame = (function(){
     // ---- INTERCAMBIOS ----
     createTrade: async (t)=>{ const id=`${t.from}__${t.to}__${Date.now()}`; await setDoc(doc(db,"trades",id), Object.assign({id},t)); return id; },
     listTrades: async (me)=>{ const qs=await getDocs(query(collection(db,"trades"), where("parties","array-contains",me))); return qs.docs.map(d=>Object.assign({id:d.id}, d.data())); },
+    watchTrades: (me, cb)=> onSnapshot(query(collection(db,"trades"), where("parties","array-contains",me)),
+      qs=> cb(qs.docs.map(d=>Object.assign({id:d.id}, d.data()))), ()=>{}),
     updateTrade:(id,data)=>updateDoc(doc(db,"trades",id), data),
     deleteTrade:(id)=>deleteDoc(doc(db,"trades",id)),
     // ---- CÓDIGOS DE UN SOLO USO ----
