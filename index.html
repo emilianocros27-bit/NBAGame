@@ -1243,7 +1243,7 @@
   const LS = "dunk_nba_v1";
   let PLAYERS = [];
   let BY = {};                 // slug -> player
-  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, graded:{}, display:{}, promo:{}, skins:{}, ballSkin:"clasico", coins:300 }; }
+  function defaultState(){ return { owned:{}, packs:0, totalCards:0, teamsClaimed:{}, rewardPacks:0, messages:[], finals:{}, graded:{}, display:{}, promo:{}, skins:{}, ballSkin:"clasico", coins:300, bestScore:0 }; }
   let state = defaultState();
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
@@ -1257,7 +1257,8 @@
   function addCoins(n){ state.coins = (state.coins||0) + n; save(); renderCoins(); return state.coins; }
   function spendCoins(n){ if((state.coins||0) < n) return false; state.coins -= n; save(); renderCoins(); return true; }
   // puente para el minijuego "Encestes" (vive en otro script)
-  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT };
+  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT,
+    getBest:()=>state.bestScore||0, setBest:(v)=>{ state.bestScore=v; save(); } };
   // ---- DEV: dar todo para testear (consola: DunkDev.giveAll()) ----
   function giveAll(){
     PLAYERS.forEach(p=>{ state.owned[p.slug]=1; });
@@ -2406,8 +2407,10 @@
   }
 
   const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c"};
-  let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null;
+  let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null, revealTimers=[];
+  function clearRevealTimers(){ revealTimers.forEach(clearTimeout); revealTimers=[]; clearTimeout(tearTimer); }
   function runOpener(cards, kind){
+    clearRevealTimers(); openerBusy=false;   // evita que timers de un destape anterior congelen este
     openerQueue=cards; openerIdx=0;
     // precarga las fotos del sobre para que no tarden en aparecer al revelar
     cards.forEach(c=>{ const src=(c.variant==="finals" && FINALS_CARD[c.p.slug]) ? FINALS_CARD[c.p.slug] : c.p.foto; if(src){ const im=new Image(); im.src=src; } });
@@ -2495,17 +2498,17 @@
     openerBusy=true;
     $("#opener-hint").textContent="…";
     requestAnimationFrame(()=>clues.classList.add("show-pos"));
-    setTimeout(()=>clues.classList.add("show-team"), step);
-    setTimeout(()=>clues.classList.add("show-ovr"), step*2);
-    setTimeout(()=>{
+    revealTimers.push(setTimeout(()=>clues.classList.add("show-team"), step));
+    revealTimers.push(setTimeout(()=>clues.classList.add("show-ovr"), step*2));
+    revealTimers.push(setTimeout(()=>{
       clues.classList.add("out");
       fin.classList.add("show");
       const el=fin.querySelector(".card,.psa,.pcard"); if(el) el.classList.add("flip-in");
       if(tier==="gold") wrap.classList.add("goldpop");
-      setTimeout(()=>wrap.classList.remove("goldpop"), 900);
+      revealTimers.push(setTimeout(()=>wrap.classList.remove("goldpop"), 900));
       openerBusy=false;
       setRevealHint();
-    }, step*3);
+    }, step*3));
   }
 
   /* =====================================================
@@ -2847,7 +2850,7 @@
   let lastPackKind="std";
   const _openPack=openPack;
   openPack=function(k){ lastPackKind=k; _openPack(k); };
-  function closeOpener(){ const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true"); }
+  function closeOpener(){ clearRevealTimers(); openerBusy=false; const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true"); }
 
   /* =====================================================
      ARRANQUE
@@ -2988,19 +2991,28 @@ window.MiniGame = (function(){
   }
   function resetBall(){ ball={x:W/2,y:GROUND()-H*0.20,r:22*S,vx:0,vy:0,flying:false,rot:0,vrot:0,canScore:true,trail:[],touchedRim:false,done:false,frames:0}; }
 
+  function startTimer(){
+    clearInterval(timerId);
+    timerId=setInterval(()=>{ if(!running) return; timeLeft--;
+      document.getElementById('mg-time').textContent=timeLeft; if(timeLeft<=0) endGame(); },1000);
+  }
   function startGame(){
     score=0; streak=0; timeLeft=60; running=true;
     document.getElementById('mg-over').style.display='none';
     document.getElementById('mg-hint').style.opacity='1';
     document.getElementById('mg-time').textContent=timeLeft;
     updateHUD(); resetBall(); newHoop();
-    clearInterval(timerId);
-    timerId=setInterval(()=>{ if(!running) return; timeLeft--;
-      document.getElementById('mg-time').textContent=timeLeft; if(timeLeft<=0) endGame(); },1000);
+    startTimer();
   }
   function endGame(){
     running=false; clearInterval(timerId);
-    const newBest = score>best; if(newBest){ best=score; localStorage.setItem('basket_best',best); }
+    // récord atado a la cuenta (estado en la nube), no a localStorage → no farmeable
+    const stored=(window.DunkEconomy&&window.DunkEconomy.getBest)?window.DunkEconomy.getBest():best;
+    best=Math.max(best||0, stored||0);
+    const newBest = score>best;
+    if(newBest){ best=score;
+      if(window.DunkEconomy&&window.DunkEconomy.setBest) window.DunkEconomy.setBest(best);
+      else localStorage.setItem('basket_best',best); }
     document.getElementById('mg-final').textContent=score;
     document.getElementById('mg-best').textContent='Mejor: '+best;
     // recompensa en monedas
@@ -3025,6 +3037,7 @@ window.MiniGame = (function(){
 
   function update(){
     if(running && ball.flying){
+      ball.py=ball.y;   // y previa, para colisión por barrido
       ball.vy+=GRAV*S; ball.x+=ball.vx; ball.y+=ball.vy; ball.rot+=ball.vrot;
       ball.trail.push({x:ball.x,y:ball.y}); if(ball.trail.length>9) ball.trail.shift();
       if(ball.x-ball.r<0){ ball.x=ball.r; ball.vx*=-0.7; }
@@ -3040,8 +3053,10 @@ window.MiniGame = (function(){
   function checkHoop(){
     if(!ball.canScore) return;
     const dx=ball.x-hoop.x, withinX=Math.abs(dx)<hoop.r*0.8, atRim=Math.abs(ball.y-hoop.rimY)<12*S;
+    // barrido: ¿cruzó el plano del aro hacia abajo en este frame? (atrapa tiros rápidos que saltarían la banda)
+    const crossedDown = (typeof ball.py==='number') && ball.py<=hoop.rimY && ball.y>=hoop.rimY;
+    if(withinX&&ball.vy>0&&(atRim||crossedDown)){ scoreBasket(); return; }
     if(withinX&&atRim&&ball.vy<0){ ball.canScore=false; ball.vy=Math.abs(ball.vy)*0.5; ball.y=hoop.rimY+12*S; return; }
-    if(withinX&&atRim&&ball.vy>0){ scoreBasket(); return; }
     const posts=[hoop.x-hoop.r, hoop.x+hoop.r];
     for(const px of posts){ const ddx=ball.x-px, ddy=ball.y-hoop.rimY, dist=Math.hypot(ddx,ddy);
       if(dist<ball.r+4*S){ ball.touchedRim=true; const ang=Math.atan2(ddy,ddx), overlap=ball.r+4*S-dist;
@@ -3225,17 +3240,29 @@ window.MiniGame = (function(){
   function init(){
     if(inited) return; inited=true;
     cv=document.getElementById('mg-c'); ctx=cv.getContext('2d'); stage=document.getElementById('mg-stage');
-    best=+(localStorage.getItem('basket_best')||0);
+    best=(window.DunkEconomy&&window.DunkEconomy.getBest)?window.DunkEconomy.getBest():+(localStorage.getItem('basket_best')||0);
     cv.addEventListener('mousedown',down);
     window.addEventListener('mousemove',move); window.addEventListener('mouseup',up);
     cv.addEventListener('touchstart',down,{passive:false});
     window.addEventListener('touchmove',move,{passive:false}); window.addEventListener('touchend',up,{passive:false});
     document.getElementById('mg-again').addEventListener('click',startGame);
-    window.addEventListener('resize',()=>{ if(active){ resize(); if(ball&&!ball.flying){ ball.x=W/2; ball.y=GROUND()-H*0.20; } } });
+    window.addEventListener('resize',()=>{
+      if(!active) return;
+      const oldS=S, oldW=W||1, oldH=H||1; resize();
+      const k=oldS?S/oldS:1;
+      if(hoop){ hoop.x*=W/oldW; hoop.y*=H/oldH; hoop.rimY=hoop.y; hoop.r*=k; if(hoop.vx) hoop.vx*=k; buildNet(hoop); }
+      if(ball){
+        if(ball.flying){ ball.x*=W/oldW; ball.y*=H/oldH; ball.r=22*S; ball.vx*=k; ball.vy*=k; }
+        else { ball.x=W/2; ball.y=GROUND()-H*0.20; ball.r=22*S; }
+      }
+    });
   }
   return {
-    start(){ init(); active=true; resize(); startGame(); if(!rafId) loop(); },
-    stop(){ active=false; running=false; clearInterval(timerId); if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }
+    start(){ init(); active=true; resize();
+      if(running){ if(ball&&!ball.flying){ ball.x=W/2; ball.y=GROUND()-H*0.20; } startTimer(); }  // reanudar
+      else startGame();                                                                            // partida nueva
+      if(!rafId) loop(); },
+    stop(){ active=false; clearInterval(timerId); if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }  // pausa (conserva la partida)
   };
 })();
 </script>
