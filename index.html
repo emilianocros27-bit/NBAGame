@@ -1496,13 +1496,18 @@
   async function handleAuth(user){
     if(user){
       authUser = user.email; currentUid = user.uid; cloudReady = false;
-      let cloud = null, loadOk = true;
+      let cloud = null, loadOk = false;
       // loadSave devuelve null si el usuario es nuevo, pero LANZA error si la carga falla.
-      try{ cloud = await window.DunkFire.loadSave(user.uid); }catch(e){ loadOk = false; }
+      // Reintenta: el token de auth tarda un instante en propagarse tras iniciar sesión.
+      for(let attempt=0; attempt<3 && !loadOk; attempt++){
+        try{ cloud = await window.DunkFire.loadSave(user.uid); loadOk = true; }
+        catch(e){ await new Promise(r=>setTimeout(r, 400*(attempt+1))); }
+      }
       if(!loadOk){
-        // No se pudo leer la nube (conexión/permiso): NO sobrescribir, o se borrarían las cartas.
-        toast("No se pudo cargar tu progreso. Revisa tu conexión y vuelve a entrar.");
-        authUser = null; currentUid = null; updateAccountUI(); return;
+        // No se pudo leer la nube tras varios intentos: entrar SIN guardar (cloudReady=false),
+        // así no se sobrescriben las cartas. NO bloquear la entrada (deja usar y refrescar).
+        toast("No se pudo cargar tu progreso; entraste sin guardar. Refresca para reintentar.");
+        myProfile = null; updateAccountUI(); hideAuth(); renderAll(); return;
       }
       cloudReady = true;
       if(cloud){ applyState(cloud); }
