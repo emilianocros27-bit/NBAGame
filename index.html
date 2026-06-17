@@ -1268,6 +1268,16 @@
     return "OK: todas las cartas + Finals + PSA 1-10";
   }
   function resetAccount(){ applyState(defaultState()); save(); renderAll(); return "OK: cuenta reiniciada (sin cartas, 300 balones)"; }
+  // Da TODAS las básicas + solo las cartas Finals indicadas por slug.
+  // Uso: DunkDev.giveBasicsAndFinals(["victor-wembanyama","deaaron-fox"])
+  function giveBasicsAndFinals(finalsSlugs){
+    PLAYERS.forEach(p=>{ state.owned[p.slug]=1; });
+    const ok=[];
+    (finalsSlugs||[]).forEach(s=>{ if(FINALS_CARD[s]){ state.finals[s]=(state.finals[s]||0)+1; ok.push(s); } });
+    state.totalCards = Math.max(state.totalCards, PLAYERS.length);
+    save(); checkTeamRewards(); renderAll();
+    return "OK: todas las básicas + Finals: "+(ok.join(", ")||"(ninguna)");
+  }
   function givePromoDev(id){
     const ids = id ? [id] : PROMO.map(c=>c.id);
     const n = grantPromo(ids);
@@ -1292,7 +1302,7 @@
     console.log("%c CÓDIGO (1 uso) "+(typeof arg==="string"?"["+arg+"] ":"")+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
     return code;
   }
-  window.DunkDev = { giveAll, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev };
+  window.DunkDev = { giveAll, giveBasicsAndFinals, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
