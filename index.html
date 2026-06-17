@@ -392,7 +392,7 @@
   /* ===== REVELADO ESTILO FC (pistas: posición → equipo → media → volteo) ===== */
   .opener .bigcard{display:grid;}
   .opener .bigcard > *{grid-area:1/1;}
-  .reveal-clues{position:fixed; inset:0; z-index:90; overflow:hidden;
+  .reveal-clues{position:fixed; inset:0; z-index:90; overflow:hidden; pointer-events:none;
     display:grid; place-items:center;
     background:radial-gradient(70% 55% at 50% 38%, var(--c1,#386cff), #06070b 82%);
     transition:opacity .35s ease, transform .35s ease;}
