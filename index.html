@@ -1057,10 +1057,7 @@
       </div>
 
       <div class="lb">
-        <div class="lb-record" id="lb-record">
-          <div class="lb-record-info"><span class="lb-record-lbl">Mejor récord</span><span class="lb-record-val" id="lb-top">—</span></div>
-        </div>
-        <div class="pf-sec-head"><h3>Clasificación · Encestes</h3></div>
+        <div class="pf-sec-head"><h3>Top 3 · Encestes</h3></div>
         <ol class="lb-list" id="lb-list"><li class="pf-empty" style="list-style:none">Cargando…</li></ol>
       </div>
     </section>
@@ -1817,9 +1814,8 @@
     window.DunkFire.submitScore(currentUid, myDisplayName(), score).catch(()=>{});
   }
   function renderLeaderboard(list){
-    const top=$("#lb-top"), ol=$("#lb-list"); if(!ol) return;
+    const ol=$("#lb-list"); if(!ol) return;
     list = (list||scoresCache||[]).slice().sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
-    if(top) top.textContent = list.length ? `${list[0].score} pts · ${esc(list[0].username||"jugador")}` : "—";
     if(!list.length){ ol.innerHTML=`<li class="pf-empty" style="list-style:none">Aún no hay récords. ¡Sé el primero en jugar Encestes!</li>`; return; }
     ol.innerHTML = list.map((r,i)=>`<li class="lb-row ${r.uid===currentUid?'me':''}">
       <span class="lb-rank">${i+1}</span>
