@@ -1248,7 +1248,7 @@
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
   const PACK_COST = { std:150, elite:600, finals:1200, psa:1000, reward:0 };
-  const COINS_PER_POINT = 5;            // canasta básica (2 pts) = 10 balones
+  const COINS_PER_POINT = 10;           // canasta básica (2 pts) = 20 balones
   function renderCoins(){
     const els = document.querySelectorAll(".coin-amount");
     els.forEach(e=> e.textContent = (state.coins||0).toLocaleString("es"));
