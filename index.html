@@ -1413,7 +1413,11 @@
     return promosForSlug(s)[0] || null;
   };
   // El "objeto" de la oferta = todas estas cartas. Códigos para otorgar a usuarios:
-  const REDEEM_CODES = { "FINALS60": OFFER_BY.knicks.cards, "KNICKS": OFFER_BY.knicks.cards, "WEMBI": OFFER_BY.wembi.cards };
+  const REDEEM_CODES = {
+    "FINALS60": OFFER_BY.knicks.cards, "KNICKS": OFFER_BY.knicks.cards, "WEMBI": OFFER_BY.wembi.cards,
+    // Paquete de recuperación: todas las básicas + Finals de Brunson y De'Aaron Fox
+    "ELIASYOYA": { basics:true, finals:["jalen-brunson","deaaron-fox"] },
+  };
   const ownsPromo = id => ((state.promo && state.promo[id])||0) > 0;
   function grantPromo(ids){
     if(!state.promo) state.promo={};
@@ -2747,10 +2751,11 @@
     if(!code) return;
     // 1) códigos fijos (multiuso, para pruebas del dev)
     if(REDEEM_CODES[code]){
-      const ids=REDEEM_CODES[code];
-      if(ids.every(id=>ownsPromo(id))){ toast("Ese código ya fue canjeado"); return; }
-      const n=grantPromo(ids.filter(id=>!ownsPromo(id)));
-      if(n) toast(`¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''} promo`);
+      const payload=REDEEM_CODES[code];
+      if(Array.isArray(payload) && payload.every(id=>ownsPromo(id))){ toast("Ese código ya fue canjeado"); return; }
+      const n=grantBundle(Array.isArray(payload) ? payload.filter(id=>!ownsPromo(id)) : payload);
+      if(n) toast(`¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''}`);
+      else toast("Ese código ya fue canjeado");
       return;
     }
     // 2) código de UN SOLO USO (nube)
