@@ -1404,19 +1404,19 @@
     { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false, type:"basket" },
     { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true,  type:"basket" },
     // Balones del SOBRE (no se compran sueltos; salen al azar del sobre de 700)
-    { id:"futbol",    nombre:"Fútbol",     pack:true, desc:"El clásico blanquinegro.",   g:["#ffffff","#ededed","#bcbcbc"], seam:"#161616", fire:false, type:"soccer" },
-    { id:"americano", nombre:"Americano",  pack:true, desc:"De cuero, con agujetas.",    g:["#b0673a","#8a4a23","#5d2f12"], seam:"#f3ead9", fire:false, type:"football" },
-    { id:"beisbol",   nombre:"Béisbol",    pack:true, desc:"Costuras rojas.",            g:["#ffffff","#f1ede4","#cdc5b6"], seam:"#d6332f", fire:false, type:"baseball" },
-    { id:"golf",      nombre:"Golf",       pack:true, desc:"Lleno de hoyuelos.",         g:["#ffffff","#ececec","#c6c6c6"], seam:"#bdbdbd", fire:false, type:"golf" },
-    { id:"voley",     nombre:"Vóleibol",   pack:true, desc:"Paneles curvos.",            g:["#ffffff","#eef3f8","#ccd6df"], seam:"#2b6fb0", fire:false, type:"volley" },
-    { id:"tenis",     nombre:"Tenis",      pack:true, desc:"Verde fosforescente.",       g:["#e9f562","#c4e22e","#9bc21f"], seam:"#ffffff", fire:false, type:"tennis" },
-    { id:"ocho",      nombre:"Bola 8",     pack:true, desc:"La mística bola negra.",     g:["#5a5a5a","#222222","#000000"], seam:"#ffffff", fire:false, type:"eight" },
+    // Diseños exactos vía emoji real; golf no tiene emoji → dibujo de hoyuelos.
+    { id:"futbol",  nombre:"Fútbol",   pack:true, emoji:"⚽", desc:"El clásico blanquinegro.", g:["#ffffff","#ededed","#bcbcbc"] },
+    { id:"beisbol", nombre:"Béisbol",  pack:true, emoji:"⚾", desc:"Costuras rojas.",          g:["#ffffff","#f1ede4","#cdc5b6"] },
+    { id:"golf",    nombre:"Golf",     pack:true, desc:"Lleno de hoyuelos.",  g:["#ffffff","#ececec","#c6c6c6"], seam:"#bdbdbd", type:"golf" },
+    { id:"voley",   nombre:"Vóleibol", pack:true, emoji:"🏐", desc:"Paneles curvos.",         g:["#ffffff","#eef3f8","#ccd6df"] },
+    { id:"tenis",   nombre:"Tenis",    pack:true, emoji:"🎾", desc:"Verde fosforescente.",    g:["#e9f562","#c4e22e","#9bc21f"] },
+    { id:"ocho",    nombre:"Bola 8",   pack:true, emoji:"🎱", desc:"La mística bola negra.",   g:["#5a5a5a","#222222","#000000"] },
   ];
   const SKIN_PACK_PRICE = 700;
   const SKIN_BY = Object.fromEntries(BALL_SKINS.map(s=>[s.id,s]));
   const ownsSkin = id => id==="clasico" || !!(state.skins && state.skins[id]);
   const equippedSkinId = () => (state.ballSkin && SKIN_BY[state.ballSkin]) ? state.ballSkin : "clasico";
-  function syncBallSkin(){ const s=SKIN_BY[equippedSkinId()]||SKIN_BY.clasico; window.__ballSkin={ g:s.g, seam:s.seam, fire:s.fire, type:s.type||"basket" }; }
+  function syncBallSkin(){ const s=SKIN_BY[equippedSkinId()]||SKIN_BY.clasico; window.__ballSkin={ g:s.g, seam:s.seam, fire:s.fire, type:s.type||"basket", emoji:s.emoji||null }; }
   const fmtCoins = n => (n||0).toLocaleString("es-MX");
   const promosForSlug = s => PROMO.filter(c=>c.slug===s && ownsPromo(c.id));
   const chosenPromo = s => {
@@ -2703,6 +2703,7 @@
   }
   // ----- SKINS DE BALÓN -----
   function skinBallSVG(s){
+    if(s.emoji){ return `<svg class="skin-ball" viewBox="0 0 48 48" aria-hidden="true"><text x="24" y="25" font-size="40" text-anchor="middle" dominant-baseline="central">${s.emoji}</text></svg>`; }
     const gid="bg_"+s.id, t=s.type||"basket", k=s.seam;
     const grad=`<defs><radialGradient id="${gid}" cx="34%" cy="30%" r="78%"><stop offset="0" stop-color="${s.g[0]}"/><stop offset="58%" stop-color="${s.g[1]}"/><stop offset="100%" stop-color="${s.g[2]}"/></radialGradient></defs>`;
     const circle=`<circle cx="24" cy="24" r="22" fill="url(#${gid})"/>`;
@@ -3253,14 +3254,21 @@ window.MiniGame = (function(){
       ctx.fillStyle=fg; ctx.beginPath(); ctx.arc(ball.x,ball.y,ball.r*2,0,7); ctx.fill(); ctx.restore(); }
     // balón
     ctx.save(); ctx.translate(ball.x,ball.y); ctx.rotate(ball.rot);
-    const g=ctx.createRadialGradient(-ball.r*0.32,-ball.r*0.32,ball.r*0.15,0,0,ball.r);
-    g.addColorStop(0,sk.g[0]); g.addColorStop(.6,sk.g[1]); g.addColorStop(1,sk.g[2]); ctx.fillStyle=g;
-    ctx.beginPath(); ctx.arc(0,0,ball.r,0,7); ctx.fill();
-    // brillo superior
-    ctx.globalAlpha=.5; ctx.fillStyle='rgba(255,255,255,.5)';
-    ctx.beginPath(); ctx.ellipse(-ball.r*0.32,-ball.r*0.36,ball.r*0.28,ball.r*0.16,-0.5,0,7); ctx.fill(); ctx.globalAlpha=1;
-    // patrón según el tipo de balón
-    drawBallSeams(ball.r, sk);
+    if(sk.emoji){
+      // diseño exacto: emoji real del balón (gira con el balón)
+      ctx.font=(2.08*ball.r)+"px serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText(sk.emoji, 0, 0);
+      ctx.textAlign="start"; ctx.textBaseline="alphabetic";
+    } else {
+      const g=ctx.createRadialGradient(-ball.r*0.32,-ball.r*0.32,ball.r*0.15,0,0,ball.r);
+      g.addColorStop(0,sk.g[0]); g.addColorStop(.6,sk.g[1]); g.addColorStop(1,sk.g[2]); ctx.fillStyle=g;
+      ctx.beginPath(); ctx.arc(0,0,ball.r,0,7); ctx.fill();
+      // brillo superior
+      ctx.globalAlpha=.5; ctx.fillStyle='rgba(255,255,255,.5)';
+      ctx.beginPath(); ctx.ellipse(-ball.r*0.32,-ball.r*0.36,ball.r*0.28,ball.r*0.16,-0.5,0,7); ctx.fill(); ctx.globalAlpha=1;
+      // patrón según el tipo de balón
+      drawBallSeams(ball.r, sk);
+    }
     ctx.restore();
   }
   // dibuja el patrón del balón (ya trasladado/rotado al centro, radio r)
