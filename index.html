@@ -2929,8 +2929,8 @@ window.MiniGame = (function(){
   const POWER = 0.21;   // potencia por pixel de arrastre (más alto = menos arrastre necesario)
   const NET_COLS = 8, NET_ROWS = 5, NET_DROP = 46;
 
-  function resize(){
-    if(!stage) return;
+  function resize(force){
+    if(!stage) return false;
     const top = stage.getBoundingClientRect().top;          // posición del escenario en el viewport
     const isMobile = window.matchMedia('(max-width:640px)').matches;
     const navSpace = isMobile ? 84 : 16;                    // hueco para la barra inferior (solo móvil)
@@ -2938,12 +2938,16 @@ window.MiniGame = (function(){
     const availW = stage.clientWidth;
     let h = Math.min(availH, 700), w = h * 9 / 16;
     if(w > availW){ w = availW; h = w * 16 / 9; }
+    if(!availW){ return false; }                            // aún sin layout: no medir todavía
+    // ignora micro-cambios (p.ej. barra del navegador en móvil) para no reescalar el juego en plena partida
+    if(!force && W && Math.abs(w - W) < 8) return false;
     stage.style.height = h + 'px';                          // el escenario se ajusta al canvas (sin huecos)
     cv.style.width = w + 'px'; cv.style.height = h + 'px';
     const dpr = window.devicePixelRatio || 1;
     cv.width = w * dpr; cv.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
     W = w; H = h; S = w / 400;
+    return true;
   }
 
   function newHoop(){
@@ -3264,20 +3268,31 @@ window.MiniGame = (function(){
     document.getElementById('mg-again').addEventListener('click',startGame);
     window.addEventListener('resize',()=>{
       if(!active) return;
-      const oldS=S, oldW=W||1, oldH=H||1; resize();
-      const k=oldS?S/oldS:1;
-      if(hoop){ hoop.x*=W/oldW; hoop.y*=H/oldH; hoop.rimY=hoop.y; hoop.r*=k; if(hoop.vx) hoop.vx*=k; buildNet(hoop); }
-      if(ball){
-        if(ball.flying){ ball.x*=W/oldW; ball.y*=H/oldH; ball.r=28*S; ball.vx*=k; ball.vy*=k; }
-        else { ball.x=W/2; ball.y=GROUND()-H*0.20; ball.r=28*S; }
+      const oldW=W||1, oldH=H||1;
+      if(!resize()) return;                 // cambio insignificante (barra del navegador): no tocar el juego
+      const kx=W/oldW, ky=H/oldH;
+      // radios SIEMPRE recalculados desde S (sin arrastre); posiciones/velocidades escaladas para continuidad
+      if(hoop){ hoop.x*=kx; hoop.y*=ky; hoop.rimY=hoop.y; hoop.r=44*S; if(hoop.vx) hoop.vx*=kx; buildNet(hoop); }
+      if(ball){ ball.r=28*S;
+        if(ball.flying){ ball.x*=kx; ball.y*=ky; ball.vx*=kx; ball.vy*=ky; }
+        else { ball.x=W/2; ball.y=GROUND()-H*0.20; }
       }
     });
   }
   return {
-    start(){ init(); active=true; resize();
-      if(running){ if(ball&&!ball.flying){ ball.x=W/2; ball.y=GROUND()-H*0.20; } startTimer(); }  // reanudar
-      else startGame();                                                                            // partida nueva
-      if(!rafId) loop(); },
+    start(){ init(); active=true;
+      const begin=()=>{
+        if(running){ if(ball&&!ball.flying){ ball.x=W/2; ball.y=GROUND()-H*0.20; } startTimer(); }  // reanudar
+        else startGame();                                                                           // partida nueva
+        if(!rafId) loop();
+      };
+      // medir de inmediato (leer clientWidth ya fuerza el layout); si aún no hay layout, espera un frame
+      if(resize(true)) begin();
+      else requestAnimationFrame(function w(){ if(resize(true)) begin(); else if(active) requestAnimationFrame(w); });
+      // corrección tras asentar el layout (sin saltos: al arrancar nada vuela todavía)
+      requestAnimationFrame(()=>{ if(active && resize(true) && ball && !ball.flying){
+        ball.x=W/2; ball.y=GROUND()-H*0.20; ball.r=28*S; if(hoop){ hoop.r=44*S; buildNet(hoop); } } });
+    },
     stop(){ active=false; clearInterval(timerId); if(rafId){ cancelAnimationFrame(rafId); rafId=null; } }  // pausa (conserva la partida)
   };
 })();
