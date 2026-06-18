@@ -2994,7 +2994,7 @@ window.MiniGame = (function(){
   }
 
   function newHoop(){
-    const r = 44 * S, margin = 70 * S;
+    const r = 38 * S, margin = 70 * S;
     // altura en una banda jugable (ni pegada al techo ni demasiado abajo)
     const yMin = 150 * S, yMax = yMin + H * 0.24;
     const y = yMin + Math.random() * (yMax - yMin);
@@ -3010,7 +3010,7 @@ window.MiniGame = (function(){
   // Evita que un reescalado raro lo deje fuera de pantalla (aro invisible).
   function clampHoopToCourt(){
     if(!hoop) return;
-    hoop.r = 44 * S;
+    hoop.r = 38 * S;
     const m = 70 * S;
     if(!(hoop.x > m && hoop.x < W - m && hoop.y > 60*S && hoop.y < H * 0.6)){ newHoop(); return; }
     hoop.rimY = hoop.y; buildNet(hoop);
