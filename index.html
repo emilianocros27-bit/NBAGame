@@ -1399,15 +1399,24 @@
   // ===== SKINS DE BALÓN (cosméticas para el minijuego) =====
   // g = [luz, medio, sombra] del balón; seam = color de costuras
   const BALL_SKINS = [
-    { id:"clasico", nombre:"Clásico",  price:0,     desc:"El balón de siempre.",            g:["#ffc079","#ef7a25","#c85912"], seam:"#6b2604", fire:false },
-    { id:"glacial", nombre:"Glacial",  price:3000,  desc:"Hielo azul brillante.",            g:["#dff4ff","#5fb6f0","#2f7fd0"], seam:"#0c3a5e", fire:false },
-    { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false },
-    { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true },
+    { id:"clasico", nombre:"Clásico",  price:0,     desc:"El balón de siempre.",            g:["#ffc079","#ef7a25","#c85912"], seam:"#6b2604", fire:false, type:"basket" },
+    { id:"glacial", nombre:"Glacial",  price:3000,  desc:"Hielo azul brillante.",            g:["#dff4ff","#5fb6f0","#2f7fd0"], seam:"#0c3a5e", fire:false, type:"basket" },
+    { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false, type:"basket" },
+    { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true,  type:"basket" },
+    // Balones del SOBRE (no se compran sueltos; salen al azar del sobre de 700)
+    { id:"futbol",    nombre:"Fútbol",     pack:true, desc:"El clásico blanquinegro.",   g:["#ffffff","#ededed","#bcbcbc"], seam:"#161616", fire:false, type:"soccer" },
+    { id:"americano", nombre:"Americano",  pack:true, desc:"De cuero, con agujetas.",    g:["#b0673a","#8a4a23","#5d2f12"], seam:"#f3ead9", fire:false, type:"football" },
+    { id:"beisbol",   nombre:"Béisbol",    pack:true, desc:"Costuras rojas.",            g:["#ffffff","#f1ede4","#cdc5b6"], seam:"#d6332f", fire:false, type:"baseball" },
+    { id:"golf",      nombre:"Golf",       pack:true, desc:"Lleno de hoyuelos.",         g:["#ffffff","#ececec","#c6c6c6"], seam:"#bdbdbd", fire:false, type:"golf" },
+    { id:"voley",     nombre:"Vóleibol",   pack:true, desc:"Paneles curvos.",            g:["#ffffff","#eef3f8","#ccd6df"], seam:"#2b6fb0", fire:false, type:"volley" },
+    { id:"tenis",     nombre:"Tenis",      pack:true, desc:"Verde fosforescente.",       g:["#e9f562","#c4e22e","#9bc21f"], seam:"#ffffff", fire:false, type:"tennis" },
+    { id:"ocho",      nombre:"Bola 8",     pack:true, desc:"La mística bola negra.",     g:["#5a5a5a","#222222","#000000"], seam:"#ffffff", fire:false, type:"eight" },
   ];
+  const SKIN_PACK_PRICE = 700;
   const SKIN_BY = Object.fromEntries(BALL_SKINS.map(s=>[s.id,s]));
   const ownsSkin = id => id==="clasico" || !!(state.skins && state.skins[id]);
   const equippedSkinId = () => (state.ballSkin && SKIN_BY[state.ballSkin]) ? state.ballSkin : "clasico";
-  function syncBallSkin(){ const s=SKIN_BY[equippedSkinId()]||SKIN_BY.clasico; window.__ballSkin={ g:s.g, seam:s.seam, fire:s.fire }; }
+  function syncBallSkin(){ const s=SKIN_BY[equippedSkinId()]||SKIN_BY.clasico; window.__ballSkin={ g:s.g, seam:s.seam, fire:s.fire, type:s.type||"basket" }; }
   const fmtCoins = n => (n||0).toLocaleString("es-MX");
   const promosForSlug = s => PROMO.filter(c=>c.slug===s && ownsPromo(c.id));
   const chosenPromo = s => {
@@ -2694,17 +2703,19 @@
   }
   // ----- SKINS DE BALÓN -----
   function skinBallSVG(s){
-    const gid="bg_"+s.id;
-    return `<svg class="skin-ball ${s.fire?'fire':''}" viewBox="0 0 48 48" aria-hidden="true">
-      <defs><radialGradient id="${gid}" cx="34%" cy="30%" r="78%">
-        <stop offset="0" stop-color="${s.g[0]}"/><stop offset="58%" stop-color="${s.g[1]}"/><stop offset="100%" stop-color="${s.g[2]}"/>
-      </radialGradient></defs>
-      <circle cx="24" cy="24" r="22" fill="url(#${gid})"/>
-      <g fill="none" stroke="${s.seam}" stroke-width="2" stroke-linecap="round">
-        <path d="M24 2V46"/><path d="M2 24H46"/>
-        <path d="M8.4 8.4C18 16 18 32 8.4 39.6"/><path d="M39.6 8.4C30 16 30 32 39.6 39.6"/>
-      </g>
-    </svg>`;
+    const gid="bg_"+s.id, t=s.type||"basket", k=s.seam;
+    const grad=`<defs><radialGradient id="${gid}" cx="34%" cy="30%" r="78%"><stop offset="0" stop-color="${s.g[0]}"/><stop offset="58%" stop-color="${s.g[1]}"/><stop offset="100%" stop-color="${s.g[2]}"/></radialGradient></defs>`;
+    const circle=`<circle cx="24" cy="24" r="22" fill="url(#${gid})"/>`;
+    let pat="";
+    if(t==="basket"){ pat=`<g fill="none" stroke="${k}" stroke-width="2" stroke-linecap="round"><path d="M24 2V46"/><path d="M2 24H46"/><path d="M8.4 8.4C18 16 18 32 8.4 39.6"/><path d="M39.6 8.4C30 16 30 32 39.6 39.6"/></g>`; }
+    else if(t==="soccer"){ pat=`<polygon points="24,15 31,20.2 28.3,28.5 19.7,28.5 17,20.2" fill="${k}"/><g fill="none" stroke="${k}" stroke-width="1.6"><path d="M24 3V15"/><path d="M45 18 31 20.2"/><path d="M38 42 28.3 28.5"/><path d="M10 42 19.7 28.5"/><path d="M3 18 17 20.2"/></g>`; }
+    else if(t==="baseball"){ pat=`<g fill="none" stroke="${k}" stroke-width="1.8" stroke-linecap="round"><path d="M14 5C9 16 9 32 14 43"/><path d="M34 5C39 16 39 32 34 43"/></g>`; }
+    else if(t==="golf"){ let d=""; for(let yy=11;yy<=37;yy+=6)for(let xx=11;xx<=37;xx+=6){const ox=(((yy-11)/6)|0)%2?3:0,cx=xx+ox,cy=yy; if((cx-24)*(cx-24)+(cy-24)*(cy-24)<18*18) d+=`<circle cx="${cx}" cy="${cy}" r="1.9" fill="rgba(0,0,0,.12)"/>`;} pat=d; }
+    else if(t==="volley"){ pat=`<g fill="none" stroke="${k}" stroke-width="1.8"><path d="M24 2V46"/><path d="M13 5C20 16 20 32 13 43"/><path d="M35 5C28 16 28 32 35 43"/></g>`; }
+    else if(t==="tennis"){ pat=`<g fill="none" stroke="${k}" stroke-width="2.4"><path d="M3 18C14 10 34 10 45 18"/><path d="M3 30C14 38 34 38 45 30"/></g>`; }
+    else if(t==="eight"){ pat=`<circle cx="24" cy="22" r="9" fill="#fff"/><text x="24" y="22.5" font-size="11" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#111">8</text>`; }
+    else if(t==="football"){ pat=`<g stroke="${k}" stroke-linecap="round"><path d="M24 12V36" stroke-width="2"/><path d="M20 17H28M20 22H28M20 27H28M20 32H28" stroke-width="1.4"/></g>`; }
+    return `<svg class="skin-ball ${s.fire?'fire':''}" viewBox="0 0 48 48" aria-hidden="true">${grad}${circle}${pat}</svg>`;
   }
   function renderEquip(){
     const box=$("#equip-box"); if(!box) return;
@@ -2718,13 +2729,34 @@
       </div>
     </div>`;
   }
+  function packMysterySVG(){
+    return `<svg class="skin-ball" viewBox="0 0 48 48" aria-hidden="true">
+      <defs><radialGradient id="bg_pack" cx="34%" cy="30%" r="80%"><stop offset="0" stop-color="#3a4150"/><stop offset="60%" stop-color="#252a36"/><stop offset="100%" stop-color="#12151d"/></radialGradient></defs>
+      <circle cx="24" cy="24" r="22" fill="url(#bg_pack)"/>
+      <text x="24" y="25" font-size="22" font-weight="bold" text-anchor="middle" dominant-baseline="central" fill="#ff7a3d">?</text>
+    </svg>`;
+  }
   function renderSkins(){
     const wrap=$("#shop-skins"); if(!wrap) return;
     const eq=equippedSkinId();
-    wrap.innerHTML = BALL_SKINS.map(s=>{
+    // --- SOBRE de balones deportivos ---
+    const restantes=BALL_SKINS.filter(s=>s.pack && !ownsSkin(s.id)).length;
+    const packBtn = restantes
+      ? `<button class="btn btn-primary ${(state.coins||0)<SKIN_PACK_PRICE?'cant-afford':''}" data-skin-pack="1"><span class="coin-ico"></span> ${fmtCoins(SKIN_PACK_PRICE)}</button>`
+      : `<button class="btn btn-ghost" disabled>¡Completo!</button>`;
+    const packCard=`<div class="skin-card pack">
+      ${packMysterySVG()}
+      <div class="skin-name">Sobre de balones</div>
+      <div class="skin-desc">Balón deportivo al azar${restantes?` · faltan ${restantes}`:` · los tienes todos`}</div>
+      ${packBtn}
+    </div>`;
+    // --- tarjetas de balones: fijos siempre; los del sobre solo si ya los tienes ---
+    const cards = BALL_SKINS.filter(s=> !s.pack || ownsSkin(s.id)).map(s=>{
       const owned=ownsSkin(s.id), isEq=s.id===eq;
       let btn;
-      if(isEq) btn=`<button class="btn btn-ghost" disabled>Equipado</button>`;
+      if(isEq) btn = (s.id==="clasico")
+          ? `<button class="btn btn-ghost" disabled>Equipado</button>`
+          : `<button class="btn btn-primary" data-skin-unequip="1">Quitar</button>`;
       else if(owned) btn=`<button class="btn btn-primary" data-skin-equip="${s.id}">Equipar</button>`;
       else btn=`<button class="btn btn-primary ${(state.coins||0)<s.price?'cant-afford':''}" data-skin-buy="${s.id}"><span class="coin-ico"></span> ${fmtCoins(s.price)}</button>`;
       return `<div class="skin-card ${isEq?'on':''}">
@@ -2734,6 +2766,15 @@
         ${btn}
       </div>`;
     }).join("");
+    wrap.innerHTML = packCard + cards;
+  }
+  function openSkinPack(){
+    const pool=BALL_SKINS.filter(s=>s.pack && !ownsSkin(s.id));
+    if(!pool.length){ toast("Ya tienes todos los balones del sobre"); return; }
+    if(!spendCoins(SKIN_PACK_PRICE)){ toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return; }
+    const got=pool[Math.floor(Math.random()*pool.length)];
+    state.skins[got.id]=1; equipSkin(got.id);
+    toast(`¡Sacaste el balón <b>${esc(got.nombre)}</b>! Equipado 🏀`);
   }
   function buySkin(id){
     const s=SKIN_BY[id]; if(!s||ownsSkin(id)) return;
@@ -2799,7 +2840,9 @@
     // tienda
     $("#shop-offers")?.addEventListener("click", e=>{ const b=e.target.closest("[data-buy]"); if(b) buyOffer(b.dataset.buy); });
     $("#shop-skins")?.addEventListener("click", e=>{
+      const pack=e.target.closest("[data-skin-pack]"); if(pack){ openSkinPack(); return; }
       const buy=e.target.closest("[data-skin-buy]"); if(buy){ buySkin(buy.dataset.skinBuy); return; }
+      const uneq=e.target.closest("[data-skin-unequip]"); if(uneq){ equipSkin("clasico"); return; }
       const eq=e.target.closest("[data-skin-equip]"); if(eq){ equipSkin(eq.dataset.skinEquip); }
     });
     $("#redeem-form")?.addEventListener("submit", e=>{ e.preventDefault(); redeemCode($("#redeem-input").value); $("#redeem-input").value=""; });
@@ -3184,7 +3227,7 @@ window.MiniGame = (function(){
     ctx.beginPath(); ctx.arc(x+r,rimY,4*S,0,7); ctx.fill();
   }
   function drawBall(){
-    const sk = window.__ballSkin || {g:['#ffc079','#ef7a25','#c85912'],seam:'#6b2604',fire:false};
+    const sk = window.__ballSkin || {g:['#ffc079','#ef7a25','#c85912'],seam:'#6b2604',fire:false,type:'basket'};
     const onFire = streak>=3 || sk.fire;
     // skin de fuego: emite brasas mientras vuela
     if(sk.fire && ball.flying && Math.random()<0.8){
@@ -3216,19 +3259,55 @@ window.MiniGame = (function(){
     // brillo superior
     ctx.globalAlpha=.5; ctx.fillStyle='rgba(255,255,255,.5)';
     ctx.beginPath(); ctx.ellipse(-ball.r*0.32,-ball.r*0.36,ball.r*0.28,ball.r*0.16,-0.5,0,7); ctx.fill(); ctx.globalAlpha=1;
-    // costuras estilo balón real: cruz + dos curvas laterales
-    const r=ball.r;
-    ctx.strokeStyle=sk.seam; ctx.lineWidth=2*S; ctx.lineCap='round';
-    ctx.beginPath(); ctx.moveTo(-r,0); ctx.lineTo(r,0); ctx.stroke();   // horizontal
-    ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(0,r); ctx.stroke();   // vertical
-    // curva izquierda (de arriba-izq a abajo-izq, abombada al centro)
-    ctx.beginPath(); ctx.moveTo(-0.709*r,-0.709*r);
-    ctx.bezierCurveTo(-0.273*r,-0.364*r, -0.273*r,0.364*r, -0.709*r,0.709*r); ctx.stroke();
-    // curva derecha (espejo)
-    ctx.beginPath(); ctx.moveTo(0.709*r,-0.709*r);
-    ctx.bezierCurveTo(0.273*r,-0.364*r, 0.273*r,0.364*r, 0.709*r,0.709*r); ctx.stroke();
-    ctx.lineCap='butt';
+    // patrón según el tipo de balón
+    drawBallSeams(ball.r, sk);
     ctx.restore();
+  }
+  // dibuja el patrón del balón (ya trasladado/rotado al centro, radio r)
+  function drawBallSeams(r, sk){
+    const t=sk.type||"basket", k=sk.seam;
+    ctx.strokeStyle=k; ctx.fillStyle=k; ctx.lineCap="round";
+    if(t==="basket"){
+      ctx.lineWidth=2*S;
+      ctx.beginPath(); ctx.moveTo(-r,0); ctx.lineTo(r,0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(0,r); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-0.709*r,-0.709*r); ctx.bezierCurveTo(-0.273*r,-0.364*r,-0.273*r,0.364*r,-0.709*r,0.709*r); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0.709*r,-0.709*r); ctx.bezierCurveTo(0.273*r,-0.364*r,0.273*r,0.364*r,0.709*r,0.709*r); ctx.stroke();
+    } else if(t==="soccer"){
+      const pr=0.34*r; ctx.beginPath();
+      for(let i=0;i<5;i++){ const a=-Math.PI/2+i*2*Math.PI/5, px=Math.cos(a)*pr, py=Math.sin(a)*pr; i?ctx.lineTo(px,py):ctx.moveTo(px,py); }
+      ctx.closePath(); ctx.fill();
+      ctx.lineWidth=1.6*S;
+      for(let i=0;i<5;i++){ const a=-Math.PI/2+i*2*Math.PI/5; ctx.beginPath(); ctx.moveTo(Math.cos(a)*pr,Math.sin(a)*pr); ctx.lineTo(Math.cos(a)*0.92*r,Math.sin(a)*0.92*r); ctx.stroke(); }
+    } else if(t==="baseball"){
+      ctx.lineWidth=1.5*S;
+      for(const sgn of [1,-1]){
+        ctx.beginPath(); ctx.moveTo(sgn*0.62*r,-0.78*r); ctx.bezierCurveTo(sgn*0.16*r,-0.36*r,sgn*0.16*r,0.36*r,sgn*0.62*r,0.78*r); ctx.stroke();
+        for(let tt=0.12;tt<0.92;tt+=0.16){ const yy=(-0.78+1.56*tt)*r, xx=sgn*(0.62-0.46*Math.sin(Math.PI*tt))*r;
+          ctx.beginPath(); ctx.moveTo(xx-sgn*0.09*r,yy-0.05*r); ctx.lineTo(xx+sgn*0.02*r,yy+0.07*r); ctx.stroke(); }
+      }
+    } else if(t==="golf"){
+      ctx.fillStyle="rgba(0,0,0,.12)";
+      for(let yy=-0.7;yy<=0.7;yy+=0.26)for(let xx=-0.7;xx<=0.7;xx+=0.26){ const ox=(Math.round((yy+0.7)/0.26)%2)?0.13:0, px=(xx+ox)*r, py=yy*r;
+        if(px*px+py*py<(0.82*r)*(0.82*r)){ ctx.beginPath(); ctx.arc(px,py,0.07*r,0,7); ctx.fill(); } }
+    } else if(t==="volley"){
+      ctx.lineWidth=1.8*S;
+      ctx.beginPath(); ctx.moveTo(0,-r); ctx.lineTo(0,r); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-0.55*r,-0.83*r); ctx.bezierCurveTo(-0.2*r,-0.3*r,-0.2*r,0.3*r,-0.55*r,0.83*r); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0.55*r,-0.83*r); ctx.bezierCurveTo(0.2*r,-0.3*r,0.2*r,0.3*r,0.55*r,0.83*r); ctx.stroke();
+    } else if(t==="tennis"){
+      ctx.lineWidth=2.2*S;
+      ctx.beginPath(); ctx.moveTo(-0.95*r,-0.2*r); ctx.bezierCurveTo(-0.3*r,-0.55*r,0.3*r,-0.55*r,0.95*r,-0.2*r); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-0.95*r,0.2*r); ctx.bezierCurveTo(-0.3*r,0.55*r,0.3*r,0.55*r,0.95*r,0.2*r); ctx.stroke();
+    } else if(t==="eight"){
+      ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(0,-0.04*r,0.42*r,0,7); ctx.fill();
+      ctx.fillStyle="#111"; ctx.font="bold "+(0.5*r)+"px sans-serif"; ctx.textAlign="center"; ctx.textBaseline="middle";
+      ctx.fillText("8",0,-0.02*r); ctx.textAlign="start"; ctx.textBaseline="alphabetic";
+    } else if(t==="football"){
+      ctx.lineWidth=2*S; ctx.beginPath(); ctx.moveTo(0,-0.8*r); ctx.lineTo(0,0.8*r); ctx.stroke();
+      ctx.lineWidth=1.5*S; for(let yy=-0.5;yy<=0.5;yy+=0.2){ ctx.beginPath(); ctx.moveTo(-0.13*r,yy*r); ctx.lineTo(0.13*r,yy*r); ctx.stroke(); }
+    }
+    ctx.lineCap="butt";
   }
   function drawAim(){
     if(!dragging) return;
