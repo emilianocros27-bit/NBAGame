@@ -262,6 +262,33 @@
     background:linear-gradient(100deg, rgba(206,214,224,.20), rgba(206,214,224,.05) 55%, transparent);}
   .prize-banner .event-trophy{color:#d6dde6; filter:drop-shadow(0 2px 8px rgba(206,214,224,.5));}
   .prize-banner .event-text b{color:#dfe5ec;}
+  /* ===== SEMANA 90s ===== */
+  .banner-90s{cursor:pointer; border-color:rgba(176,121,255,.55);
+    background:linear-gradient(100deg, rgba(176,121,255,.22), rgba(176,121,255,.06) 55%, transparent);}
+  .banner-90s .event-trophy{font-size:26px; filter:drop-shadow(0 2px 8px rgba(176,121,255,.6));}
+  .banner-90s .event-text b{color:#cdb0ff;}
+  .banner-90s:hover{border-color:rgba(176,121,255,.85);}
+  .tab-90s{font-family:var(--display); font-weight:800; letter-spacing:.04em;}
+  .tab-90s[aria-selected="true"]{color:#cdb0ff;}
+  .noventas-hero{position:relative; border-radius:20px; overflow:hidden; min-height:560px;
+    display:flex; align-items:flex-end; padding:0; background:#16121f;}
+  /* la imagen es de baja resolución: leve desenfoque + escala disimulan el pixelado y se ve intencional */
+  .noventas-hero::before{content:""; position:absolute; inset:-10px; z-index:0;
+    background:#16121f url('90s-bg.png') center 12%/cover no-repeat;
+    filter:blur(1.5px) saturate(1.08) contrast(1.05) brightness(.96); transform:scale(1.07);}
+  .noventas-overlay{position:absolute; inset:0; z-index:0; pointer-events:none;
+    background:
+      radial-gradient(120% 80% at 50% 30%, transparent 40%, rgba(12,10,22,.55) 100%),
+      linear-gradient(180deg, rgba(12,10,22,.34) 0%, rgba(12,10,22,.12) 30%, rgba(12,10,22,.92) 100%);}
+  .noventas-content{position:relative; z-index:1; width:100%; padding:26px 22px 28px; text-align:center;}
+  .noventas-kicker{font-family:var(--display); font-size:11px; letter-spacing:.26em; text-transform:uppercase; color:#cdb0ff;}
+  .noventas-title{font-size:42px; text-transform:uppercase; letter-spacing:.02em; margin:4px 0 6px;
+    text-shadow:0 2px 18px rgba(0,0,0,.7);}
+  .noventas-sub{color:#e7e2f2; font-size:14px; margin:0 auto 18px; max-width:420px; text-shadow:0 1px 8px rgba(0,0,0,.8);}
+  .noventas-album-head{margin:28px 4px 14px;}
+  .noventas-album-head h3{font-size:21px; text-transform:uppercase; letter-spacing:.02em;}
+  .noventas-pack{max-width:360px; margin:0 auto; text-align:left;
+    background:linear-gradient(165deg, rgba(42,24,64,.92), rgba(20,10,30,.92)); backdrop-filter:blur(3px);}
   .card.finals .card-inner{box-shadow:inset 0 0 0 2px rgba(232,184,75,.9);}
   .card-finals{position:absolute; z-index:6; top:9px; left:50%; transform:translateX(-50%);
     font-family:var(--display); font-weight:700; font-size:10px; letter-spacing:.07em; white-space:nowrap;
@@ -827,6 +854,7 @@
       </div>
       <nav class="tabs" role="tablist" aria-label="Modos">
         <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
+        <button class="tab tab-90s" role="tab" data-view="noventas" aria-selected="false">90s</button>
         <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
         <button class="tab" role="tab" data-view="tienda" aria-selected="false">Tienda</button>
         <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
@@ -890,6 +918,14 @@
         <span id="event-count" class="event-count"></span>
       </div>
     </div>
+    <!-- ===== BANNER EVENTO SEMANA 90s ===== -->
+    <div id="banner-90s" class="event-banner banner-90s" role="button" tabindex="0" title="Ir al sobre 90s">
+      <div class="event-trophy">🏀</div>
+      <div class="event-body">
+        <span class="event-text"><b>Semana 90s</b> · Leyendas de la vieja escuela. Abre el <b>Sobre 90s</b> y consigue 2 leyendas.</span>
+        <span class="event-count">Evento especial · sobre de 2 cartas</span>
+      </div>
+    </div>
     <!-- ===== ÁLBUM ===== -->
     <section class="view active" id="view-album" role="tabpanel">
       <div class="view-head">
@@ -914,6 +950,33 @@
         </div>
       </div>
       <div class="grid" id="album-grid"></div>
+    </section>
+
+    <!-- ===== SEMANA 90s ===== -->
+    <section class="view" id="view-noventas" role="tabpanel">
+      <div class="noventas-hero">
+        <div class="noventas-overlay"></div>
+        <div class="noventas-content">
+          <span class="noventas-kicker">Evento especial</span>
+          <h2 class="noventas-title">Semana 90s</h2>
+          <p class="noventas-sub">Magic, Jordan, Bird y compañía. Abre el sobre y revive la vieja escuela.</p>
+          <div class="pack noventas-pack" style="--pc:#b079ff">
+            <div class="pk-foil"></div>
+            <span class="pk-badge">2 cartas</span>
+            <div class="pk-kicker">Sobre 90s</div>
+            <h3>Leyendas</h3>
+            <p class="pk-desc">Dos leyendas de los 90 al azar (Jordan, Magic, Bird y más).</p>
+            <span class="pk-art">90s</span>
+            <button class="btn btn-primary pack-buy" data-pack="noventas" id="btn-noventas">Abrir · <span class="coin-ico"></span> 1100</button>
+          </div>
+        </div>
+      </div>
+      <!-- ÁLBUM DE LEYENDAS 90s (debajo del sobre) -->
+      <div class="noventas-album-head">
+        <h3>Tu colección de leyendas</h3>
+        <p id="noventas-count" class="teams-done">Tienes <b>0</b> / 60 leyendas</p>
+      </div>
+      <div class="grid" id="album-90s"></div>
     </section>
 
     <!-- ===== SOBRES ===== -->
@@ -1127,6 +1190,7 @@
   <!-- barra inferior de navegación (solo móvil) -->
   <nav class="bottom-nav" role="tablist" aria-label="Modos">
     <button class="tab" role="tab" data-view="album" aria-selected="true">Álbum</button>
+    <button class="tab tab-90s" role="tab" data-view="noventas" aria-selected="false">90s</button>
     <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
     <button class="tab" role="tab" data-view="tienda" aria-selected="false">Tienda</button>
     <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
@@ -1203,6 +1267,7 @@
 
   /* ---- colores y CDN de equipos NBA ---- */
   const TEAMS = {
+    "Leyendas 90s":{c1:"#e8b84b", c2:"#7a531a"},
     "Atlanta Hawks":        {c1:"#E03A3E", c2:"#26282A", id:1610612737},
     "Boston Celtics":       {c1:"#007A33", c2:"#0c3d22", id:1610612738},
     "Brooklyn Nets":        {c1:"#2b2b2b", c2:"#0a0a0a", id:1610612751},
@@ -1247,7 +1312,7 @@
   let state = defaultState();
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
-  const PACK_COST = { std:150, elite:600, finals:1200, psa:1000, reward:0 };
+  const PACK_COST = { std:150, elite:600, finals:1200, psa:1000, reward:0, noventas:1100 };
   const COINS_PER_POINT = 10;           // canasta básica (2 pts) = 20 balones
   function renderCoins(){
     const els = document.querySelectorAll(".coin-amount");
@@ -1413,6 +1478,39 @@
     { id:"ocho",    nombre:"Bola 8",   pack:true, emoji:"🎱", desc:"La mística bola negra.",   g:["#5a5a5a","#222222","#000000"] },
   ];
   const SKIN_PACK_PRICE = 700;
+  const LEGENDS_90S = [
+    {slug:"michael-jordan",nombre:"Michael Jordan",media:99,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/01-michael-jordan.jpg"}, {slug:"magic-johnson",nombre:"Magic Johnson",media:99,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/02-magic-johnson.jpg"},
+    {slug:"larry-bird",nombre:"Larry Bird",media:99,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/03-larry-bird.jpg"}, {slug:"hakeem-olajuwon",nombre:"Hakeem Olajuwon",media:99,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/04-hakeem-olajuwon.jpg"},
+    {slug:"david-robinson",nombre:"David Robinson",media:98,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/05-david-robinson.jpg"}, {slug:"karl-malone",nombre:"Karl Malone",media:98,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/06-karl-malone.jpg"},
+    {slug:"john-stockton",nombre:"John Stockton",media:98,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/07-john-stockton.jpg"}, {slug:"charles-barkley",nombre:"Charles Barkley",media:98,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/08-charles-barkley.jpg"},
+    {slug:"scottie-pippen",nombre:"Scottie Pippen",media:97,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/09-scottie-pippen.jpg"}, {slug:"patrick-ewing",nombre:"Patrick Ewing",media:97,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/10-patrick-ewing.jpg"},
+    {slug:"shaquille-oneal",nombre:"Shaquille O'Neal",media:97,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/11-shaquille-oneal.jpg"}, {slug:"clyde-drexler",nombre:"Clyde Drexler",media:97,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/12-clyde-drexler.jpg"},
+    {slug:"gary-payton",nombre:"Gary Payton",media:96,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/13-gary-payton.jpg"}, {slug:"reggie-miller",nombre:"Reggie Miller",media:96,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/14-reggie-miller.jpg"},
+    {slug:"tim-hardaway",nombre:"Tim Hardaway",media:96,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/15-tim-hardaway.jpg"}, {slug:"anfernee-hardaway",nombre:"Anfernee Hardaway",media:96,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/16-anfernee-hardaway.jpg"},
+    {slug:"dennis-rodman",nombre:"Dennis Rodman",media:95,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/17-dennis-rodman.jpg"}, {slug:"dikembe-mutombo",nombre:"Dikembe Mutombo",media:95,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/18-dikembe-mutombo.jpg"},
+    {slug:"alonzo-mourning",nombre:"Alonzo Mourning",media:95,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/19-alonzo-mourning.jpg"}, {slug:"shawn-kemp",nombre:"Shawn Kemp",media:95,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/20-shawn-kemp.jpg"},
+    {slug:"chris-webber",nombre:"Chris Webber",media:94,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/21-chris-webber.jpg"}, {slug:"grant-hill",nombre:"Grant Hill",media:94,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/22-grant-hill.jpg"},
+    {slug:"allen-iverson",nombre:"Allen Iverson",media:94,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/23-allen-iverson.jpg"}, {slug:"kobe-bryant",nombre:"Kobe Bryant",media:94,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/24-kobe-bryant.jpg"},
+    {slug:"kevin-garnett",nombre:"Kevin Garnett",media:93,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/25-kevin-garnett.jpg"}, {slug:"tim-duncan",nombre:"Tim Duncan",media:93,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/26-tim-duncan.jpg"},
+    {slug:"mitch-richmond",nombre:"Mitch Richmond",media:93,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/27-mitch-richmond.jpg"}, {slug:"glen-rice",nombre:"Glen Rice",media:93,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/28-glen-rice.jpg"},
+    {slug:"joe-dumars",nombre:"Joe Dumars",media:92,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/29-joe-dumars.jpg"}, {slug:"isiah-thomas",nombre:"Isiah Thomas",media:92,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/30-isiah-thomas.jpg"},
+    {slug:"dominique-wilkins",nombre:"Dominique Wilkins",media:92,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/31-dominique-wilkins.jpg"}, {slug:"james-worthy",nombre:"James Worthy",media:92,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/32-james-worthy.jpg"},
+    {slug:"kevin-johnson",nombre:"Kevin Johnson",media:91,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/33-kevin-johnson.jpg"}, {slug:"mark-price",nombre:"Mark Price",media:91,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/34-mark-price.jpg"},
+    {slug:"detlef-schrempf",nombre:"Detlef Schrempf",media:91,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/35-detlef-schrempf.jpg"}, {slug:"chris-mullin",nombre:"Chris Mullin",media:91,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/36-chris-mullin.jpg"},
+    {slug:"jason-kidd",nombre:"Jason Kidd",media:90,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/37-jason-kidd.jpg"}, {slug:"latrell-sprewell",nombre:"Latrell Sprewell",media:90,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/38-latrell-sprewell.jpg"},
+    {slug:"larry-johnson",nombre:"Larry Johnson",media:90,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/39-larry-johnson.jpg"}, {slug:"vlade-divac",nombre:"Vlade Divac",media:90,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/40-vlade-divac.jpg"},
+    {slug:"horace-grant",nombre:"Horace Grant",media:89,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/41-horace-grant.jpg"}, {slug:"dan-majerle",nombre:"Dan Majerle",media:89,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/42-dan-majerle.jpg"},
+    {slug:"mookie-blaylock",nombre:"Mookie Blaylock",media:89,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/43-mookie-blaylock.jpg"}, {slug:"steve-smith",nombre:"Steve Smith",media:89,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/44-steve-smith.jpg"},
+    {slug:"eddie-jones",nombre:"Eddie Jones",media:88,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/45-eddie-jones.jpg"}, {slug:"rik-smits",nombre:"Rik Smits",media:88,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/46-rik-smits.jpg"},
+    {slug:"brad-daugherty",nombre:"Brad Daugherty",media:88,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/47-brad-daugherty.jpg"}, {slug:"terry-porter",nombre:"Terry Porter",media:88,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/48-terry-porter.jpg"},
+    {slug:"robert-parish",nombre:"Robert Parish",media:87,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/49-robert-parish.jpg"}, {slug:"sean-elliott",nombre:"Sean Elliott",media:87,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/50-sean-elliott.jpg"},
+    {slug:"toni-kukoc",nombre:"Toni Kukoc",media:87,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/51-toni-kukoc.jpg"}, {slug:"jeff-hornacek",nombre:"Jeff Hornacek",media:87,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/52-jeff-hornacek.jpg"},
+    {slug:"derrick-coleman",nombre:"Derrick Coleman",media:86,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/53-derrick-coleman.jpg"}, {slug:"jamal-mashburn",nombre:"Jamal Mashburn",media:86,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/54-jamal-mashburn.jpg"},
+    {slug:"glenn-robinson",nombre:"Glenn Robinson",media:86,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/55-glenn-robinson.jpg"}, {slug:"jerry-stackhouse",nombre:"Jerry Stackhouse",media:86,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/56-jerry-stackhouse.jpg"},
+    {slug:"ray-allen",nombre:"Ray Allen",media:85,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/57-ray-allen.jpg"}, {slug:"vince-carter",nombre:"Vince Carter",media:85,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/58-vince-carter.jpg"},
+    {slug:"shareef-abdur-rahim",nombre:"Shareef Abdur-Rahim",media:85,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/59-shareef-abdur-rahim.jpg"}, {slug:"antonio-mcdyess",nombre:"Antonio McDyess",media:85,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/60-antonio-mcdyess.jpg"},
+  ];
+  const LEG_BY = Object.fromEntries(LEGENDS_90S.map(p=>[p.slug,p]));
   const SKIN_BY = Object.fromEntries(BALL_SKINS.map(s=>[s.id,s]));
   const ownsSkin = id => id==="clasico" || !!(state.skins && state.skins[id]);
   const equippedSkinId = () => (state.ballSkin && SKIN_BY[state.ballSkin]) ? state.ballSkin : "clasico";
@@ -1492,7 +1590,7 @@
     if(!state.skins) state.skins={}; if(!state.ballSkin) state.ballSkin="clasico";
     syncBallSkin();
   }
-  function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); }
+  function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s(); }
   function updateAccountUI(){
     const b=$("#acct"); if(!b) return;
     if(authUser){ b.hidden=false; $("#acct-ini").textContent=(authUser[0]||"?").toUpperCase(); $("#acct-name").textContent=authUser; }
@@ -2131,6 +2229,17 @@
     }).join("");
     grid.innerHTML = playersHTML;
   }
+  // Álbum de leyendas 90s (debajo del sobre, en la pestaña 90s)
+  function renderAlbum90s(){
+    const grid=$("#album-90s"); if(!grid) return;
+    const list=LEGENDS_90S.slice().sort((a,b)=>b.media-a.media || a.nombre.localeCompare(b.nombre));
+    grid.innerHTML = list.map(p=>{
+      const owned=ownsNormal(p.slug);
+      return cardHTML(p, {owned, count: state.owned[p.slug]||0, variant:"normal"});
+    }).join("");
+    const have=LEGENDS_90S.filter(p=>ownsNormal(p.slug)).length;
+    const c=$("#noventas-count"); if(c) c.innerHTML=`Tienes <b>${have}</b> / ${LEGENDS_90S.length} leyendas`;
+  }
 
   /* tilt + lámina siguiendo el puntero (delegado, sin re-render) */
   function bindTilt(root){
@@ -2247,8 +2356,12 @@
     if(cost > 0 && !spendCoins(cost)){
       toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return;
     }
-    const n=5, picks=[], taken=new Set();   // taken => sin duplicados dentro del mismo sobre
-    if(kind==="finals"){
+    const n = kind==="noventas" ? 2 : 5;     // el sobre 90s da 2 cartas
+    const picks=[], taken=new Set();          // taken => sin duplicados dentro del mismo sobre
+    if(kind==="noventas"){
+      // SOLO leyendas de los 90 (no jugadores actuales)
+      for(let i=0;i<n;i++){ const p=drawOne(LEGENDS_90S, taken); picks.push(p); taken.add(p.slug); }
+    } else if(kind==="finals"){
       const fin = PLAYERS.filter(p=>p.finals && ovr(p)>=85);
       const pool = fin.length ? fin : PLAYERS.filter(p=>p.finals);
       const first = drawOne(pool, taken); picks.push(first); taken.add(first.slug);
@@ -2420,7 +2533,7 @@
     openRewardPack();   // se abre la recompensa al instante desde la notificación
   }
 
-  const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c"};
+  const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c", noventas:"#b079ff"};
   let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null, revealTimers=[];
   function clearRevealTimers(){ revealTimers.forEach(clearTimeout); revealTimers=[]; clearTimeout(tearTimer); }
   function runOpener(cards, kind){
@@ -2827,6 +2940,7 @@
     if(v==="quinteto") renderSlots();
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
+    if(v==="noventas") renderAlbum90s();
     if(v==="juego"){ subscribeScores(); renderLeaderboard(scoresCache); }
     if(window.MiniGame){ if(v==="juego") window.MiniGame.start(); else window.MiniGame.stop(); }
     window.scrollTo({top:0, behavior:"instant"});
@@ -2837,6 +2951,7 @@
   function bindEvents(){
     $$(".tab").forEach(t=>t.addEventListener("click",()=>showView(t.dataset.view)));
     $("#bell").addEventListener("click", openMessages);
+    $("#banner-90s")?.addEventListener("click", ()=>showView("noventas"));
 
     // tienda
     $("#shop-offers")?.addEventListener("click", e=>{ const b=e.target.closest("[data-buy]"); if(b) buyOffer(b.dataset.buy); });
