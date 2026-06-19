@@ -2156,7 +2156,7 @@
   };
   function gradeLabel(g){ return g>=10?"GEM MT":g>=9?"MINT":g>=8?"NM-MT":g>=7?"NEAR MINT":g>=6?"EX-MT":g>=5?"EXCELLENT":g>=4?"VG-EX":g>=3?"VERY GOOD":g>=2?"GOOD":"POOR"; }
   function certNo(slug,g){ let h=0; const s=slug+"|"+g; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return 10000000 + (h%89999999); }
-  function cardHTML(p, {owned=true, count=0, mini=false, variant="normal", grade=null, gradeIdx=null, photoOverride=null}={}){
+  function cardHTML(p, {owned=true, count=0, mini=false, variant="normal", grade=null, gradeIdx=null, photoOverride=null, nameOverride=null, noFoil=false}={}){
     const t = teamOf(p.equipo);
     const logo = logoURL(p.equipo);
     if(!owned){
@@ -2176,14 +2176,16 @@
       const entry = arr[idx]!=null ? arr[idx] : 0;
       const g = gNum(entry), src = gSrc(entry);
       // la ventana del slab usa un render de CARTA válido con el arte de la versión graduada
+      const promoG = src.indexOf("promo:")===0 ? PROMO_BY[src.slice(6)] : null;
+      const labelName = promoG ? promoG.nombre : p.nombre;
       let inner;
       if(src==="finals" && FINALS_CARD[p.slug]) inner = cardHTML(p, {owned:true, count:0, variant:"finals"});
-      else if(src.indexOf("promo:")===0 && PROMO_BY[src.slice(6)]) inner = cardHTML(p, {owned:true, count:0, variant:"normal", photoOverride:PROMO_BY[src.slice(6)].foto});
+      else if(promoG) inner = cardHTML(p, {owned:true, count:0, variant:"normal", photoOverride:promoG.foto, nameOverride:promoG.nombre, noFoil:true});
       else inner = cardHTML(p, {owned:true, count:0, variant:"normal"});
       return `<div class="psa ${g>=9?'ghi':''}" data-slug="${p.slug}" data-variant="graded">
         <div class="psa-label">
           <div class="psa-l-text">
-            <div class="psa-l1">${esc(p.nombre)} · ${p.media}</div>
+            <div class="psa-l1">${esc(labelName)} · ${p.media}</div>
             <div class="psa-l2">DUNK GRADING · CERT ${certNo(p.slug,g)} <span class="psa-logo"><b>P</b><i>S</i><b>A</b></span></div>
           </div>
           <div class="psa-grade"><b>${g}</b><span>${gradeLabel(g)}</span></div>
@@ -2196,9 +2198,10 @@
     const foco = isFinals
       ? `style="object-position:${FINALS_FOCO[p.slug] || "50% 18%"}"`
       : (FOCO[p.slug] ? `style="object-position:${FOCO[p.slug]}"` : "");
-    const f = foilFor(ovr(p));
+    const f = noFoil ? {foil:0, glow:0} : foilFor(ovr(p));
+    const nm = nameOverride || p.nombre;
     const boosted = p.finals || isFinals;   // muestra media mejorada + original
-    return `<button class="card ${p.finals?'finals':''} ${isFinals?'fcard':''}" style="--c1:${t.c1};--c2:${t.c2};--foil:${f.foil}" data-glow="${f.glow}" data-slug="${p.slug}" data-variant="${isFinals?'finals':'normal'}" aria-label="${esc(p.nombre)}, media ${ovr(p)}${isFinals?' edición Finals':''}">
+    return `<button class="card ${p.finals?'finals':''} ${isFinals?'fcard':''}" style="--c1:${t.c1};--c2:${t.c2};--foil:${f.foil}" data-glow="${f.glow}" data-slug="${p.slug}" data-variant="${isFinals?'finals':'normal'}" aria-label="${esc(nm)}, media ${ovr(p)}${isFinals?' edición Finals':''}">
       <div class="card-inner">
         <div class="card-img"><img loading="lazy" src="${esc(photo)}" alt="${esc(p.nombre)}" ${foco} onerror="this.style.opacity=0"></div>
         ${logo?`<div class="card-logo" style="background-image:url('${logo}')"></div>`:""}
@@ -2209,7 +2212,7 @@
         ${isFinals && p.equipo==="New York Knicks" ? `<div class="champ-badge"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M3 7l4 4 5-6 5 6 4-4-1.5 11h-15L3 7z"/><rect x="4.5" y="18.5" width="15" height="2.4" rx="1" fill="currentColor"/></svg>Campeón</div>` : ""}
         <div class="card-ovr"><b>${boosted?ovr(p):p.media}</b>${boosted?`<span class="ovr-orig">${p.media}</span>`:""}<span>${p.posicion}</span></div>
         ${count>1?`<div class="card-dup">×${count}</div>`:""}
-        <div class="card-info"><h3>${esc(p.nombre)}</h3><p>${esc(p.equipo)}</p></div>
+        <div class="card-info"><h3>${esc(nm)}</h3><p>${esc(p.equipo)}</p></div>
       </div></button>`;
   }
 
