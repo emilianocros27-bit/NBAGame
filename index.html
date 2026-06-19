@@ -291,6 +291,8 @@
   .ms-count{font-family:var(--display); font-weight:700; color:var(--muted-2); font-size:13px;}
   .ms-claimed{font-size:12px; color:var(--good); font-weight:600;}
   .ms-claim{padding:9px 16px; font-size:13px;}
+  .ms-cardprev{flex:0 0 auto; width:58px;}
+  .ms-cardprev .pcard{width:58px; min-width:58px;}
   .tab-90s[aria-selected="true"]{color:#cdb0ff;}
   .noventas-hero{position:relative; border-radius:20px; overflow:hidden; min-height:560px;
     display:flex; align-items:flex-end; padding:0; background:#16121f;}
@@ -1283,6 +1285,7 @@
   /* ---- colores y CDN de equipos NBA ---- */
   const TEAMS = {
     "Leyendas 90s":{c1:"#e8b84b", c2:"#7a531a"},
+    "Especial":{c1:"#37d39b", c2:"#136b4c"},
     "Atlanta Hawks":        {c1:"#E03A3E", c2:"#26282A", id:1610612737},
     "Boston Celtics":       {c1:"#007A33", c2:"#0c3d22", id:1610612738},
     "Brooklyn Nets":        {c1:"#2b2b2b", c2:"#0a0a0a", id:1610612751},
@@ -1458,6 +1461,7 @@
 
   /* ===== CARTAS PROMO (solo tienda) ===== */
   const PROMO = [
+    { id:"mk", slug:"mk", nombre:"MK", equipo:"Especial", media:99, foto:"promo-cards/mk.jpg" },
     { id:"brunson-lucario",   slug:"jalen-brunson",      nombre:"Brunson · Lucario",    equipo:"New York Knicks", media:97, foto:"tienda-cards/02-New-York-Knicks/brunson-lucario.jpg" },
     { id:"towns-incineroar",  slug:"karl-anthony-towns", nombre:"Towns · Incineroar",   equipo:"New York Knicks", media:96, foto:"tienda-cards/02-New-York-Knicks/towns-incineroar.jpg" },
     { id:"brunson-darkrai",   slug:"jalen-brunson",      nombre:"Brunson · Darkrai",    equipo:"New York Knicks", media:97, foto:"tienda-cards/02-New-York-Knicks/brunson-darkrai.jpg" },
@@ -2513,6 +2517,7 @@
     { id:"leg30",    t:"Consigue 30 leyendas 90s",      goal:30,  cur:_msLegends, r:{coins:1500} },
     { id:"score100", t:"Haz 100 puntos en una partida", goal:100, cur:()=>state.missions.stats.bestScore||0, r:{coins:500} },
     { id:"streak6",  t:"Racha de 6 en Encestes",        goal:6,   cur:()=>state.missions.stats.maxStreak||0, r:{coins:400} },
+    { id:"baskets100", t:"Encesta 100 canastas (en total)", goal:100, cur:()=>state.missions.stats.totalBaskets||0, r:{promo:"mk"}, card:"mk" },
     { id:"psa",      t:"Gradúa tu primera carta PSA",   goal:1,   cur:_msGraded, r:{coins:600} },
     { id:"skin",     t:"Compra una skin de balón",      goal:1,   cur:()=>state.missions.stats.boughtSkin?1:0, r:{coins:300} },
   ];
@@ -2520,6 +2525,7 @@
     const txt=[];
     if(r.coins){ addCoins(r.coins); txt.push(`<span class="coin-ico"></span> ${r.coins}`); }
     if(r.rewardPacks){ state.rewardPacks=(state.rewardPacks||0)+r.rewardPacks; txt.push(`🎁 ${r.rewardPacks} sobre${r.rewardPacks>1?"s":""}`); }
+    if(r.promo && PROMO_BY[r.promo]){ grantPromo([r.promo]); txt.push(`carta <b>${esc(PROMO_BY[r.promo].nombre)}</b>`); }
     return txt.join(" + ");
   }
   function claimMission(kind, id){
@@ -2537,11 +2543,13 @@
     const cur=Math.min(mi.cur(), mi.goal), done=mi.cur()>=mi.goal;
     const store = kind==="daily"?state.missions.daily.claimed:state.missions.claimed;
     const claimed=!!store[mi.id], pct=Math.round(cur/mi.goal*100);
-    const rwd=(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` 🎁 ${mi.r.rewardPacks}`:"");
+    const rwd=(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` 🎁 ${mi.r.rewardPacks}`:"")+(mi.r.promo&&PROMO_BY[mi.r.promo]?` carta ${esc(PROMO_BY[mi.r.promo].nombre)}`:"");
     const act = claimed ? `<span class="ms-claimed">Reclamado ✓</span>`
       : done ? `<button class="btn btn-primary ms-claim" data-ms-kind="${kind}" data-ms-id="${mi.id}">Reclamar</button>`
       : `<span class="ms-count">${cur}/${mi.goal}</span>`;
-    return `<div class="ms-card ${done&&!claimed?'ready':''} ${claimed?'is-claimed':''}">
+    const cardPrev = (mi.card && PROMO_BY[mi.card]) ? `<div class="ms-cardprev">${promoCardHTML(PROMO_BY[mi.card],{owned:true})}</div>` : "";
+    return `<div class="ms-card ${done&&!claimed?'ready':''} ${claimed?'is-claimed':''} ${cardPrev?'ms-has-card':''}">
+      ${cardPrev}
       <div class="ms-info">
         <div class="ms-title">${esc(mi.t)}</div>
         <div class="ms-bar"><span style="width:${pct}%"></span></div>
@@ -2559,7 +2567,7 @@
   // ganchos para el minijuego (vive en otro script)
   window.DunkMissions = {
     game(){ ensureMissions(); state.missions.daily.games++; save(); },
-    basket(golden){ ensureMissions(); state.missions.daily.baskets++; if(golden) state.missions.daily.golden++; save(); },
+    basket(golden){ ensureMissions(); state.missions.daily.baskets++; if(golden) state.missions.daily.golden++; state.missions.stats.totalBaskets=(state.missions.stats.totalBaskets||0)+1; save(); },
     streak(s){ ensureMissions(); state.missions.stats.maxStreak=Math.max(state.missions.stats.maxStreak||0,s); save(); },
     score(sc){ ensureMissions(); state.missions.stats.bestScore=Math.max(state.missions.stats.bestScore||0,sc); save(); },
   };
