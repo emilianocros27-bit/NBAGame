@@ -268,6 +268,10 @@
   .banner-90s .event-trophy{font-size:26px; filter:drop-shadow(0 2px 8px rgba(176,121,255,.6));}
   .banner-90s .event-text b{color:#cdb0ff;}
   .banner-90s:hover{border-color:rgba(176,121,255,.85);}
+  .banner-psa{border-color:rgba(210,59,59,.55);
+    background:linear-gradient(100deg, rgba(210,59,59,.20), rgba(210,59,59,.05) 55%, transparent);}
+  .banner-psa .event-text b{color:#ff8d8d;}
+  .banner-psa .event-trophy .psa-logo{font-size:15px;}
   .tab-90s{font-family:var(--display); font-weight:800; letter-spacing:.04em;}
   .tab-90s[aria-selected="true"]{color:#cdb0ff;}
   .noventas-hero{position:relative; border-radius:20px; overflow:hidden; min-height:560px;
@@ -918,6 +922,14 @@
         <span id="event-count" class="event-count"></span>
       </div>
     </div>
+    <!-- ===== BANNER EVENTO PSA (24h, solo viernes) ===== -->
+    <div id="banner-psa" class="event-banner banner-psa" style="display:none">
+      <div class="event-trophy"><span class="psa-logo"><b>P</b><i>S</i><b>A</b></span></div>
+      <div class="event-body">
+        <span class="event-text"><b>Evento PSA · solo hoy (24h)</b> · Gradúa cualquier carta y conviértela en slab certificado.</span>
+        <span class="event-count">Viernes de graduación · cuesta 2000 balones</span>
+      </div>
+    </div>
     <!-- ===== BANNER EVENTO SEMANA 90s ===== -->
     <div id="banner-90s" class="event-banner banner-90s" role="button" tabindex="0" title="Ir al sobre 90s">
       <div class="event-trophy">🏀</div>
@@ -1551,8 +1563,13 @@
   const ownsNormal = s => (state.owned[s]||0)>0;
   const ownsFinals = s => (state.finals && state.finals[s]||0)>0;
   const gradesOf = s => (state.graded && state.graded[s]) || [];
+  // cada entrada graduada puede ser un número (legado = normal) o {g, src}
+  const gNum = e => typeof e==="number" ? e : ((e&&e.g)||0);
+  const gSrc = e => typeof e==="number" ? "normal" : ((e&&e.src)||"normal");
   const ownsGraded = s => gradesOf(s).length>0;
-  const bestGrade = s => gradesOf(s).length ? Math.max.apply(null, gradesOf(s)) : 0;
+  const bestGrade = s => gradesOf(s).length ? Math.max.apply(null, gradesOf(s).map(gNum)) : 0;
+  const bestGradedIndex = s => { const a=gradesOf(s); let bi=-1; a.forEach((e,i)=>{ if(bi<0||gNum(e)>gNum(a[bi])) bi=i; }); return bi; };
+  const gradedIndex = s => { const d=state.display&&state.display[s]; if(typeof d==="string"&&d.indexOf("graded:#")===0){ const i=+d.slice(8); if(gradesOf(s)[i]!=null) return i; } return -1; };
   const ownsAny = s => ownsNormal(s) || ownsFinals(s) || ownsGraded(s);
   function displayVariant(s){
     const d = state.display && state.display[s];
@@ -1565,8 +1582,8 @@
     return null;
   }
   function displayGrade(s){
-    const d = state.display && state.display[s];
-    if(typeof d==="string" && d.indexOf("graded:")===0){ const g=+d.split(":")[1]; if(gradesOf(s).includes(g)) return g; }
+    const i=gradedIndex(s); const a=gradesOf(s);
+    if(i>=0) return gNum(a[i]);
     return bestGrade(s);
   }
 
@@ -2139,7 +2156,7 @@
   };
   function gradeLabel(g){ return g>=10?"GEM MT":g>=9?"MINT":g>=8?"NM-MT":g>=7?"NEAR MINT":g>=6?"EX-MT":g>=5?"EXCELLENT":g>=4?"VG-EX":g>=3?"VERY GOOD":g>=2?"GOOD":"POOR"; }
   function certNo(slug,g){ let h=0; const s=slug+"|"+g; for(let i=0;i<s.length;i++) h=(h*31+s.charCodeAt(i))>>>0; return 10000000 + (h%89999999); }
-  function cardHTML(p, {owned=true, count=0, mini=false, variant="normal", grade=null}={}){
+  function cardHTML(p, {owned=true, count=0, mini=false, variant="normal", grade=null, gradeIdx=null, photoOverride=null}={}){
     const t = teamOf(p.equipo);
     const logo = logoURL(p.equipo);
     if(!owned){
@@ -2153,8 +2170,16 @@
     if(variant==="promo"){ const pc=chosenPromo(p.slug); if(pc) return promoCardHTML(pc,{owned:true}); }
     // ---- CARTA GRADUADA (slab tipo PSA) ----
     if(variant==="graded" && ownsGraded(p.slug)){
-      const g = (typeof grade==="number") ? grade : bestGrade(p.slug);
-      const inner = cardHTML(p, {owned:true, count:0, variant:"normal"});
+      const arr = gradesOf(p.slug);
+      let idx = (typeof gradeIdx==="number" && arr[gradeIdx]!=null) ? gradeIdx : gradedIndex(p.slug);
+      if(idx<0) idx = bestGradedIndex(p.slug);
+      const entry = arr[idx]!=null ? arr[idx] : 0;
+      const g = gNum(entry), src = gSrc(entry);
+      // la ventana del slab usa un render de CARTA válido con el arte de la versión graduada
+      let inner;
+      if(src==="finals" && FINALS_CARD[p.slug]) inner = cardHTML(p, {owned:true, count:0, variant:"finals"});
+      else if(src.indexOf("promo:")===0 && PROMO_BY[src.slice(6)]) inner = cardHTML(p, {owned:true, count:0, variant:"normal", photoOverride:PROMO_BY[src.slice(6)].foto});
+      else inner = cardHTML(p, {owned:true, count:0, variant:"normal"});
       return `<div class="psa ${g>=9?'ghi':''}" data-slug="${p.slug}" data-variant="graded">
         <div class="psa-label">
           <div class="psa-l-text">
@@ -2167,7 +2192,7 @@
       </div>`;
     }
     const isFinals = variant==="finals" && FINALS_CARD[p.slug];
-    const photo = isFinals ? FINALS_CARD[p.slug] : p.foto;
+    const photo = photoOverride || (isFinals ? FINALS_CARD[p.slug] : p.foto);
     const foco = isFinals
       ? `style="object-position:${FINALS_FOCO[p.slug] || "50% 18%"}"`
       : (FOCO[p.slug] ? `style="object-position:${FOCO[p.slug]}"` : "");
@@ -2225,7 +2250,7 @@
       let v = displayVariant(p.slug);   // puede ser "promo" si lo elegiste como versión a exponer
       if(!v && promosForSlug(p.slug).length) v = "promo";   // solo tiene la promo
       const count = v==="finals" ? (state.finals[p.slug]||0) : (state.owned[p.slug]||0);
-      return cardHTML(p, {owned:!!v, count, variant:v||"normal", grade: v==="graded"?displayGrade(p.slug):null});
+      return cardHTML(p, {owned:!!v, count, variant:v||"normal", gradeIdx: v==="graded"?gradedIndex(p.slug):null});
     }).join("");
     grid.innerHTML = playersHTML;
   }
@@ -2234,10 +2259,10 @@
     const grid=$("#album-90s"); if(!grid) return;
     const list=LEGENDS_90S.slice().sort((a,b)=>b.media-a.media || a.nombre.localeCompare(b.nombre));
     grid.innerHTML = list.map(p=>{
-      const owned=ownsNormal(p.slug);
-      return cardHTML(p, {owned, count: state.owned[p.slug]||0, variant:"normal"});
+      const v = displayVariant(p.slug) || (ownsNormal(p.slug)?"normal":(ownsGraded(p.slug)?"graded":null));
+      return cardHTML(p, {owned:!!v, count: state.owned[p.slug]||0, variant:v||"normal", gradeIdx: v==="graded"?gradedIndex(p.slug):null});
     }).join("");
-    const have=LEGENDS_90S.filter(p=>ownsNormal(p.slug)).length;
+    const have=LEGENDS_90S.filter(p=>ownsNormal(p.slug)||ownsGraded(p.slug)).length;
     const c=$("#noventas-count"); if(c) c.innerHTML=`Tienes <b>${have}</b> / ${LEGENDS_90S.length} leyendas`;
   }
 
@@ -2262,29 +2287,32 @@
      DETALLE
      ===================================================== */
   function openDetail(slug){
-    const p = BY[slug]; if(!p) return;
+    const p = BY[slug] || LEG_BY[slug]; if(!p) return;
+    const isLeg = !BY[slug];
     const v = displayVariant(slug) || (promosForSlug(slug).length ? "promo" : "normal");
     const inLineup = lineup.includes(slug);
-    const gv = v==="graded" ? displayGrade(slug) : null;
-    const selKey = v==="graded" ? ("graded:"+gv) : v==="promo" ? (state.display[slug]||"") : v;
+    const gIdxShown = gradedIndex(slug)>=0 ? gradedIndex(slug) : bestGradedIndex(slug);
+    const selKey = v==="graded" ? ("graded:#"+gIdxShown) : v==="promo" ? (state.display[slug]||"") : v;
     const variants = [];
-    if(ownsNormal(slug)) variants.push({key:"normal", variant:"normal", grade:null, label:"Normal"});
-    if(ownsFinals(slug)) variants.push({key:"finals", variant:"finals", grade:null, label:"Finals"});
-    [...new Set(gradesOf(slug))].sort((a,b)=>b-a).forEach(g=> variants.push({key:"graded:"+g, variant:"graded", grade:g, label:"PSA "+g}));
+    if(ownsNormal(slug)) variants.push({key:"normal", variant:"normal", label:isLeg?"Leyenda":"Normal"});
+    if(ownsFinals(slug)) variants.push({key:"finals", variant:"finals", label:"Finals"});
+    gradesOf(slug).forEach((e,i)=> variants.push({key:"graded:#"+i, variant:"graded", gradeIdx:i, label:"PSA "+gNum(e)}));
     promosForSlug(slug).forEach(pc=> variants.push({key:"promo:"+pc.id, promo:pc, label:"Promo"}));
     const cnt = v==="finals" ? (state.finals[slug]||0) : v==="graded" ? gradesOf(slug).length : (state.owned[slug]||0);
+    // versión gradable según lo que se muestra (no se puede re-graduar una ya graduada)
+    const gradeSrc = v==="finals" ? "finals" : v==="promo" ? ("promo:"+(chosenPromo(slug)?chosenPromo(slug).id:"")) : v==="normal" ? "normal" : null;
     const body = $("#sheet-body");
     body.innerHTML = `
       <div class="detail">
-        <div class="detail-card">${cardHTML(p,{owned:true,count:cnt,variant:v,grade:gv})}</div>
+        <div class="detail-card">${cardHTML(p,{owned:true,count:cnt,variant:v,gradeIdx:gIdxShown})}</div>
         <div class="detail-info">
           <div class="eyebrow">${esc(p.posicion)} · ${esc(p.equipo)}</div>
           <h2>${esc(p.nombre)}</h2>
-          <div class="team-line">${v==="finals"?"Edición NBA Finals":"Carta NBA 2K26"}</div>
+          <div class="team-line">${isLeg?"Leyenda de los 90":(v==="finals"?"Edición NBA Finals":"Carta NBA 2K26")}</div>
           ${variants.length>1 ? `<div class="ver-label">Tus versiones · elige cuál exponer</div>
             <div class="ver-row">${variants.map(ent=>`
               <div class="ver ${ent.key===selKey?'sel':''}" data-ver="${ent.key}" role="button" tabindex="0">
-                ${ent.promo ? promoCardHTML(ent.promo,{owned:true}) : cardHTML(p,{owned:true,count:0,variant:ent.variant,grade:ent.grade})}
+                ${ent.promo ? promoCardHTML(ent.promo,{owned:true}) : cardHTML(p,{owned:true,count:0,variant:ent.variant,gradeIdx:(ent.gradeIdx!=null?ent.gradeIdx:null)})}
                 <span class="ver-name">${ent.label}</span>
               </div>`).join("")}</div>` : ""}
           <div class="detail-grid">
@@ -2296,15 +2324,15 @@
             ${inLineup
               ? `<button class="btn btn-ghost" data-act="rm-lineup">Quitar del quinteto</button>`
               : `<button class="btn btn-primary" data-act="add-lineup">Añadir al quinteto</button>`}
-            ${isPsaFriday() && ownsNormal(slug)
-              ? `<button class="btn btn-ghost" data-act="grade">Graduar (PSA · <span class="coin-ico"></span> ${PSA_GRADE_COST})</button>` : ""}
+            ${isPsaFriday() && gradeSrc
+              ? `<button class="btn btn-ghost" data-act="grade">Graduar esta versión (PSA · <span class="coin-ico"></span> ${PSA_GRADE_COST})</button>` : ""}
           </div>
         </div>
       </div>`;
     body.querySelectorAll("[data-ver]").forEach(b=>b.addEventListener("click", ()=>{
-      state.display[slug]=b.dataset.ver; save(); renderAlbum(); openDetail(slug);
+      state.display[slug]=b.dataset.ver; save(); renderAlbum(); renderAlbum90s(); openDetail(slug);
     }));
-    body.querySelector("[data-act='grade']")?.addEventListener("click", ()=>gradeCard(slug));
+    body.querySelector("[data-act='grade']")?.addEventListener("click", ()=>gradeCard(slug, gradeSrc));
     body.querySelector("[data-act='add-lineup']")?.addEventListener("click", ()=>{ addToLineup(slug); closeSheet(); toast(`<b>${esc(p.nombre)}</b> al quinteto`); });
     body.querySelector("[data-act='rm-lineup']")?.addEventListener("click", ()=>{ removeFromLineup(slug); closeSheet(); });
     showSheet();
@@ -2334,19 +2362,29 @@
     for(const p of pool){ r-=weight(p,taken); if(r<=0) return p; }
     return pool[pool.length-1];
   }
-  function rollGrade(){ const r=Math.random(); return r<0.40?10 : r<0.68?9 : r<0.85?8 : r<0.94?7 : r<0.98?6 : 5; }
-  const PSA_GRADE_COST = 500;
+  function rollGrade(){ const r=Math.random(); return r<0.45?10 : r<0.80?9 : r<0.92?8 : r<0.97?7 : r<0.99?6 : 5; }
+  const PSA_GRADE_COST = 2000;
   const isPsaFriday = () => new Date().getDay()===5;
-  function gradeCard(slug){
+  // Gradúa UNA versión concreta (src: "normal" | "finals" | "promo:<id>").
+  // Consume esa copia y la convierte en una carta graduada de esa misma versión.
+  function gradeCard(slug, src){
     if(!isPsaFriday()){ toast("Graduar solo está disponible los viernes (evento PSA)"); return; }
-    if(!ownsNormal(slug)){ toast("Necesitas la carta normal para graduarla"); return; }
+    src = src || "normal";
+    const promoId = src.indexOf("promo:")===0 ? src.slice(6) : null;
+    const has = src==="finals" ? ownsFinals(slug) : promoId ? ownsPromo(promoId) : ownsNormal(slug);
+    if(!has){ toast("No tienes esa versión para graduar"); return; }
     if(!spendCoins(PSA_GRADE_COST)){ toast("Te faltan balones para graduar"); showView("juego"); return; }
-    removeCardFromState({slug, variant:"normal"});
+    // consume UNA copia de esa versión (no duplica, no conserva la sin graduar)
+    if(src==="finals") removeCardFromState({slug, variant:"finals"});
+    else if(promoId){ if((state.promo[promoId]||0)>1) state.promo[promoId]--; else delete state.promo[promoId]; }
+    else removeCardFromState({slug, variant:"normal"});
     const grade = rollGrade();
-    (state.graded[slug] = state.graded[slug]||[]).push(grade);
-    if(state.display) state.display[slug]="graded";
+    state.graded[slug] = state.graded[slug] || [];
+    state.graded[slug].push({ g:grade, src });           // recuerda la versión para mostrar su arte
+    state.display[slug] = "graded:#"+(state.graded[slug].length-1);   // expone la recién graduada
     save(); renderAll();
-    toast(`Graduada: <b>${esc(BY[slug].nombre)}</b> · PSA ${grade}`);
+    const nm = (BY[slug]||LEG_BY[slug]||{}).nombre || "Carta";
+    toast(`Graduada: <b>${esc(nm)}</b> · PSA ${grade}`);
     closeSheet(); openDetail(slug);
   }
   function openPack(kind){
@@ -2400,7 +2438,7 @@
     if(kind==="reward") state.rewardPacks=Math.max(0,(state.rewardPacks||0)-1);
     const newlyDone = checkTeamRewards();   // ¿algún equipo completado con estas cartas?
     save();
-    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum();
+    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s();
     runOpener(out, kind);
     if(gotSpecial) toast(`¡Carta especial <b>NBA Finals</b> de ${esc(gotSpecial.nombre)}!`);
     if(gotGraded) toast(`¡Carta graduada! <b>${esc(gotGraded.p.nombre)}</b> · PSA ${gotGraded.grade}`);
@@ -2489,6 +2527,7 @@
   }
   function renderPsaBadge(){
     const on=isPsaFriday();
+    const pb=$("#banner-psa"); if(pb) pb.style.display = on ? "flex" : "none";
     $$('.tab[data-view="album"]').forEach(t=>{
       let b=t.querySelector(".psa-tab-badge");
       if(on){ if(!b){ b=document.createElement("span"); b.className="psa-tab-badge"; b.innerHTML="<b>P</b><i>S</i><b>A</b>"; t.appendChild(b); } }
@@ -2519,7 +2558,7 @@
     state.packs++; state.totalCards+=n;
     const newlyDone=checkTeamRewards();
     save();
-    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum();
+    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s();
     runOpener(out, "reward");
     newlyDone.forEach(t=> toast(`¡Equipo completo: <b>${esc(t)}</b>! Tienes un mensaje para reclamar tu recompensa`));
   }
@@ -2979,9 +3018,15 @@
     $("#album-grid").addEventListener("click", e=>{
       const pc=e.target.closest(".pcard[data-promo]");
       if(pc){ const c=PROMO_BY[pc.dataset.promo]; if(c) openDetail(c.slug); return; }
+      const slab=e.target.closest(".psa[data-slug]"); if(slab){ openDetail(slab.dataset.slug); return; }
       const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
     });
     bindTilt($("#album-grid"));
+    // álbum de leyendas 90s: abrir detalle (para graduar leyendas)
+    $("#album-90s")?.addEventListener("click", e=>{
+      const slab=e.target.closest(".psa[data-slug]"); if(slab){ openDetail(slab.dataset.slug); return; }
+      const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
+    });
 
     // sobres
     $$("[data-pack]").forEach(b=>b.addEventListener("click",()=>openPack(b.dataset.pack)));
@@ -3262,6 +3307,7 @@ window.MiniGame = (function(){
     if(swish) pts += 2;
     let addTime = 1;
     if(hoop.golden){ pts += 3; addTime = 3; }
+    if(hoop.golden && swish){ addTime = 10; }   // dorado + swish: +10 segundos
     score += pts; updateHUD();
     const col = hoop.golden ? '#ffd24d' : swish ? '#7CFC9B' : streak>=3 ? '#ff7a3d' : '#ffd24d';
     burst(hoop.x,hoop.rimY, col);
