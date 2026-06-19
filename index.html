@@ -273,6 +273,24 @@
   .banner-psa .event-text b{color:#ff8d8d;}
   .banner-psa .event-trophy .psa-logo{font-size:15px;}
   .tab-90s{font-family:var(--display); font-weight:800; letter-spacing:.04em;}
+  /* ===== MISIONES ===== */
+  .ms-head{font-family:var(--display); text-transform:uppercase; letter-spacing:.04em; font-size:18px; margin:22px 2px 12px;}
+  .ms-list{display:grid; gap:12px; grid-template-columns:1fr; max-width:760px;}
+  @media(min-width:640px){.ms-list{grid-template-columns:1fr 1fr;}}
+  .ms-card{display:flex; align-items:center; gap:14px; padding:14px 16px; border-radius:14px;
+    background:var(--surface-2); border:1px solid var(--line-strong);}
+  .ms-card.ready{border-color:rgba(242,85,44,.7); box-shadow:0 0 0 1px rgba(242,85,44,.35);}
+  .ms-card.is-claimed{opacity:.55;}
+  .ms-info{flex:1; min-width:0;}
+  .ms-title{font-weight:600; font-size:14px; margin-bottom:7px;}
+  .ms-bar{height:7px; border-radius:6px; background:rgba(255,255,255,.10); overflow:hidden;}
+  .ms-bar span{display:block; height:100%; background:linear-gradient(90deg,var(--accent),#ffb27a); border-radius:6px;}
+  .ms-reward{font-size:12px; color:var(--muted); margin-top:7px;}
+  .ms-reward .coin-ico{width:12px; height:12px; vertical-align:-2px;}
+  .ms-act{flex:0 0 auto;}
+  .ms-count{font-family:var(--display); font-weight:700; color:var(--muted-2); font-size:13px;}
+  .ms-claimed{font-size:12px; color:var(--good); font-weight:600;}
+  .ms-claim{padding:9px 16px; font-size:13px;}
   .tab-90s[aria-selected="true"]{color:#cdb0ff;}
   .noventas-hero{position:relative; border-radius:20px; overflow:hidden; min-height:560px;
     display:flex; align-items:flex-end; padding:0; background:#16121f;}
@@ -862,7 +880,7 @@
         <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
         <button class="tab" role="tab" data-view="tienda" aria-selected="false">Tienda</button>
         <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
-        <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
+        <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
         <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
       </nav>
       <div class="coins-chip" title="Balones (gana jugando Encestes)"><span class="coin-ico"></span><b class="coin-amount">0</b></div>
@@ -1076,32 +1094,17 @@
     </section>
 
     <!-- ===== QUINTETO ===== -->
-    <section class="view" id="view-quinteto" role="tabpanel">
+    <section class="view" id="view-misiones" role="tabpanel">
       <div class="view-head">
         <div>
-          <h2>Construye tu quinteto</h2>
-          <p>Elige 5 titulares de tu colección. Cubrir cada posición (PG·SG·SF·PF·C) suma química y poder total.</p>
+          <h2>Misiones</h2>
+          <p>Completa retos y reclama balones y sobres. Las diarias se reinician cada día.</p>
         </div>
       </div>
-      <div class="lineup-wrap">
-        <div class="court">
-          <div class="court-top">
-            <span class="ttl">Tu quinteto inicial</span>
-            <span class="ttl" id="lineup-filled">0/5</span>
-          </div>
-          <div class="slots" id="slots"></div>
-        </div>
-        <div class="panel">
-          <div class="stat-row"><span class="lbl">Media de equipo</span><span class="val" id="st-avg">—</span></div>
-          <div class="stat-row"><span class="lbl">Química (posiciones)</span><span class="val" id="st-pos">+0</span></div>
-          <div class="stat-row"><span class="lbl">Conexión (mismo equipo)</span><span class="val" id="st-team">+0</span></div>
-          <div class="stat-row stat-total"><span class="lbl">Poder total</span><span class="val" id="st-total">0</span></div>
-          <p class="hint-line" id="lineup-hint">Toca un hueco para añadir un jugador.</p>
-          <div style="display:flex; gap:10px; margin-top:16px; flex-wrap:wrap">
-            <button class="btn btn-ghost" id="btn-clear">Vaciar</button>
-          </div>
-        </div>
-      </div>
+      <h3 class="ms-head">🔁 Diarias</h3>
+      <div class="ms-list" id="ms-daily"></div>
+      <h3 class="ms-head">🏆 Logros</h3>
+      <div class="ms-list" id="ms-ach"></div>
     </section>
 
     <!-- ===== MINIJUEGO: ENCESTES ===== -->
@@ -1206,7 +1209,7 @@
     <button class="tab" role="tab" data-view="sobres" aria-selected="false">Sobres</button>
     <button class="tab" role="tab" data-view="tienda" aria-selected="false">Tienda</button>
     <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
-    <button class="tab" role="tab" data-view="quinteto" aria-selected="false">Quinteto</button>
+    <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
     <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
   </nav>
 
@@ -2324,9 +2327,6 @@
             <div class="dstat"><b>×${cnt}</b><span>En tu mazo</span></div>
           </div>
           <div class="detail-actions">
-            ${inLineup
-              ? `<button class="btn btn-ghost" data-act="rm-lineup">Quitar del quinteto</button>`
-              : `<button class="btn btn-primary" data-act="add-lineup">Añadir al quinteto</button>`}
             ${isPsaFriday() && gradeSrc
               ? `<button class="btn btn-ghost" data-act="grade">Graduar esta versión (PSA · <span class="coin-ico"></span> ${PSA_GRADE_COST})</button>` : ""}
           </div>
@@ -2438,6 +2438,7 @@
       else state.owned[it.p.slug]=(state.owned[it.p.slug]||0)+1;
     });
     state.packs++; state.totalCards+=n;
+    ensureMissions(); state.missions.daily.packs++;   // misión diaria: abrir sobre
     if(kind==="reward") state.rewardPacks=Math.max(0,(state.rewardPacks||0)-1);
     const newlyDone = checkTeamRewards();   // ¿algún equipo completado con estas cartas?
     save();
@@ -2485,6 +2486,83 @@
     if(btn){ btn.disabled = rp<=0; btn.textContent = rp>0 ? `Abrir recompensa (${rp})` : "Sin sobres (0)"; }
     const badge=$("#reward-badge"); if(badge) badge.textContent = rp>0 ? `x${rp} disponible${rp>1?"s":""}` : "Recompensa";
   }
+
+  /* ===== MISIONES ===== */
+  function msToday(){ return new Date().toISOString().slice(0,10); }
+  function ensureMissions(){
+    if(!state.missions) state.missions={ claimed:{}, stats:{}, daily:null };
+    const m=state.missions; if(!m.claimed) m.claimed={}; if(!m.stats) m.stats={};
+    if(!m.daily || m.daily.day!==msToday()) m.daily={ day:msToday(), games:0, baskets:0, golden:0, packs:0, claimed:{} };
+  }
+  const _msOwned   = ()=> PLAYERS.filter(p=>ownsAny(p.slug)).length;
+  const _msLegends = ()=> LEGENDS_90S.filter(p=>ownsNormal(p.slug)||ownsGraded(p.slug)).length;
+  const _msGraded  = ()=> Object.keys(state.graded||{}).some(s=>gradesOf(s).length>0)?1:0;
+  const DAILY_MISSIONS = [
+    { id:"play",    t:"Juega 1 partida de Encestes", goal:1,  cur:()=>state.missions.daily.games,   r:{coins:200} },
+    { id:"baskets", t:"Encesta 15 canastas",         goal:15, cur:()=>state.missions.daily.baskets, r:{coins:300} },
+    { id:"golden",  t:"Mete 1 aro dorado",           goal:1,  cur:()=>state.missions.daily.golden,  r:{coins:250} },
+    { id:"pack",    t:"Abre 1 sobre",                goal:1,  cur:()=>state.missions.daily.packs,   r:{coins:150} },
+  ];
+  const ACH_MISSIONS = [
+    { id:"cards10",  t:"Consigue 10 cartas",            goal:10,  cur:_msOwned, r:{coins:300} },
+    { id:"cards50",  t:"Consigue 50 cartas",            goal:50,  cur:_msOwned, r:{coins:800} },
+    { id:"cards150", t:"Completa el álbum (150 cartas)",goal:150, cur:_msOwned, r:{coins:3000, rewardPacks:1} },
+    { id:"teams1",   t:"Completa 1 equipo",             goal:1,   cur:teamsCompletedCount, r:{coins:400} },
+    { id:"teams30",  t:"Completa los 30 equipos",       goal:30,  cur:teamsCompletedCount, r:{rewardPacks:2} },
+    { id:"leg5",     t:"Consigue 5 leyendas 90s",       goal:5,   cur:_msLegends, r:{coins:500} },
+    { id:"leg30",    t:"Consigue 30 leyendas 90s",      goal:30,  cur:_msLegends, r:{coins:1500} },
+    { id:"score100", t:"Haz 100 puntos en una partida", goal:100, cur:()=>state.missions.stats.bestScore||0, r:{coins:500} },
+    { id:"streak6",  t:"Racha de 6 en Encestes",        goal:6,   cur:()=>state.missions.stats.maxStreak||0, r:{coins:400} },
+    { id:"psa",      t:"Gradúa tu primera carta PSA",   goal:1,   cur:_msGraded, r:{coins:600} },
+    { id:"skin",     t:"Compra una skin de balón",      goal:1,   cur:()=>state.missions.stats.boughtSkin?1:0, r:{coins:300} },
+  ];
+  function msApplyReward(r){
+    const txt=[];
+    if(r.coins){ addCoins(r.coins); txt.push(`<span class="coin-ico"></span> ${r.coins}`); }
+    if(r.rewardPacks){ state.rewardPacks=(state.rewardPacks||0)+r.rewardPacks; txt.push(`🎁 ${r.rewardPacks} sobre${r.rewardPacks>1?"s":""}`); }
+    return txt.join(" + ");
+  }
+  function claimMission(kind, id){
+    ensureMissions();
+    const list = kind==="daily"?DAILY_MISSIONS:ACH_MISSIONS;
+    const mi=list.find(x=>x.id===id); if(!mi) return;
+    const store = kind==="daily"?state.missions.daily.claimed:state.missions.claimed;
+    if(store[id] || mi.cur()<mi.goal) return;
+    store[id]=true;
+    const got=msApplyReward(mi.r);
+    save(); renderMissions(); renderRewards();
+    toast(`¡Misión completada! +${got}`);
+  }
+  function missionCardHTML(kind, mi){
+    const cur=Math.min(mi.cur(), mi.goal), done=mi.cur()>=mi.goal;
+    const store = kind==="daily"?state.missions.daily.claimed:state.missions.claimed;
+    const claimed=!!store[mi.id], pct=Math.round(cur/mi.goal*100);
+    const rwd=(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` 🎁 ${mi.r.rewardPacks}`:"");
+    const act = claimed ? `<span class="ms-claimed">Reclamado ✓</span>`
+      : done ? `<button class="btn btn-primary ms-claim" data-ms-kind="${kind}" data-ms-id="${mi.id}">Reclamar</button>`
+      : `<span class="ms-count">${cur}/${mi.goal}</span>`;
+    return `<div class="ms-card ${done&&!claimed?'ready':''} ${claimed?'is-claimed':''}">
+      <div class="ms-info">
+        <div class="ms-title">${esc(mi.t)}</div>
+        <div class="ms-bar"><span style="width:${pct}%"></span></div>
+        <div class="ms-reward">Recompensa: ${rwd}</div>
+      </div>
+      <div class="ms-act">${act}</div>
+    </div>`;
+  }
+  function renderMissions(){
+    ensureMissions();
+    const d=$("#ms-daily"), a=$("#ms-ach");
+    if(d) d.innerHTML=DAILY_MISSIONS.map(mi=>missionCardHTML("daily",mi)).join("");
+    if(a) a.innerHTML=ACH_MISSIONS.map(mi=>missionCardHTML("ach",mi)).join("");
+  }
+  // ganchos para el minijuego (vive en otro script)
+  window.DunkMissions = {
+    game(){ ensureMissions(); state.missions.daily.games++; save(); },
+    basket(golden){ ensureMissions(); state.missions.daily.baskets++; if(golden) state.missions.daily.golden++; save(); },
+    streak(s){ ensureMissions(); state.missions.stats.maxStreak=Math.max(state.missions.stats.maxStreak||0,s); save(); },
+    score(sc){ ensureMissions(); state.missions.stats.bestScore=Math.max(state.missions.stats.bestScore||0,sc); save(); },
+  };
 
   // ---- MENSAJES / BANDEJA ----
   const unclaimedCount = () => (state.messages||[]).filter(m=> m.type==="psa" ? !m.read : !m.claimed).length;
@@ -2684,7 +2762,7 @@
      QUINTETO
      ===================================================== */
   function renderSlots(){
-    const wrap=$("#slots");
+    const wrap=$("#slots"); if(!wrap) return;
     wrap.innerHTML = lineup.map((slug,i)=>{
       if(!slug){
         return `<div class="slot" data-slot="${i}" role="button" tabindex="0" aria-label="Hueco ${i+1}">
@@ -2943,7 +3021,7 @@
   function buySkin(id){
     const s=SKIN_BY[id]; if(!s||ownsSkin(id)) return;
     if(!spendCoins(s.price)){ toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return; }
-    state.skins[id]=1; equipSkin(id); toast(`¡Skin <b>${esc(s.nombre)}</b> desbloqueada y equipada!`);
+    state.skins[id]=1; ensureMissions(); state.missions.stats.boughtSkin=true; equipSkin(id); toast(`¡Skin <b>${esc(s.nombre)}</b> desbloqueada y equipada!`);
   }
   function equipSkin(id){
     if(!ownsSkin(id)) return;
@@ -2987,7 +3065,7 @@
   function showView(v){
     $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===v)));
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
-    if(v==="quinteto") renderSlots();
+    if(v==="misiones") renderMissions();
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
     if(v==="noventas") renderAlbum90s();
@@ -3033,6 +3111,10 @@
       const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
     });
     bindTilt($("#album-grid"));
+    // misiones: reclamar recompensa
+    $("#view-misiones")?.addEventListener("click", e=>{
+      const b=e.target.closest(".ms-claim"); if(b) claimMission(b.dataset.msKind, b.dataset.msId);
+    });
     // álbum de leyendas 90s: abrir detalle (para graduar leyendas)
     $("#album-90s")?.addEventListener("click", e=>{
       const slab=e.target.closest(".psa[data-slug]"); if(slab){ openDetail(slab.dataset.slug); return; }
@@ -3052,15 +3134,15 @@
     $("#opener-done").addEventListener("click",(e)=>{ e.stopPropagation(); closeOpener(); showView("album"); renderAlbum(); });
     bindTilt($("#opener-card"));
 
-    // quinteto
-    $("#slots").addEventListener("click", e=>{
+    // quinteto (reemplazado por Misiones; se guardan los handlers por si vuelve)
+    $("#slots")?.addEventListener("click", e=>{
       const rm=e.target.closest("[data-rm]"); if(rm){ e.stopPropagation(); lineup[+rm.dataset.rm]=null; renderSlots(); return; }
       const slot=e.target.closest("[data-slot]"); if(slot) openPicker(+slot.dataset.slot);
     });
-    $("#slots").addEventListener("keydown", e=>{
+    $("#slots")?.addEventListener("keydown", e=>{
       if(e.key!=="Enter"&&e.key!==" ") return; const slot=e.target.closest("[data-slot]"); if(slot){ e.preventDefault(); openPicker(+slot.dataset.slot); }
     });
-    $("#btn-clear").addEventListener("click", ()=>{ lineup=[null,null,null,null,null]; renderSlots(); });
+    $("#btn-clear")?.addEventListener("click", ()=>{ lineup=[null,null,null,null,null]; renderSlots(); });
 
     // sheet
     $("#sheet-close").addEventListener("click", closeSheet);
@@ -3236,6 +3318,7 @@ window.MiniGame = (function(){
   }
   function startGame(){
     score=0; streak=0; timeLeft=60; running=true;
+    if(window.DunkMissions) window.DunkMissions.game();   // misión diaria: jugar partida
     document.getElementById('mg-over').style.display='none';
     document.getElementById('mg-hint').style.opacity='1';
     document.getElementById('mg-time').textContent=timeLeft;
@@ -3261,6 +3344,7 @@ window.MiniGame = (function(){
       rw.innerHTML='<span class="coin-ico"></span> +'+earned+' balones'+(newBest?' · ¡Récord!':''); }
     else if(rw){ rw.textContent=''; }
     if(score>0 && window.__submitScore) window.__submitScore(score);   // a la tabla global
+    if(window.DunkMissions) window.DunkMissions.score(score);          // misión: puntos en una partida
     document.getElementById('mg-over').style.display='flex';
   }
   function updateHUD(){
@@ -3320,6 +3404,7 @@ window.MiniGame = (function(){
     if(hoop.golden){ pts += 3; addTime = 3; }
     if(hoop.golden && swish){ addTime = 10; }   // dorado + swish: +10 segundos
     score += pts; updateHUD();
+    if(window.DunkMissions){ window.DunkMissions.basket(hoop.golden); window.DunkMissions.streak(streak); }
     const col = hoop.golden ? '#ffd24d' : swish ? '#7CFC9B' : streak>=3 ? '#ff7a3d' : '#ffd24d';
     burst(hoop.x,hoop.rimY, col);
     rings.push({x:hoop.x,y:hoop.rimY,r:hoop.r*0.5,life:1,color:col});
