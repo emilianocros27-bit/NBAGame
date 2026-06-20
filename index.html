@@ -1474,10 +1474,10 @@
   const OFFERS = [
     { id:"knicks", tagline:"Edición Pokémon", title:"Edición Promo · Knicks Mythic",
       sub:"Cartas de colección de los finalistas, en su versión más rara. Solo aquí.",
-      price:45000, cards:["brunson-lucario","towns-incineroar","brunson-darkrai","towns-jynx","brunson-meditite"] },
+      price:15000, cards:["brunson-lucario","towns-incineroar","brunson-darkrai","towns-jynx","brunson-meditite"] },
     { id:"wembi", tagline:"Edición especial", title:"Wemby",
       sub:"La carta caricatura exclusiva de Wembanyama. Única en su tipo.",
-      price:20000, cards:["wembi"] },
+      price:10000, cards:["wembi"] },
   ];
   const OFFER_BY = Object.fromEntries(OFFERS.map(o=>[o.id,o]));
   // ===== SKINS DE BALÓN (cosméticas para el minijuego) =====
@@ -2616,7 +2616,7 @@
   }
   function renderPsaBadge(){
     const on=isPsaFriday();
-    const pb=$("#banner-psa"); if(pb) pb.style.display = on ? "flex" : "none";
+    const pb=$("#banner-psa"); if(pb) pb.style.display = "none";   // evento PSA terminado (banner oculto)
     $$('.tab[data-view="album"]').forEach(t=>{
       let b=t.querySelector(".psa-tab-badge");
       if(on){ if(!b){ b=document.createElement("span"); b.className="psa-tab-badge"; b.innerHTML="<b>P</b><i>S</i><b>A</b>"; t.appendChild(b); } }
