@@ -566,6 +566,7 @@
   @media(min-width:640px){.detail{grid-template-columns:300px 1fr}}
   .detail-card{padding:24px; display:grid; place-items:center; background:radial-gradient(80% 60% at 50% 0%, rgba(255,255,255,.05), transparent);}
   .detail-card .card{width:min(70vw,250px)}
+  .detail-card .pcard{width:min(70vw,250px)}
   .detail-info{padding:24px 26px 28px;}
   .detail-info .eyebrow{font-family:var(--display); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent)}
   .detail-info h2{font-size:32px; text-transform:uppercase; margin:8px 0 2px}
@@ -2348,6 +2349,19 @@
 
   function showSheet(){ const s=$("#sheet"); s.classList.add("show"); s.setAttribute("aria-hidden","false"); }
   function closeSheet(){ const s=$("#sheet"); s.classList.remove("show"); s.setAttribute("aria-hidden","true"); }
+  // muestra una carta promo (ej. MK) en grande
+  function showPromoFull(id){
+    const c=PROMO_BY[id]; if(!c) return;
+    $("#sheet-body").innerHTML=`<div class="detail">
+      <div class="detail-card">${promoCardHTML(c,{owned:true})}</div>
+      <div class="detail-info">
+        <div class="eyebrow">${esc(c.equipo)}</div>
+        <h2>${esc(c.nombre)}</h2>
+        <div class="team-line">Carta promo${ownsPromo(id)?"":" · recompensa de misión"}</div>
+        <div class="detail-grid"><div class="dstat"><b>${c.media}</b><span>Media</span></div></div>
+      </div></div>`;
+    showSheet();
+  }
 
   /* =====================================================
      SOBRES
@@ -2548,7 +2562,7 @@
     const act = claimed ? `<span class="ms-claimed">Reclamado ✓</span>`
       : done ? `<button class="btn btn-primary ms-claim" data-ms-kind="${kind}" data-ms-id="${mi.id}">Reclamar</button>`
       : `<span class="ms-count">${cur}/${mi.goal}</span>`;
-    const cardPrev = (mi.card && PROMO_BY[mi.card]) ? `<div class="ms-cardprev">${promoCardHTML(PROMO_BY[mi.card],{owned:true})}</div>` : "";
+    const cardPrev = (mi.card && PROMO_BY[mi.card]) ? `<div class="ms-cardprev" data-card="${mi.card}" role="button" title="Ver carta">${promoCardHTML(PROMO_BY[mi.card],{owned:true})}</div>` : "";
     return `<div class="ms-card ${done&&!claimed?'ready':''} ${claimed?'is-claimed':''} ${cardPrev?'ms-has-card':''}">
       ${cardPrev}
       <div class="ms-info">
@@ -3122,6 +3136,7 @@
     bindTilt($("#album-grid"));
     // misiones: reclamar recompensa
     $("#view-misiones")?.addEventListener("click", e=>{
+      const cp=e.target.closest(".ms-cardprev"); if(cp){ showPromoFull(cp.dataset.card); return; }
       const b=e.target.closest(".ms-claim"); if(b) claimMission(b.dataset.msKind, b.dataset.msId);
     });
     // álbum de leyendas 90s: abrir detalle (para graduar leyendas)
