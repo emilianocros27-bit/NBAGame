@@ -291,6 +291,30 @@
   .ms-count{font-family:var(--display); font-weight:700; color:var(--muted-2); font-size:13px;}
   .ms-claimed{font-size:12px; color:var(--good); font-weight:600;}
   .ms-claim{padding:9px 16px; font-size:13px;}
+  /* ===== LIGA + PASE DE BATALLA ===== */
+  .liga-top{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:22px;}
+  @media(max-width:560px){ .liga-top{grid-template-columns:1fr;} }
+  .liga-rank,.liga-claim{background:var(--surface-2); border:1px solid var(--line); border-radius:16px; padding:16px 18px; display:flex; flex-direction:column; gap:6px; justify-content:center;}
+  .liga-rank-lbl,.liga-claim-txt{font-size:12px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
+  .liga-rank-num{font-family:var(--display); font-weight:800; font-size:40px; color:var(--accent); line-height:1;}
+  .liga-rank-sub{font-size:13px; color:var(--muted-2);}
+  .liga-claim-txt{text-transform:none; letter-spacing:0; font-size:14px; color:var(--text);}
+  .bp-wrap{background:var(--surface-2); border:1px solid var(--line); border-radius:18px; padding:18px;}
+  .bp-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
+  .bp-head h3{font-size:18px; text-transform:uppercase;}
+  .bp-xp{font-size:13px; color:var(--accent); font-family:var(--display); font-weight:700;}
+  .bp-track{display:flex; gap:12px; overflow-x:auto; padding-bottom:8px;}
+  .bp-tier{flex:0 0 150px; background:rgba(255,255,255,.03); border:1px solid var(--line); border-radius:14px; padding:12px; opacity:.55; transition:.2s;}
+  .bp-tier.reached{opacity:1; border-color:rgba(242,85,44,.5);}
+  .bp-lvl{font-family:var(--display); font-weight:800; font-size:15px; display:flex; justify-content:space-between; align-items:baseline; margin-bottom:10px;}
+  .bp-lvl span{font-size:11px; color:var(--muted); font-weight:600;}
+  .bp-row{display:flex; align-items:center; gap:6px; font-size:13px; padding:7px 0; border-top:1px solid var(--line);}
+  .bp-tag{font-size:10px; text-transform:uppercase; letter-spacing:.06em; padding:2px 6px; border-radius:6px; background:rgba(255,255,255,.06); color:var(--muted);}
+  .bp-prem .bp-tag{background:rgba(242,184,75,.18); color:#f0c75a;}
+  .bp-rwd{flex:1; font-weight:600;}
+  .bp-claim{padding:5px 10px; font-size:12px;}
+  .bp-ok{color:var(--good); font-weight:800;}
+  .bp-lock{opacity:.7;}
   .ms-cardprev{flex:0 0 auto; width:58px;}
   .ms-cardprev .pcard{width:58px; min-width:58px;}
   .tab-90s[aria-selected="true"]{color:#cdb0ff;}
@@ -886,6 +910,7 @@
         <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
         <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
         <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
+        <button class="tab" role="tab" data-view="liga" aria-selected="false">Liga</button>
       </nav>
       <div class="coins-chip" title="Balones (gana jugando Encestes)"><span class="coin-ico"></span><b class="coin-amount">0</b></div>
       <button class="bell" id="bell" aria-label="Mensajes" title="Mensajes">
@@ -1144,6 +1169,25 @@
       </div>
     </section>
 
+    <!-- ===== LIGA (competitivo) ===== -->
+    <section class="view" id="view-liga" role="tabpanel">
+      <div class="view-head"><div>
+        <h2>Liga</h2>
+        <p>Temporada nueva: compite por el mejor puntaje de Encestes. El top 3 reclama balones cada hora.</p>
+      </div></div>
+      <div class="liga-top" id="liga-top"></div>
+      <div class="bp-wrap">
+        <div class="bp-head">
+          <h3>Pase de batalla</h3>
+          <span id="bp-xp" class="bp-xp">Nivel 1</span>
+        </div>
+        <div class="bp-track" id="bp-track"></div>
+        <button class="btn btn-primary" id="bp-buy" style="margin-top:14px">Desbloquear Premium · <span class="coin-ico"></span> 5000</button>
+      </div>
+      <div class="pf-sec-head" style="margin-top:26px"><h3>Clasificación</h3></div>
+      <ol class="lb-list" id="liga-list"><li class="pf-empty" style="list-style:none">Cargando…</li></ol>
+    </section>
+
     <!-- ===== PERFIL ===== -->
     <section class="view" id="view-perfil" role="tabpanel">
       <div class="view-head"><div>
@@ -1215,6 +1259,7 @@
     <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
     <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
     <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
+        <button class="tab" role="tab" data-view="liga" aria-selected="false">Liga</button>
   </nav>
 
   <!-- overlay apertura de sobre -->
@@ -1999,15 +2044,126 @@
   }
   function myDisplayName(){ return (myProfile&&myProfile.username) ? "@"+myProfile.username : (authUser? authUser.split("@")[0] : "jugador"); }
   function submitMyScore(score){
-    if(!window.DunkFire || !window.DunkFire.submitScore) return;
-    if(!currentUid){ toast("Inicia sesión para guardar tu récord en la tabla"); return; }
+    // liga + pase de batalla (local, aunque no estés logueado)
+    ensureLeague();
+    state.league.best = Math.max(state.league.best||0, score);
+    state.league.xp = (state.league.xp||0) + score;
+    save();
+    if(!window.DunkFire || !window.DunkFire.submitScore){ renderLiga(); return; }
+    if(!currentUid){ toast("Inicia sesión para guardar tu récord en la tabla"); renderLiga(); return; }
     window.DunkFire.submitScore(currentUid, myDisplayName(), score)
       .then(ok=>{ if(ok) toast("Récord guardado ✓"); })
       .catch(()=>{ toast("No se pudo guardar tu récord (revisa tu conexión)"); });
+    window.DunkFire.submitLeague && window.DunkFire.submitLeague(currentUid, myDisplayName(), state.league.best).catch(()=>{});
+    renderLiga();
+  }
+  /* ===== LIGA + PASE DE BATALLA ===== */
+  let leagueSub=null, leagueCache=[];
+  function ensureLeague(){
+    if(!state.league) state.league={ best:0, xp:0, premium:false, claimedFree:{}, claimedPremium:{}, claimHour:"" };
+    const L=state.league;
+    if(!L.claimedFree) L.claimedFree={}; if(!L.claimedPremium) L.claimedPremium={};
+  }
+  function subscribeLeague(){
+    if(leagueSub || !window.DunkFire || !window.DunkFire.watchLeague) return;
+    leagueSub = window.DunkFire.watchLeague(list=>{ leagueCache=list; renderLiga(); }, 50);
+  }
+  const HOUR_REWARD = {1:500, 2:300, 3:200};
+  const BP_TIERS = [
+    {xp:50,   free:{coins:150}, prem:{coins:300}},
+    {xp:150,  free:{coins:200}, prem:{coins:400}},
+    {xp:300,  free:{coins:250}, prem:{coins:500}},
+    {xp:500,  free:{coins:300}, prem:{rewardPacks:1}},
+    {xp:800,  free:{coins:400}, prem:{coins:800}},
+    {xp:1150, free:{coins:500}, prem:{coins:1000}},
+    {xp:1600, free:{coins:600}, prem:{rewardPacks:1}},
+    {xp:2150, free:{coins:800}, prem:{coins:1500}},
+    {xp:2800, free:{coins:1000}, prem:{coins:2000}},
+    {xp:3600, free:{coins:1200}, prem:{rewardPacks:2}},
+  ];
+  const BP_PREMIUM_COST = 5000;
+  function bpLevel(){ ensureLeague(); const xp=state.league.xp||0; let n=0; BP_TIERS.forEach(t=>{ if(xp>=t.xp) n++; }); return n; }
+  function leagueRank(){ const i=leagueCache.findIndex(r=>r.uid===currentUid); return i>=0 ? i+1 : 0; }
+  function hourKey(){ return new Date().toISOString().slice(0,13); }
+  function claimHourReward(){
+    ensureLeague();
+    const rank=leagueRank(); const rew=HOUR_REWARD[rank];
+    if(!rew){ toast("Solo el top 3 reclama premio por hora"); return; }
+    if(state.league.claimHour===hourKey()){ toast("Ya reclamaste tu premio esta hora"); return; }
+    state.league.claimHour=hourKey(); addCoins(rew); save(); renderLiga();
+    toast(`¡Premio de liga! +<b>${rew}</b> balones (#${rank})`);
+  }
+  function claimBP(idx, track){
+    ensureLeague();
+    const t=BP_TIERS[idx]; if(!t) return;
+    if((state.league.xp||0) < t.xp){ toast("Aún no alcanzas ese nivel"); return; }
+    if(track==="prem" && !state.league.premium){ toast("Necesitas el Pase Premium"); return; }
+    const store = track==="prem"?state.league.claimedPremium:state.league.claimedFree;
+    if(store[idx]){ return; }
+    store[idx]=true;
+    const got=msApplyReward(track==="prem"?t.prem:t.free);
+    save(); renderLiga(); renderRewards();
+    toast(`¡Recompensa nivel ${idx+1}! +${got}`);
+  }
+  function buyPremium(){
+    ensureLeague();
+    if(state.league.premium){ toast("Ya tienes el Pase Premium"); return; }
+    if(!spendCoins(BP_PREMIUM_COST)){ toast("Te faltan balones para el Premium"); return; }
+    state.league.premium=true; save(); renderLiga();
+    toast("¡Pase Premium desbloqueado! 🎉");
+  }
+  function rewardLabel(r){ return (r.coins?`<span class="coin-ico"></span> ${r.coins}`:"")+(r.rewardPacks?`🎁 ${r.rewardPacks}`:""); }
+  function renderLiga(){
+    ensureLeague();
+    // tu posición + premio por hora
+    const top=$("#liga-top");
+    if(top){
+      const rank=leagueRank();
+      const claimable = HOUR_REWARD[rank] && state.league.claimHour!==hourKey();
+      top.innerHTML = `
+        <div class="liga-rank">
+          <span class="liga-rank-lbl">Tu posición</span>
+          <span class="liga-rank-num">${rank? "#"+rank : "—"}</span>
+          <span class="liga-rank-sub">Mejor puntaje: ${state.league.best||0}</span>
+        </div>
+        <div class="liga-claim">
+          ${HOUR_REWARD[rank] ? `<div class="liga-claim-txt">Premio por hora (#${rank}): <b>${HOUR_REWARD[rank]}</b> 🏀</div>
+             <button class="btn ${claimable?'btn-primary':'btn-ghost'}" id="liga-claim-btn" ${claimable?'':'disabled'}>${claimable?'Reclamar':'Reclamado esta hora'}</button>`
+            : `<div class="liga-claim-txt">Llega al top 3 para ganar balones cada hora.</div>`}
+        </div>`;
+    }
+    // pase de batalla
+    const lvl=bpLevel();
+    const xpEl=$("#bp-xp"); if(xpEl) xpEl.textContent=`Nivel ${lvl} · ${state.league.xp||0} XP`;
+    const buy=$("#bp-buy"); if(buy){ buy.style.display = state.league.premium ? "none" : ""; }
+    const track=$("#bp-track");
+    if(track){
+      track.innerHTML = BP_TIERS.map((t,i)=>{
+        const reached=(state.league.xp||0)>=t.xp;
+        const fC=state.league.claimedFree[i], pC=state.league.claimedPremium[i];
+        const fBtn = fC?`<span class="bp-ok">✓</span>` : reached?`<button class="btn btn-primary bp-claim" data-bp="${i}" data-track="free">Reclamar</button>`:`<span class="bp-lock">🔒</span>`;
+        const pBtn = pC?`<span class="bp-ok">✓</span>` : (reached&&state.league.premium)?`<button class="btn btn-primary bp-claim" data-bp="${i}" data-track="prem">Reclamar</button>`:`<span class="bp-lock">${state.league.premium?'🔒':'⭐'}</span>`;
+        return `<div class="bp-tier ${reached?'reached':''}">
+          <div class="bp-lvl">Nv ${i+1}<span>${t.xp} XP</span></div>
+          <div class="bp-row bp-free"><span class="bp-tag">Gratis</span><span class="bp-rwd">${rewardLabel(t.free)}</span>${fBtn}</div>
+          <div class="bp-row bp-prem"><span class="bp-tag">Premium</span><span class="bp-rwd">${rewardLabel(t.prem)}</span>${pBtn}</div>
+        </div>`;
+      }).join("");
+    }
+    // tabla
+    const ol=$("#liga-list");
+    if(ol){
+      const list=(leagueCache||[]).slice().sort((a,b)=>(b.score||0)-(a.score||0));
+      ol.innerHTML = list.length ? list.map((r,i)=>`<li class="lb-row ${r.uid===currentUid?'me':''}">
+        <span class="lb-rank">${i+1}</span>
+        <span class="lb-name">${esc(r.username||"jugador")}${r.uid===currentUid?" (tú)":""}</span>
+        <span class="lb-pts">${r.score||0}</span></li>`).join("")
+        : `<li class="pf-empty" style="list-style:none">Aún nadie en la liga. ¡Juega Encestes para entrar!</li>`;
+    }
   }
   function renderLeaderboard(list){
     const ol=$("#lb-list"); if(!ol) return;
-    const _arr=(list||scoresCache||[]).slice(); _arr.push({uid:"seed-huesca",username:"HuescaPro24",score:132});
+    const _arr=(list||scoresCache||[]).slice(); _arr.push({uid:"seed-huesca",username:"HuescaPro24",score:132}); _arr.push({uid:"seed-elias",username:"@eliasyoya",score:152});
     const _by={}; _arr.forEach(r=>{ const k=r.username||"jugador"; if(!_by[k]||(r.score||0)>(_by[k].score||0)) _by[k]=r; });
     list = Object.values(_by).sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
     if(!list.length){ ol.innerHTML=`<li class="pf-empty" style="list-style:none">Aún no hay récords. ¡Sé el primero en jugar Encestes!</li>`; return; }
@@ -3111,6 +3267,7 @@
     $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===v)));
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
     if(v==="misiones") renderMissions();
+    if(v==="liga"){ subscribeLeague(); renderLiga(); }
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
     if(v==="noventas") renderAlbum90s();
@@ -3157,6 +3314,11 @@
     });
     bindTilt($("#album-grid"));
     // misiones: reclamar recompensa
+    $("#view-liga")?.addEventListener("click", e=>{
+      if(e.target.closest("#liga-claim-btn")){ claimHourReward(); return; }
+      if(e.target.closest("#bp-buy")){ buyPremium(); return; }
+      const bp=e.target.closest(".bp-claim"); if(bp){ claimBP(+bp.dataset.bp, bp.dataset.track); return; }
+    });
     $("#view-misiones")?.addEventListener("click", e=>{
       const cp=e.target.closest(".ms-cardprev"); if(cp){ showPromoFull(cp.dataset.card); return; }
       const b=e.target.closest(".ms-claim"); if(b) claimMission(b.dataset.msKind, b.dataset.msId);
@@ -3791,6 +3953,17 @@ window.MiniGame = (function(){
       });
     },
     watchScores: (cb, n)=> onSnapshot(query(collection(db,"scores"), orderBy("score","desc"), limit(n||20)),
+      qs=> cb(qs.docs.map(d=>d.data())), ()=>{}),
+    // ---- LIGA (temporada nueva, ranking propio) ----
+    submitLeague: async (uid, username, score)=>{
+      return await runTransaction(db, async(tx)=>{
+        const ref=doc(db,"league",uid); const s=await tx.get(ref);
+        const prev = s.exists() ? (s.data().score||0) : 0;
+        if(score>prev){ tx.set(ref, { uid, username, score, updated:Date.now() }); return true; }
+        return false;
+      });
+    },
+    watchLeague: (cb, n)=> onSnapshot(query(collection(db,"league"), orderBy("score","desc"), limit(n||50)),
       qs=> cb(qs.docs.map(d=>d.data())), ()=>{}),
     // ---- CÓDIGOS DE UN SOLO USO ----
     makeCode: async (code, cards)=>{ await setDoc(doc(db,"codes",code), { cards, used:false, createdAt:Date.now() }); return code; },
