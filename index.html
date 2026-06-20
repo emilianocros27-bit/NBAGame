@@ -1999,8 +1999,11 @@
   }
   function myDisplayName(){ return (myProfile&&myProfile.username) ? "@"+myProfile.username : (authUser? authUser.split("@")[0] : "jugador"); }
   function submitMyScore(score){
-    if(!currentUid || !window.DunkFire || !window.DunkFire.submitScore) return;
-    window.DunkFire.submitScore(currentUid, myDisplayName(), score).catch(()=>{});
+    if(!window.DunkFire || !window.DunkFire.submitScore) return;
+    if(!currentUid){ toast("Inicia sesión para guardar tu récord en la tabla"); return; }
+    window.DunkFire.submitScore(currentUid, myDisplayName(), score)
+      .then(ok=>{ if(ok) toast("Récord guardado ✓"); })
+      .catch(()=>{ toast("No se pudo guardar tu récord (revisa tu conexión)"); });
   }
   function renderLeaderboard(list){
     const ol=$("#lb-list"); if(!ol) return;
