@@ -2004,7 +2004,9 @@
   }
   function renderLeaderboard(list){
     const ol=$("#lb-list"); if(!ol) return;
-    list = (list||scoresCache||[]).slice().sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
+    const _arr=(list||scoresCache||[]).slice(); _arr.push({uid:"seed-huesca",username:"HuescaPro24",score:132});
+    const _by={}; _arr.forEach(r=>{ const k=r.username||"jugador"; if(!_by[k]||(r.score||0)>(_by[k].score||0)) _by[k]=r; });
+    list = Object.values(_by).sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
     if(!list.length){ ol.innerHTML=`<li class="pf-empty" style="list-style:none">Aún no hay récords. ¡Sé el primero en jugar Encestes!</li>`; return; }
     ol.innerHTML = list.map((r,i)=>`<li class="lb-row ${r.uid===currentUid?'me':''}">
       <span class="lb-rank">${i+1}</span>
