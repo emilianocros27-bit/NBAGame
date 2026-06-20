@@ -2409,11 +2409,11 @@
     toast(`Graduada: <b>${esc(nm)}</b> · PSA ${grade}`);
     closeSheet(); openDetail(slug);
   }
-  function openPack(kind){
+  function openPack(kind, free){
     if(kind==="reward" && !((state.rewardPacks||0)>0)){ toast("No tienes sobres de recompensa. Completa un equipo en el álbum."); return; }
     if(kind==="finals" && !eventActive()){ toast("El evento de Finales ya terminó."); return; }
     const cost = PACK_COST[kind] || 0;
-    if(cost > 0 && !spendCoins(cost)){
+    if(!free && cost > 0 && !spendCoins(cost)){
       toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return;
     }
     const n = kind==="noventas" ? 2 : 5;     // el sobre 90s da 2 cartas
@@ -3060,9 +3060,26 @@
         : `<div class="pf-empty">Aún no tienes cartas promo. Cómpralas arriba con balones o canjea un código.</div>`;
     }
   }
+  // códigos canjeables UNA sola vez por cuenta (todos usan el mismo código)
+  const ONCE_CODES = {
+    "LEYENDA90": { coins:2000, pack90s:true },
+  };
   async function redeemCode(raw){
     const code = String(raw||"").trim().toUpperCase();
     if(!code) return;
+    // 0) código de una vez por cuenta
+    if(ONCE_CODES[code]){
+      if(!state.claimedCodes) state.claimedCodes={};
+      if(state.claimedCodes[code]){ toast("Ya usaste este código en tu cuenta"); return; }
+      const r=ONCE_CODES[code];
+      state.claimedCodes[code]=true;
+      if(r.coins) addCoins(r.coins);
+      save();
+      toast(`¡Código canjeado! +<b>${r.coins||0}</b> balones + 1 sobre 90s 🎁`);
+      if(r.pack90s) openPack("noventas", true);   // sobre 90s gratis (con su animación)
+      else save();
+      return;
+    }
     // 1) códigos fijos (multiuso, para pruebas del dev)
     if(REDEEM_CODES[code]){
       const payload=REDEEM_CODES[code];
@@ -3175,7 +3192,7 @@
   }
   let lastPackKind="std";
   const _openPack=openPack;
-  openPack=function(k){ lastPackKind=k; _openPack(k); };
+  openPack=function(k, free){ lastPackKind=k; _openPack(k, free); };
   function closeOpener(){ clearRevealTimers(); openerBusy=false; const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true"); }
 
   /* =====================================================
