@@ -580,6 +580,7 @@
   .picker-head h3{font-size:22px; text-transform:uppercase}
   .picker-head .pf{margin-left:auto; flex:0 0 auto; width:180px}
   .picker-grid{padding:16px 20px 24px;}
+  .pk-grid2 .ver{width:auto;}   /* en el selector de intercambio: cartas en cuadrícula, tamaño completo */
 
   /* ============ TOAST ============ */
   .toast{position:fixed; left:50%; bottom:24px; transform:translateX(-50%) translateY(20px); z-index:100;
@@ -1966,7 +1967,7 @@
     const cell=(o)=>`<div class="ver" data-slug="${o.slug}" data-variant="${o.variant}">${cardHTML(o.p,{owned:true,count:0,variant:o.variant})}<span class="ver-name">Elegir</span></div>`;
     body.innerHTML=`<div class="picker-head"><h3>${esc(title)}</h3>${single?"":'<span class="pf-link" id="pk-done">Listo</span>'}</div>
       <p style="padding:0 20px;color:var(--muted);font-size:13px" id="pk-info">${single?"Toca una carta para elegirla.":"Selecciona tus cartas. Comisión estimada según media y desbalance."}</p>
-      <div class="picker-grid"><div class="ver-row" id="pk-grid">${owned.map(cell).join("")||'<div class="pf-empty">No tienes cartas.</div>'}</div></div>`;
+      <div class="picker-grid"><div class="grid pk-grid2" id="pk-grid">${owned.map(cell).join("")||'<div class="pf-empty">No tienes cartas.</div>'}</div></div>`;
     body.querySelector("#pk-grid").addEventListener("click",e=>{
       const el=e.target.closest("[data-slug]"); if(!el) return;
       if(single){ closeSheet(); cb([{slug:el.dataset.slug,variant:el.dataset.variant}]); return; }
