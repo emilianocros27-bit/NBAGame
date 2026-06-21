@@ -1752,9 +1752,14 @@
   }
   function renderShowcase(prof, isMe){
     const wrap=$("#pf-showcase");
-    const list=(prof.showcase||[]).map(s=>({p:BY[s.slug], variant:s.variant||"normal"})).filter(x=>x.p);
+    const list=(prof.showcase||[]).map(s=>{
+      const variant = s.variant||"normal";
+      if(variant.indexOf("promo:")===0){ const pc=PROMO_BY[variant.slice(6)]; return pc?{promo:pc}:null; }
+      const p = BY[s.slug] || LEG_BY[s.slug];
+      return p ? {p, variant} : null;
+    }).filter(Boolean);
     if(!list.length){ wrap.innerHTML=`<div class="pf-empty">${isMe?"Aún no expones cartas. Toca \"Editar vitrina\".":"Sin cartas en la vitrina."}</div>`; return; }
-    wrap.innerHTML = list.map(x=>cardHTML(x.p,{owned:true,count:0,variant:x.variant})).join("");
+    wrap.innerHTML = list.map(x=> x.promo ? promoCardHTML(x.promo,{owned:true}) : cardHTML(x.p,{owned:true,count:0,variant:x.variant})).join("");
   }
 
   // ---- estado de amistad con un usuario ----
@@ -1819,24 +1824,32 @@
 
   // ---- editor de vitrina (elige hasta 6 cartas tuyas) ----
   function openShowcaseEditor(){
-    const owned = PLAYERS.filter(p=>ownsAny(p.slug)).sort((a,b)=>ovr(b)-ovr(a));
-    let sel = (myProfile.showcase||[]).map(s=>s.slug);
+    // todas las cartas que puedes exponer: jugadores, leyendas 90s y promos
+    const items=[];
+    PLAYERS.forEach(p=>{ if(ownsAny(p.slug)){
+      let v=displayVariant(p.slug); if(!v||v==="promo") v=ownsNormal(p.slug)?"normal":ownsFinals(p.slug)?"finals":"graded";
+      items.push({slug:p.slug, variant:v, ord:ovr(p), html:cardHTML(p,{owned:true,count:0,variant:v})});
+    }});
+    LEGENDS_90S.forEach(p=>{ if(ownsNormal(p.slug)) items.push({slug:p.slug, variant:"normal", ord:ovr(p), html:cardHTML(p,{owned:true,count:0,variant:"normal"})}); });
+    PROMO.forEach(c=>{ if(ownsPromo(c.id)) items.push({slug:c.slug, variant:"promo:"+c.id, ord:c.media||90, html:promoCardHTML(c,{owned:true})}); });
+    items.sort((a,b)=>b.ord-a.ord);
+    const keyOf = it => it.slug+"|"+it.variant;
+    let sel = (myProfile.showcase||[]).map(s=>s.slug+"|"+(s.variant||"normal"));
     const body=$("#sheet-body");
-    const grid = ()=> owned.map(p=>{
-      const v=displayVariant(p.slug)||"normal"; const on=sel.includes(p.slug);
-      return `<div class="ver ${on?'sel':''}" data-slug="${p.slug}" data-variant="${v}">${cardHTML(p,{owned:true,count:0,variant:v})}<span class="ver-name">${on?'Quitar':'Exponer'}</span></div>`;
+    const grid = ()=> items.map(it=>{ const k=keyOf(it); const on=sel.includes(k);
+      return `<div class="ver ${on?'sel':''}" data-key="${k}">${it.html}<span class="ver-name">${on?'Quitar':'Exponer'}</span></div>`;
     }).join("");
     body.innerHTML = `<div class="picker-head"><h3>Tu vitrina · elige hasta 6</h3><span class="pf-link" id="sc-save">Guardar</span></div>
       <div class="picker-grid"><div class="ver-row" id="sc-grid">${grid()}</div></div>`;
-    if(!owned.length) body.querySelector("#sc-grid").innerHTML=`<div class="pf-empty">Aún no tienes cartas. Abre sobres primero.</div>`;
+    if(!items.length) body.querySelector("#sc-grid").innerHTML=`<div class="pf-empty">Aún no tienes cartas. Abre sobres primero.</div>`;
     body.querySelector("#sc-grid").addEventListener("click", e=>{
-      const el=e.target.closest("[data-slug]"); if(!el) return; const slug=el.dataset.slug;
-      if(sel.includes(slug)) sel=sel.filter(s=>s!==slug);
-      else { if(sel.length>=6){ toast("Máximo 6 cartas"); return; } sel.push(slug); }
+      const el=e.target.closest("[data-key]"); if(!el) return; const k=el.dataset.key;
+      if(sel.includes(k)) sel=sel.filter(s=>s!==k);
+      else { if(sel.length>=6){ toast("Máximo 6 cartas"); return; } sel.push(k); }
       el.classList.toggle("sel"); el.querySelector(".ver-name").textContent = el.classList.contains("sel")?"Quitar":"Exponer";
     });
     body.querySelector("#sc-save").addEventListener("click", async ()=>{
-      const showcase = sel.map(slug=>({ slug, variant: displayVariant(slug)||"normal" }));
+      const showcase = sel.map(k=>{ const i=k.indexOf("|"); return { slug:k.slice(0,i), variant:k.slice(i+1) }; });
       myProfile = Object.assign(myProfile||{}, { showcase });
       try{ await window.DunkFire.saveProfile(currentUid, { showcase }); }catch(e){}
       closeSheet(); renderShowcase(myProfile, true);
