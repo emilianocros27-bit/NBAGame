@@ -1898,7 +1898,7 @@
      ===================================================== */
   // valor de una carta segun su media (+ extra si es Finals especial)
   function cardValue(c){
-    const p=BY[c.slug]; if(!p) return 0;
+    const p=BY[c.slug]||LEG_BY[c.slug]; if(!p) return 0;
     const m=ovr(p);
     let v = m>=95?420 : m>=90?260 : m>=85?150 : m>=80?90 : m>=75?55 : 30;
     if(c.variant==="finals") v=Math.round(v*1.6);
@@ -1951,7 +1951,7 @@
   function tradeCardsMini(arr){
     if(!arr||!arr.length) return `<span class="t-empty">—</span>`;
     return arr.map(c=>{
-      const p=BY[c.slug]; if(!p) return "";
+      const p=BY[c.slug]||LEG_BY[c.slug]; if(!p) return "";
       const variant = c.variant==="finals" ? "finals" : "normal";
       return `<div class="t-cardwrap">${cardHTML(p,{owned:true,count:0,variant})}</div>`;
     }).join("");
@@ -1962,6 +1962,7 @@
     const owned=[];
     PLAYERS.forEach(p=>{ if((state.owned[p.slug]||0)>0) owned.push({slug:p.slug,variant:"normal",p});
       if((state.finals[p.slug]||0)>0) owned.push({slug:p.slug,variant:"finals",p}); });
+    LEGENDS_90S.forEach(p=>{ if((state.owned[p.slug]||0)>0) owned.push({slug:p.slug,variant:"normal",p}); });
     owned.sort((a,b)=>ovr(b.p)-ovr(a.p));
     let sel=[];
     const body=$("#sheet-body");
@@ -2098,8 +2099,8 @@
   }
   async function beat(){ if(!roomId) return; const u={}; u["presence."+currentUid]=Date.now(); try{ await window.DunkFire.updateTrade(roomId,u); }catch(e){} }
   function feeOf(t){ const p=t.pick||{}; if(!p[t.from]||!p[t.to]) return 0; return tradeFee([p[t.from]],[p[t.to]]); }
-  function slotCard(c){ if(!c||!BY[c.slug]) return `<span class="tr-empty">—</span>`;
-    return `<div class="t-cardwrap">${cardHTML(BY[c.slug],{owned:true,count:0,variant:c.variant==="finals"?"finals":"normal"})}</div>`; }
+  function slotCard(c){ const p=c&&(BY[c.slug]||LEG_BY[c.slug]); if(!p) return `<span class="tr-empty">—</span>`;
+    return `<div class="t-cardwrap">${cardHTML(p,{owned:true,count:0,variant:c.variant==="finals"?"finals":"normal"})}</div>`; }
   function renderRoom(t){
     roomTrade=t; const ou=otherOf(t);
     profName(ou).then(n=>{ const el=$("#tr-other-name"); if(el) el.textContent=n; });
