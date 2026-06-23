@@ -242,6 +242,8 @@
   @media(prefers-reduced-motion:reduce){ .ss-title,.ss-sub,.ss-go{animation:none !important;} }
 
   /* ===== FICHA DE VERANO (sola) ===== */
+  /* colección de verano: cuadrícula pequeña de 7 cartas */
+  .grid-verano{grid-template-columns:repeat(auto-fill, minmax(96px,1fr)); gap:10px; max-width:760px; margin:0 auto;}
   .ficha-zone{max-width:520px; margin:30px auto 8px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;}
   .ficha-coin{background:none; border:0; padding:0; cursor:pointer; line-height:0; border-radius:50%;
     filter:drop-shadow(0 10px 26px rgba(255,158,61,.4)); transition:transform .18s var(--ease);
@@ -1184,6 +1186,13 @@
         <p class="ficha-sub">Puede no darte nada, darte <b>balones</b>, una <b>carta exclusiva de Verano</b> o el <b>balón especial de Verano</b>.</p>
         <button class="btn btn-primary ficha-buy" id="btn-ficha-buy">Comprar ficha · <span class="coin-ico"></span> 500</button>
       </div>
+
+      <!-- COLECCIÓN DE VERANO (debajo de la ficha) -->
+      <div class="noventas-album-head">
+        <h3>Tu colección de verano</h3>
+        <p id="verano-count" class="teams-done">Tienes <b>0</b> / 7 cartas de verano</p>
+      </div>
+      <div class="grid grid-verano" id="album-verano"></div>
     </section>
 
     <!-- ===== TIENDA ===== -->
@@ -3560,6 +3569,11 @@
       const slab=e.target.closest(".psa[data-slug]"); if(slab){ openDetail(slab.dataset.slug); return; }
       const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
     });
+    // colección de verano
+    $("#album-verano")?.addEventListener("click", e=>{
+      const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
+    });
+    if($("#album-verano")) bindTilt($("#album-verano"));
     // sobres
     $$("[data-pack]").forEach(b=>b.addEventListener("click",()=>openPack(b.dataset.pack)));
     $("#btn-ficha")?.addEventListener("click", buySummerToken);
