@@ -3600,7 +3600,8 @@
 
     bindEvents();
     bindAuth();
-    $("#season-splash")?.classList.add("show");   // splash de temporada al iniciar
+    // splash de temporada: solo la primera vez (no vuelve a salir, no afecta la sesión)
+    try{ if(!localStorage.getItem("season2_splash_seen")){ $("#season-splash")?.classList.add("show"); localStorage.setItem("season2_splash_seen","1"); } }catch(e){ $("#season-splash")?.classList.add("show"); }
     renderAll(); renderPsaBadge();
     startSession();   // Firebase: muestra login o reanuda sesión
 
