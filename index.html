@@ -358,6 +358,10 @@
   .ms-claimed{font-size:12px; color:var(--good); font-weight:600;}
   .ms-claim{padding:9px 16px; font-size:13px;}
   /* ===== LIGA + PASE DE BATALLA ===== */
+  .liga-countdown{text-align:center; padding:26px 16px;}
+  .liga-cd-lbl{font-size:13px; color:var(--muted); text-transform:uppercase; letter-spacing:.08em;}
+  .liga-cd-time{font-family:var(--display); font-weight:800; font-size:48px; color:var(--accent); line-height:1.1; margin:6px 0;}
+  .liga-cd-sub{font-size:13px; color:var(--muted-2); max-width:320px; margin:0 auto;}
   .liga-top{display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:22px;}
   @media(max-width:560px){ .liga-top{grid-template-columns:1fr;} }
   .liga-rank,.liga-claim{background:var(--surface-2); border:1px solid var(--line); border-radius:16px; padding:16px 18px; display:flex; flex-direction:column; gap:6px; justify-content:center;}
@@ -2170,7 +2174,8 @@
     window.DunkFire.submitScore(currentUid, myDisplayName(), score)
       .then(ok=>{ if(ok) toast("Récord guardado ✓"); })
       .catch(()=>{ toast("No se pudo guardar tu récord (revisa tu conexión)"); });
-    window.DunkFire.submitLeague && window.DunkFire.submitLeague(currentUid, myDisplayName(), state.league.best).catch(()=>{});
+    // a la tabla de la liga solo una vez que la liga ya abrió (1 h tras el lanzamiento)
+    if(leagueOpen() && window.DunkFire.submitLeague){ window.DunkFire.submitLeague(currentUid, myDisplayName(), state.league.best).catch(()=>{}); }
     renderLiga();
   }
   /* ===== LIGA + PASE DE BATALLA ===== */
@@ -2185,6 +2190,17 @@
     leagueSub = window.DunkFire.watchLeague(list=>{ leagueCache=list; renderLiga(); }, 50);
   }
   const HOUR_REWARD = {1:500, 2:300, 3:200};
+  // La tabla de clasificación de la liga arranca 1 hora después del lanzamiento.
+  // Antes de esa hora se muestra una cuenta regresiva; después, el mejor puntaje
+  // del minijuego entra automáticamente y solo se muestra el TOP 3.
+  const LEAGUE_START_MS = 1782257810151;
+  const leagueOpen = () => Date.now() >= LEAGUE_START_MS;
+  function leagueCountdownText(){
+    let ms = LEAGUE_START_MS - Date.now(); if(ms<0) ms=0;
+    const h=Math.floor(ms/3600000), m=Math.floor(ms%3600000/60000), s=Math.floor(ms%60000/1000);
+    return (h?h+":":"")+String(m).padStart(2,"0")+":"+String(s).padStart(2,"0");
+  }
+  let leagueTick=null;
   const BP_TIERS = [
     {xp:50,   free:{coins:150}, prem:{coins:300}},
     {xp:150,  free:{coins:200}, prem:{coins:400}},
@@ -2266,16 +2282,33 @@
         </div>`;
       }).join("");
     }
-    // tabla
+    // tabla (solo TOP 3) — antes de la hora de inicio: cuenta regresiva
     const ol=$("#liga-list");
     if(ol){
-      const list=(leagueCache||[]).slice().sort((a,b)=>(b.score||0)-(a.score||0));
-      ol.innerHTML = list.length ? list.map((r,i)=>`<li class="lb-row ${r.uid===currentUid?'me':''}">
-        <span class="lb-rank">${i+1}</span>
-        <span class="lb-name">${esc(r.username||"jugador")}${r.uid===currentUid?" (tú)":""}</span>
-        <span class="lb-pts">${r.score||0}</span></li>`).join("")
-        : `<li class="pf-empty" style="list-style:none">Aún nadie en la liga. ¡Juega Encestes para entrar!</li>`;
+      if(!leagueOpen()){
+        ol.innerHTML = `<li class="pf-empty liga-countdown" style="list-style:none">
+          <div class="liga-cd-lbl">La tabla de clasificación inicia en</div>
+          <div class="liga-cd-time" id="liga-cd-time">${leagueCountdownText()}</div>
+          <div class="liga-cd-sub">Cuando arranque, el mejor puntaje del minijuego entra solo al <b>Top 3</b>.</div>
+        </li>`;
+      } else {
+        const list=(leagueCache||[]).slice().sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
+        ol.innerHTML = list.length ? list.map((r,i)=>`<li class="lb-row ${r.uid===currentUid?'me':''}">
+          <span class="lb-rank">${i+1}</span>
+          <span class="lb-name">${esc(r.username||"jugador")}${r.uid===currentUid?" (tú)":""}</span>
+          <span class="lb-pts">${r.score||0}</span></li>`).join("")
+          : `<li class="pf-empty" style="list-style:none">Aún nadie en el Top 3. ¡Juega Encestes para entrar!</li>`;
+      }
     }
+  }
+  // refresca la cuenta regresiva cada segundo mientras la liga no abre
+  function startLeagueTick(){
+    if(leagueTick || leagueOpen()) return;
+    leagueTick = setInterval(()=>{
+      const t=$("#liga-cd-time");
+      if(leagueOpen()){ clearInterval(leagueTick); leagueTick=null; renderLiga(); return; }
+      if(t) t.textContent = leagueCountdownText();
+    }, 1000);
   }
   function renderLeaderboard(list){
     const ol=$("#lb-list"); if(!ol) return;
@@ -3452,7 +3485,7 @@
     $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===v)));
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
     if(v==="misiones") renderMissions();
-    if(v==="liga"){ subscribeLeague(); renderLiga(); }
+    if(v==="liga"){ subscribeLeague(); renderLiga(); startLeagueTick(); }
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
     if(v==="noventas") renderAlbum90s();
