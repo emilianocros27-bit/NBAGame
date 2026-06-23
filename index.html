@@ -909,6 +909,16 @@
   .pf-sec-head h3{font-size:18px; text-transform:uppercase; letter-spacing:.02em;}
   .pf-link{background:none; border:0; color:var(--accent); font-family:var(--display); font-weight:600; cursor:pointer; font-size:13px; text-transform:uppercase; letter-spacing:.04em;}
   .pf-showcase{display:grid; grid-template-columns:repeat(auto-fill, minmax(132px,1fr)); gap:14px;}
+  /* PSA en la vitrina: achicar todo (media, nombre, nota) para que no se vea comprimida */
+  .pf-showcase .psa{padding:4px;}
+  .pf-showcase .psa-label{margin-bottom:4px;}
+  .pf-showcase .psa-l-text{padding:3px 6px; gap:1px;}
+  .pf-showcase .psa-l1{font-size:7px;}
+  .pf-showcase .psa-l2{font-size:5.5px; gap:3px;}
+  .pf-showcase .psa-logo{font-size:7px;}
+  .pf-showcase .psa-grade{width:30px;}
+  .pf-showcase .psa-grade b{font-size:15px;}
+  .pf-showcase .psa-grade span{font-size:4.5px;}
   .pf-empty{color:var(--muted-2); font-size:14px; padding:20px; border:1px dashed var(--line-strong); border-radius:14px; text-align:center;}
   .pf-search{max-width:420px; margin-bottom:14px;}
   .pf-search .btn{padding:9px 12px; flex:0 0 auto;}
@@ -1489,11 +1499,13 @@
   // ---- DEV: dar todo para testear (consola: DunkDev.giveAll()) ----
   function giveAll(){
     PLAYERS.forEach(p=>{ state.owned[p.slug]=1; });
+    LEGENDS_90S.forEach(p=>{ state.owned[p.slug]=1; });        // leyendas 90s
+    SUMMER_CARDS.forEach(p=>{ state.owned[p.slug]=1; });       // cartas de verano
     Object.keys(FINALS_CARD).forEach(s=>{ state.finals[s]=1; });
     PLAYERS.forEach(p=>{ state.graded[p.slug]=[1,2,3,4,5,6,7,8,9,10]; });
     state.totalCards = Math.max(state.totalCards, PLAYERS.length);
     save(); checkTeamRewards(); renderAll();
-    return "OK: todas las cartas + Finals + PSA 1-10";
+    return "OK: todas las cartas (incluye 90s y Verano) + Finals + PSA 1-10";
   }
   function resetAccount(){ applyState(defaultState()); save(); renderAll(); return "OK: cuenta reiniciada (sin cartas, 300 balones)"; }
   // Da TODAS las básicas + solo las cartas Finals indicadas por slug.
