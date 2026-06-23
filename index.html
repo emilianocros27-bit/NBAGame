@@ -215,6 +215,72 @@
   .card-info p{margin:3px 0 0; font-size:11px; color:rgba(255,255,255,.78); text-transform:uppercase; letter-spacing:.08em; text-shadow:0 1px 4px rgba(0,0,0,.8);}
   .card-dup{position:absolute; z-index:5; top:10px; right:10px; font-family:var(--display); font-weight:600; font-size:12px;
     background:rgba(0,0,0,.5); border:1px solid rgba(255,255,255,.22); padding:2px 8px; border-radius:var(--radius-pill);}
+  .card-summer{position:absolute; z-index:6; top:10px; right:10px; font-family:var(--display); font-weight:700; font-size:11px;
+    letter-spacing:.06em; color:#3a2200; background:linear-gradient(135deg,#ffd24d,#ff9e3d 55%,#1fb6c9);
+    padding:3px 9px; border-radius:var(--radius-pill); box-shadow:0 2px 8px rgba(0,0,0,.35);}
+
+  /* ===== SPLASH DE TEMPORADA ===== */
+  .season-splash{position:fixed; inset:0; z-index:300; display:none; place-items:center;
+    background:#06070b url("temporada-bg.jpg") center/cover no-repeat;}
+  .season-splash.show{display:grid; animation:fade .35s ease both;}
+  .season-splash::before{content:""; position:absolute; inset:0;
+    background:linear-gradient(180deg, rgba(6,7,11,.45), rgba(6,7,11,.78));}
+  .ss-card{position:relative; z-index:1; text-align:center; padding:24px;}
+  .ss-title{font-family:var(--display); font-weight:800; letter-spacing:.02em; line-height:.92;
+    font-size:clamp(48px,16vw,120px); color:#fff; text-transform:uppercase;
+    text-shadow:0 6px 30px rgba(0,0,0,.6), 0 2px 0 rgba(255,158,61,.5);
+    animation:ssPop .6s cubic-bezier(.2,1.3,.4,1) both;}
+  .ss-sub{margin-top:14px; font-family:var(--display); font-weight:700; letter-spacing:.18em;
+    font-size:clamp(18px,5vw,30px); text-transform:uppercase;
+    color:#ffd76b; text-shadow:0 2px 14px rgba(0,0,0,.6);
+    animation:ssRise .6s ease .12s both;}
+  .ss-go{margin-top:30px; font-size:18px; padding:14px 40px; animation:ssRise .6s ease .25s both;}
+  @keyframes ssPop{0%{transform:scale(.6); opacity:0}60%{transform:scale(1.06)}100%{transform:scale(1); opacity:1}}
+  @keyframes ssRise{0%{transform:translateY(16px); opacity:0}100%{transform:translateY(0); opacity:1}}
+  @media(prefers-reduced-motion:reduce){ .ss-title,.ss-sub,.ss-go{animation:none !important;} }
+
+  /* ===== FICHA DE VERANO (sola) ===== */
+  .ficha-zone{max-width:520px; margin:30px auto 8px; display:flex; flex-direction:column; align-items:center; text-align:center; gap:12px;}
+  .ficha-coin{background:none; border:0; padding:0; cursor:pointer; line-height:0; border-radius:50%;
+    filter:drop-shadow(0 10px 26px rgba(255,158,61,.4)); transition:transform .18s var(--ease);
+    animation:fichaFloat 3.2s ease-in-out infinite;}
+  .ficha-coin:hover{transform:scale(1.06) rotate(-4deg);}
+  .ficha-coin:active{transform:scale(.94);}
+  @keyframes fichaFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+  .ficha-title{font-family:var(--display); font-weight:700; font-size:24px; letter-spacing:.02em; text-transform:uppercase;}
+  .ficha-sub{color:var(--muted); font-size:14px; max-width:420px; margin:0;}
+  .ficha-sub b{color:#ffd76b;}
+  .ficha-buy{margin-top:4px;}
+  .ficha-buy.cant-afford{opacity:.5;}
+
+  /* ===== RESULTADO DE LA FICHA (overlay animado) ===== */
+  .fres{position:fixed; inset:0; z-index:120; display:none; place-items:center; padding:24px;
+    background:rgba(6,7,11,.82); backdrop-filter:blur(7px);}
+  .fres.show{display:grid; animation:fade .25s ease both;}
+  .fres-in{display:flex; flex-direction:column; align-items:center; text-align:center; gap:16px; max-width:420px;}
+  .fres-ico{width:96px; height:96px; display:block;}
+  .fres-title{font-family:var(--display); font-weight:700; font-size:30px; text-transform:uppercase; letter-spacing:.02em;}
+  .fres-sub{color:var(--muted); font-size:15px; margin:0;}
+  .fres-amount{font-family:var(--display); font-weight:700; font-size:46px; color:#ffd76b; display:flex; align-items:center; gap:10px;}
+  .fres-amount .coin-ico{width:34px; height:34px;}
+  .fres .btn{margin-top:6px;}
+  .fres-pop{animation:fresPop .5s cubic-bezier(.2,1.3,.5,1) both;}
+  .fres-spin{animation:fresSpin .7s ease both;}
+  .fres-shake{animation:fresShake .55s ease both;}
+  .fres-rise{animation:fresRise .6s ease both;}
+  @keyframes fresPop{0%{transform:scale(.2); opacity:0}60%{transform:scale(1.12)}100%{transform:scale(1); opacity:1}}
+  @keyframes fresSpin{0%{transform:rotateY(0) scale(.4); opacity:0}100%{transform:rotateY(720deg) scale(1); opacity:1}}
+  @keyframes fresShake{0%,100%{transform:translateX(0)}20%{transform:translateX(-12px) rotate(-6deg)}40%{transform:translateX(10px) rotate(5deg)}60%{transform:translateX(-7px) rotate(-3deg)}80%{transform:translateX(4px)}}
+  @keyframes fresRise{0%{transform:translateY(18px); opacity:0}100%{transform:translateY(0); opacity:1}}
+  /* lluvia de balones */
+  .fres-coins{position:fixed; inset:0; pointer-events:none; overflow:hidden;}
+  .fres-coins i{position:absolute; top:-40px; width:18px; height:18px; border-radius:50%;
+    background:radial-gradient(circle at 38% 32%, #fff3c0, #ffc24d 55%, #e8861f);
+    box-shadow:0 0 0 2px rgba(185,101,15,.5) inset; animation:coinFall linear forwards;}
+  @keyframes coinFall{to{transform:translateY(110vh) rotate(540deg); opacity:.2}}
+  @media(prefers-reduced-motion:reduce){
+    .ficha-coin,.fres-pop,.fres-spin,.fres-shake,.fres-rise,.fres-coins i{animation:none !important;}
+  }
 
   /* carta bloqueada (no poseída) */
   .card.locked .card-inner{background:linear-gradient(160deg,#181a22,#0e0f15); box-shadow:0 8px 20px rgba(0,0,0,.4), inset 0 0 0 1px var(--line);}
@@ -869,6 +935,17 @@
   <div class="bg-arena" aria-hidden="true"></div>
   <div class="grain" aria-hidden="true"></div>
 
+  <!-- SPLASH DE TEMPORADA (al iniciar) -->
+  <div class="season-splash" id="season-splash" role="dialog" aria-label="Temporada 2">
+    <div class="ss-card">
+      <div class="ss-text">
+        <div class="ss-title">YA LLEGÓ<br>EL VERANO</div>
+        <div class="ss-sub">Temporada 2</div>
+        <button class="btn btn-primary ss-go" id="season-go">¡Vamos!</button>
+      </div>
+    </div>
+  </div>
+
   <header class="nav">
     <div class="nav-in">
       <div class="brand">
@@ -1032,24 +1109,6 @@
           <span class="pk-art">5</span>
           <button class="btn btn-primary pack-buy" data-pack="std" id="btn-std">Abrir · <span class="coin-ico"></span> 150</button>
         </div>
-        <div class="pack elite" style="--pc:#f2552c">
-          <div class="pk-foil"></div>
-          <span class="pk-badge">5 cartas · 1 top</span>
-          <div class="pk-kicker">Sobre élite</div>
-          <h3>Élite</h3>
-          <p class="pk-desc">Cinco cartas con una garantizada de media 88 o superior. Tu mejor opción para cazar cracks.</p>
-          <span class="pk-art">★</span>
-          <button class="btn btn-primary pack-buy" data-pack="elite" id="btn-elite">Abrir · <span class="coin-ico"></span> 600</button>
-        </div>
-        <div class="pack finals" id="pack-finals" style="--pc:#e8b84b; display:none">
-          <div class="pk-foil"></div>
-          <span class="pk-badge">Evento · 5 cartas</span>
-          <div class="pk-kicker">Finales NBA</div>
-          <h3>Finales</h3>
-          <p class="pk-desc">Sobre del evento: una estrella finalista (Spurs o Knicks) garantizada, con su boost de Finales.</p>
-          <span class="pk-art"><svg viewBox="0 0 24 24" width="140" height="140" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg></span>
-          <button class="btn btn-primary pack-buy" data-pack="finals" id="btn-finals">Abrir · <span class="coin-ico"></span> 1200</button>
-        </div>
         <div class="pack psa" id="pack-psa" style="--pc:#d23b3b">
           <div class="pk-foil"></div>
           <span class="pk-badge">Graduada · 1 carta</span>
@@ -1061,6 +1120,29 @@
         </div>
       </div>
       <div class="pack-stats">Sobres abiertos: <b id="packs-opened">0</b> · Cartas obtenidas: <b id="cards-total">0</b></div>
+
+      <!-- FICHA DE VERANO (sola, sin rectángulo de sobre) -->
+      <div class="ficha-zone">
+        <button class="ficha-coin" id="btn-ficha" aria-label="Comprar ficha de verano por 500 balones">
+          <svg viewBox="0 0 100 100" width="150" height="150" aria-hidden="true">
+            <defs><radialGradient id="fvg" cx="50%" cy="42%" r="62%">
+              <stop offset="0%" stop-color="#fff6c8"/><stop offset="55%" stop-color="#ffc24d"/><stop offset="100%" stop-color="#e8861f"/>
+            </radialGradient></defs>
+            <circle cx="50" cy="50" r="46" fill="url(#fvg)" stroke="#b9650f" stroke-width="3"/>
+            <circle cx="50" cy="50" r="38" fill="none" stroke="#ffe9a8" stroke-width="2" opacity=".7"/>
+            <circle cx="50" cy="50" r="13" fill="#fff3c0"/>
+            <g stroke="#fff3c0" stroke-width="4" stroke-linecap="round">
+              <line x1="50" y1="20" x2="50" y2="30"/><line x1="50" y1="70" x2="50" y2="80"/>
+              <line x1="20" y1="50" x2="30" y2="50"/><line x1="70" y1="50" x2="80" y2="50"/>
+              <line x1="29" y1="29" x2="36" y2="36"/><line x1="64" y1="64" x2="71" y2="71"/>
+              <line x1="71" y1="29" x2="64" y2="36"/><line x1="36" y1="64" x2="29" y2="71"/>
+            </g>
+          </svg>
+        </button>
+        <div class="ficha-title">Ficha de Verano</div>
+        <p class="ficha-sub">Puede no darte nada, darte <b>balones</b>, una <b>carta exclusiva de Verano</b> o el <b>balón especial de Verano</b>.</p>
+        <button class="btn btn-primary ficha-buy" id="btn-ficha-buy">Comprar ficha · <span class="coin-ico"></span> 500</button>
+      </div>
     </section>
 
     <!-- ===== TIENDA ===== -->
@@ -1240,6 +1322,11 @@
     </div>
   </div>
 
+  <!-- overlay resultado de la FICHA (nada / balones / balón) -->
+  <div class="fres" id="fres" aria-hidden="true">
+    <div class="fres-in" id="fres-in"></div>
+  </div>
+
   <!-- modal detalle / picker -->
   <div class="sheet" id="sheet" aria-hidden="true">
     <div class="sheet-card" id="sheet-card">
@@ -1287,6 +1374,7 @@
   /* ---- colores y CDN de equipos NBA ---- */
   const TEAMS = {
     "Leyendas 90s":{c1:"#e8b84b", c2:"#7a531a"},
+    "Verano":{c1:"#ff9e3d", c2:"#1fb6c9"},
     "Especial":{c1:"#37d39b", c2:"#136b4c"},
     "Atlanta Hawks":        {c1:"#E03A3E", c2:"#26282A", id:1610612737},
     "Boston Celtics":       {c1:"#007A33", c2:"#0c3d22", id:1610612738},
@@ -1333,6 +1421,7 @@
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
   const PACK_COST = { std:150, elite:600, finals:1200, psa:1000, reward:0, noventas:1100 };
+  const TOKEN_COST = 500;   // ficha de verano
   const COINS_PER_POINT = 10;           // canasta básica (2 pts) = 20 balones
   function renderCoins(){
     const els = document.querySelectorAll(".coin-amount");
@@ -1408,7 +1497,7 @@
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
-    on: true,
+    on: false,   // evento de Finales desactivado (sobre eliminado, cartas Finals ya no se consiguen)
     name: "Finales NBA 2026",
     teams: ["San Antonio Spurs", "New York Knicks"],
     boost: 3,                 // +media a los jugadores finalistas durante el evento
@@ -1470,16 +1559,14 @@
     { id:"towns-jynx",        slug:"karl-anthony-towns", nombre:"Towns · Jynx",         equipo:"New York Knicks", media:96, foto:"tienda-cards/02-New-York-Knicks/towns-jynx.jpg" },
     { id:"brunson-meditite",  slug:"jalen-brunson",      nombre:"Brunson · Meditite",   equipo:"New York Knicks", media:97, foto:"tienda-cards/02-New-York-Knicks/brunson-meditite.jpg" },
     { id:"wembi",             slug:"victor-wembanyama",  nombre:"Wemby",                equipo:"San Antonio Spurs", media:97, foto:"tienda-cards/12-San-Antonio-Spurs/wemby-2tallanimation.gif", fit:"contain" },
+    { id:"brunson-anim",      slug:"jalen-brunson",      nombre:"Brunson Animado",      equipo:"New York Knicks", media:97, foto:"promo-cards/brunson-anim.gif", fit:"contain" },
   ];
   const PROMO_BY = Object.fromEntries(PROMO.map(c=>[c.id,c]));
   // PAQUETES de la tienda (cada uno con su precio y código propio)
   const OFFERS = [
-    { id:"knicks", tagline:"Edición Pokémon", title:"Edición Promo · Knicks Mythic",
-      sub:"Cartas de colección de los finalistas, en su versión más rara. Solo aquí.",
-      price:15000, cards:["brunson-lucario","towns-incineroar","brunson-darkrai","towns-jynx","brunson-meditite"] },
-    { id:"wembi", tagline:"Edición especial", title:"Wemby",
-      sub:"La carta caricatura exclusiva de Wembanyama. Única en su tipo.",
-      price:10000, cards:["wembi"] },
+    { id:"brunson-anim", tagline:"Edición especial", title:"Brunson Animado",
+      sub:"La carta animada exclusiva de Jalen Brunson. Única en su tipo.",
+      price:10000, cards:["brunson-anim"] },
   ];
   const OFFER_BY = Object.fromEntries(OFFERS.map(o=>[o.id,o]));
   // ===== SKINS DE BALÓN (cosméticas para el minijuego) =====
@@ -1489,6 +1576,7 @@
     { id:"glacial", nombre:"Glacial",  price:3000,  desc:"Hielo azul brillante.",            g:["#dff4ff","#5fb6f0","#2f7fd0"], seam:"#0c3a5e", fire:false, type:"basket", tex:"ball-tex/glacial.png" },
     { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false, type:"basket", tex:"ball-tex/oro.png" },
     { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true,  type:"basket", tex:"ball-tex/inferno.png" },
+    { id:"verano",  nombre:"Verano", price:7500, desc:"Balón especial de verano: playa con sillas y sombrilla.", g:["#fff3b0","#ffd24d","#1fb6c9"], seam:"#0c5563", fire:false, type:"basket", tex:"ball-tex/verano.png" },
     // Balones del SOBRE (no se compran sueltos; salen al azar del sobre de 700)
     // Diseños exactos vía emoji real; golf no tiene emoji → dibujo de hoyuelos.
     { id:"futbol",  nombre:"Fútbol",   pack:true, emoji:"⚽", desc:"El clásico blanquinegro.", g:["#ffffff","#ededed","#bcbcbc"] },
@@ -1532,6 +1620,18 @@
     {slug:"shareef-abdur-rahim",nombre:"Shareef Abdur-Rahim",media:85,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/59-shareef-abdur-rahim.jpg"}, {slug:"antonio-mcdyess",nombre:"Antonio McDyess",media:85,posicion:"LEG",equipo:"Leyendas 90s",foto:"legends-90s/60-antonio-mcdyess.jpg"},
   ];
   const LEG_BY = Object.fromEntries(LEGENDS_90S.map(p=>[p.slug,p]));
+  // ===== CARTAS EXCLUSIVAS DE VERANO (solo salen en la Ficha de Verano) =====
+  // SOLO estas 7, con las imágenes propias de verano-cards/. No salen otras.
+  const SUMMER_CARDS = [
+    { slug:"vrn-nikola-jokic",     nombre:"Nikola Jokić",      media:99, posicion:"C",  equipo:"Verano", foto:"verano-cards/nikola-jokic.jpg",    summer:true },
+    { slug:"vrn-kobe-bryant",      nombre:"Kobe Bryant",       media:98, posicion:"SG", equipo:"Verano", foto:"verano-cards/kobe-bryant.jpg",     summer:true },
+    { slug:"vrn-shaquille-oneal",  nombre:"Shaquille O'Neal",  media:98, posicion:"C",  equipo:"Verano", foto:"verano-cards/shaquille-oneal.jpg", summer:true },
+    { slug:"vrn-stephen-curry",    nombre:"Stephen Curry",     media:97, posicion:"PG", equipo:"Verano", foto:"verano-cards/stephen-curry.jpg",   summer:true },
+    { slug:"vrn-kyrie-irving",     nombre:"Kyrie Irving",      media:95, posicion:"PG", equipo:"Verano", foto:"verano-cards/kyrie-irving.jpg",    summer:true },
+    { slug:"vrn-kevin-durant",     nombre:"Kevin Durant",      media:94, posicion:"SF", equipo:"Verano", foto:"verano-cards/kevin-durant.jpg",    summer:true },
+    { slug:"vrn-klay-thompson",    nombre:"Klay Thompson",     media:92, posicion:"SG", equipo:"Verano", foto:"verano-cards/klay-thompson.jpg",   summer:true },
+  ];
+  const SUMMER_BY = Object.fromEntries(SUMMER_CARDS.map(c=>[c.slug,c]));
   const SKIN_BY = Object.fromEntries(BALL_SKINS.map(s=>[s.id,s]));
   const ownsSkin = id => id==="clasico" || !!(state.skins && state.skins[id]);
   const equippedSkinId = () => (state.ballSkin && SKIN_BY[state.ballSkin]) ? state.ballSkin : "clasico";
@@ -1545,7 +1645,7 @@
   };
   // El "objeto" de la oferta = todas estas cartas. Códigos para otorgar a usuarios:
   const REDEEM_CODES = {
-    "FINALS60": OFFER_BY.knicks.cards, "KNICKS": OFFER_BY.knicks.cards, "WEMBI": OFFER_BY.wembi.cards,
+    "BRUNSON": OFFER_BY["brunson-anim"].cards,
   };
   const ownsPromo = id => ((state.promo && state.promo[id])||0) > 0;
   function grantPromo(ids){
@@ -1616,7 +1716,7 @@
     if(!state.skins) state.skins={}; if(!state.ballSkin) state.ballSkin="clasico";
     syncBallSkin();
   }
-  function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s(); }
+  function renderAll(){ renderEvent(); renderCoins(); renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s(); renderAlbumSummer(); }
   function updateAccountUI(){
     const b=$("#acct"); if(!b) return;
     if(authUser){ b.hidden=false; $("#acct-ini").textContent=(authUser[0]||"?").toUpperCase(); $("#acct-name").textContent=authUser; }
@@ -1755,7 +1855,7 @@
     const list=(prof.showcase||[]).map(s=>{
       const variant = s.variant||"normal";
       if(variant.indexOf("promo:")===0){ const pc=PROMO_BY[variant.slice(6)]; return pc?{promo:pc}:null; }
-      const p = BY[s.slug] || LEG_BY[s.slug];
+      const p = BY[s.slug] || LEG_BY[s.slug] || SUMMER_BY[s.slug];
       return p ? {p, variant} : null;
     }).filter(Boolean);
     if(!list.length){ wrap.innerHTML=`<div class="pf-empty">${isMe?"Aún no expones cartas. Toca \"Editar vitrina\".":"Sin cartas en la vitrina."}</div>`; return; }
@@ -1831,6 +1931,7 @@
       items.push({slug:p.slug, variant:v, ord:ovr(p), html:cardHTML(p,{owned:true,count:0,variant:v})});
     }});
     LEGENDS_90S.forEach(p=>{ if(ownsNormal(p.slug)) items.push({slug:p.slug, variant:"normal", ord:ovr(p), html:cardHTML(p,{owned:true,count:0,variant:"normal"})}); });
+    SUMMER_CARDS.forEach(p=>{ if(ownsNormal(p.slug)) items.push({slug:p.slug, variant:"normal", ord:ovr(p), html:cardHTML(p,{owned:true,count:0,variant:"normal"})}); });
     PROMO.forEach(c=>{ if(ownsPromo(c.id)) items.push({slug:c.slug, variant:"promo:"+c.id, ord:c.media||90, html:promoCardHTML(c,{owned:true})}); });
     items.sort((a,b)=>b.ord-a.ord);
     const keyOf = it => it.slug+"|"+it.variant;
@@ -1911,7 +2012,7 @@
      ===================================================== */
   // valor de una carta segun su media (+ extra si es Finals especial)
   function cardValue(c){
-    const p=BY[c.slug]||LEG_BY[c.slug]; if(!p) return 0;
+    const p=BY[c.slug]||LEG_BY[c.slug]||SUMMER_BY[c.slug]; if(!p) return 0;
     const m=ovr(p);
     let v = m>=95?420 : m>=90?260 : m>=85?150 : m>=80?90 : m>=75?55 : 30;
     if(c.variant==="finals") v=Math.round(v*1.6);
@@ -1964,7 +2065,7 @@
   function tradeCardsMini(arr){
     if(!arr||!arr.length) return `<span class="t-empty">—</span>`;
     return arr.map(c=>{
-      const p=BY[c.slug]||LEG_BY[c.slug]; if(!p) return "";
+      const p=BY[c.slug]||LEG_BY[c.slug]||SUMMER_BY[c.slug]; if(!p) return "";
       const variant = c.variant==="finals" ? "finals" : "normal";
       return `<div class="t-cardwrap">${cardHTML(p,{owned:true,count:0,variant})}</div>`;
     }).join("");
@@ -1976,6 +2077,7 @@
     PLAYERS.forEach(p=>{ if((state.owned[p.slug]||0)>0) owned.push({slug:p.slug,variant:"normal",p});
       if((state.finals[p.slug]||0)>0) owned.push({slug:p.slug,variant:"finals",p}); });
     LEGENDS_90S.forEach(p=>{ if((state.owned[p.slug]||0)>0) owned.push({slug:p.slug,variant:"normal",p}); });
+    SUMMER_CARDS.forEach(p=>{ if((state.owned[p.slug]||0)>0) owned.push({slug:p.slug,variant:"normal",p}); });
     owned.sort((a,b)=>ovr(b.p)-ovr(a.p));
     let sel=[];
     const body=$("#sheet-body");
@@ -2112,7 +2214,7 @@
   }
   async function beat(){ if(!roomId) return; const u={}; u["presence."+currentUid]=Date.now(); try{ await window.DunkFire.updateTrade(roomId,u); }catch(e){} }
   function feeOf(t){ const p=t.pick||{}; if(!p[t.from]||!p[t.to]) return 0; return tradeFee([p[t.from]],[p[t.to]]); }
-  function slotCard(c){ const p=c&&(BY[c.slug]||LEG_BY[c.slug]); if(!p) return `<span class="tr-empty">—</span>`;
+  function slotCard(c){ const p=c&&(BY[c.slug]||LEG_BY[c.slug]||SUMMER_BY[c.slug]); if(!p) return `<span class="tr-empty">—</span>`;
     return `<div class="t-cardwrap">${cardHTML(p,{owned:true,count:0,variant:c.variant==="finals"?"finals":"normal"})}</div>`; }
   function renderRoom(t){
     roomTrade=t; const ou=otherOf(t);
@@ -2231,12 +2333,13 @@
     const boosted = p.finals || isFinals;   // muestra media mejorada + original
     return `<button class="card ${p.finals?'finals':''} ${isFinals?'fcard':''}" style="--c1:${t.c1};--c2:${t.c2};--foil:${f.foil}" data-glow="${f.glow}" data-slug="${p.slug}" data-variant="${isFinals?'finals':'normal'}" aria-label="${esc(nm)}, media ${ovr(p)}${isFinals?' edición Finals':''}">
       <div class="card-inner">
-        <div class="card-img"><img loading="lazy" src="${esc(photo)}" alt="${esc(p.nombre)}" ${foco} onerror="this.style.opacity=0"></div>
+        <div class="card-img"><img loading="lazy" src="${esc(photo)}" alt="${esc(p.nombre)}" ${foco} ${p.summer&&p.fallback?`data-fb="${esc(p.fallback)}" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.removeAttribute('data-fb');}else{this.style.opacity=0;}"`:`onerror="this.style.opacity=0"`}></div>
         ${logo?`<div class="card-logo" style="background-image:url('${logo}')"></div>`:""}
         <div class="card-foil"></div>
         <div class="card-shine"></div>
         ${isFinals ? `<div class="fcard-mark"><span class="fc-word">Finals</span></div>`
-                   : (p.finals?`<div class="card-star">★</div>`:"")}
+                   : (p.summer?`<div class="card-summer">VERANO</div>`
+                   : (p.finals?`<div class="card-star">★</div>`:""))}
         ${isFinals && p.equipo==="New York Knicks" ? `<div class="champ-badge"><svg viewBox="0 0 24 24" width="13" height="13" aria-hidden="true"><path fill="currentColor" d="M3 7l4 4 5-6 5 6 4-4-1.5 11h-15L3 7z"/><rect x="4.5" y="18.5" width="15" height="2.4" rx="1" fill="currentColor"/></svg>Campeón</div>` : ""}
         <div class="card-ovr"><b>${boosted?ovr(p):p.media}</b>${boosted?`<span class="ovr-orig">${p.media}</span>`:""}<span>${p.posicion}</span></div>
         ${count>1?`<div class="card-dup">×${count}</div>`:""}
@@ -2296,6 +2399,14 @@
     const have=LEGENDS_90S.filter(p=>ownsNormal(p.slug)||ownsGraded(p.slug)).length;
     const c=$("#noventas-count"); if(c) c.innerHTML=`Tienes <b>${have}</b> / ${LEGENDS_90S.length} leyendas`;
   }
+  // Álbum de cartas exclusivas de verano
+  function renderAlbumSummer(){
+    const grid=$("#album-verano"); if(!grid) return;
+    const list=SUMMER_CARDS.slice().sort((a,b)=>b.media-a.media || a.nombre.localeCompare(b.nombre));
+    grid.innerHTML = list.map(p=> cardHTML(p, {owned:ownsNormal(p.slug), count:state.owned[p.slug]||0, variant:"normal"})).join("");
+    const have=SUMMER_CARDS.filter(p=>ownsNormal(p.slug)).length;
+    const c=$("#verano-count"); if(c) c.innerHTML=`Tienes <b>${have}</b> / ${SUMMER_CARDS.length} cartas de verano`;
+  }
 
   /* tilt + lámina siguiendo el puntero (delegado, sin re-render) */
   function bindTilt(root){
@@ -2318,14 +2429,15 @@
      DETALLE
      ===================================================== */
   function openDetail(slug){
-    const p = BY[slug] || LEG_BY[slug]; if(!p) return;
-    const isLeg = !BY[slug];
+    const p = BY[slug] || LEG_BY[slug] || SUMMER_BY[slug]; if(!p) return;
+    const isLeg = !!LEG_BY[slug];
+    const isSummer = !!SUMMER_BY[slug];
     const v = displayVariant(slug) || (promosForSlug(slug).length ? "promo" : "normal");
     const inLineup = lineup.includes(slug);
     const gIdxShown = gradedIndex(slug)>=0 ? gradedIndex(slug) : bestGradedIndex(slug);
     const selKey = v==="graded" ? ("graded:#"+gIdxShown) : v==="promo" ? (state.display[slug]||"") : v;
     const variants = [];
-    if(ownsNormal(slug)) variants.push({key:"normal", variant:"normal", label:isLeg?"Leyenda":"Normal"});
+    if(ownsNormal(slug)) variants.push({key:"normal", variant:"normal", label:isSummer?"Verano":isLeg?"Leyenda":"Normal"});
     if(ownsFinals(slug)) variants.push({key:"finals", variant:"finals", label:"Finals"});
     gradesOf(slug).forEach((e,i)=> variants.push({key:"graded:#"+i, variant:"graded", gradeIdx:i, label:"PSA "+gNum(e)}));
     promosForSlug(slug).forEach(pc=> variants.push({key:"promo:"+pc.id, promo:pc, label:"Promo"}));
@@ -2339,7 +2451,7 @@
         <div class="detail-info">
           <div class="eyebrow">${esc(p.posicion)} · ${esc(p.equipo)}</div>
           <h2>${esc(p.nombre)}</h2>
-          <div class="team-line">${isLeg?"Leyenda de los 90":(v==="finals"?"Edición NBA Finals":"Carta NBA 2K26")}</div>
+          <div class="team-line">${isSummer?"Carta exclusiva de Verano":isLeg?"Leyenda de los 90":(v==="finals"?"Edición NBA Finals":"Carta NBA 2K26")}</div>
           ${variants.length>1 ? `<div class="ver-label">Tus versiones · elige cuál exponer</div>
             <div class="ver-row">${variants.map(ent=>`
               <div class="ver ${ent.key===selKey?'sel':''}" data-ver="${ent.key}" role="button" tabindex="0">
@@ -2430,7 +2542,6 @@
   }
   function openPack(kind, free){
     if(kind==="reward" && !((state.rewardPacks||0)>0)){ toast("No tienes sobres de recompensa. Completa un equipo en el álbum."); return; }
-    if(kind==="finals" && !eventActive()){ toast("El evento de Finales ya terminó."); return; }
     const cost = PACK_COST[kind] || 0;
     if(!free && cost > 0 && !spendCoins(cost)){
       toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return;
@@ -2440,11 +2551,6 @@
     if(kind==="noventas"){
       // SOLO leyendas de los 90 (no jugadores actuales)
       for(let i=0;i<n;i++){ const p=drawOne(LEGENDS_90S, taken); picks.push(p); taken.add(p.slug); }
-    } else if(kind==="finals"){
-      const fin = PLAYERS.filter(p=>p.finals && ovr(p)>=85);
-      const pool = fin.length ? fin : PLAYERS.filter(p=>p.finals);
-      const first = drawOne(pool, taken); picks.push(first); taken.add(first.slug);
-      for(let i=0;i<n-1;i++){ const p=drawOne(PLAYERS, taken); picks.push(p); taken.add(p.slug); }
     } else if(kind==="elite" || kind==="reward"){
       const minMedia = kind==="reward" ? 90 : 88;          // recompensa garantiza 90+
       const tops = PLAYERS.filter(p=>ovr(p)>=minMedia);
@@ -2456,13 +2562,7 @@
     // mejor carta al final para clímax
     picks.sort((a,b)=>ovr(a)-ovr(b));
     let out = picks.map(p=>({p, variant:"normal"}));
-    // CARTA ESPECIAL FINALS: solo en el sobre Finales, muy rara (~5%)
-    let gotSpecial=null, gotGraded=null;
-    if(kind==="finals" && Math.random()<0.05){
-      const specials = PLAYERS.filter(p=>FINALS_CARD[p.slug]);
-      gotSpecial = specials[Math.floor(Math.random()*specials.length)];
-      out[out.length-1] = {p:gotSpecial, variant:"finals"};   // como clímax del sobre
-    }
+    let gotGraded=null;
     if(kind==="psa" && Math.random()<0.08){
       const pool=PLAYERS.filter(p=>ovr(p)>=80);
       const sp=drawOne(pool.length?pool:PLAYERS, new Set());
@@ -2480,17 +2580,76 @@
     if(kind==="reward") state.rewardPacks=Math.max(0,(state.rewardPacks||0)-1);
     const newlyDone = checkTeamRewards();   // ¿algún equipo completado con estas cartas?
     save();
-    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s();
+    renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s(); renderAlbumSummer();
     runOpener(out, kind);
-    if(gotSpecial) toast(`¡Carta especial <b>NBA Finals</b> de ${esc(gotSpecial.nombre)}!`);
     if(gotGraded) toast(`¡Carta graduada! <b>${esc(gotGraded.p.nombre)}</b> · PSA ${gotGraded.grade}`);
     newlyDone.forEach(t=> toast(`¡Equipo completo: <b>${esc(t)}</b>! Tienes un mensaje para reclamar tu recompensa`));
   }
   function renderPackStats(){ $("#packs-opened").textContent=state.packs; $("#cards-total").textContent=state.totalCards; }
+  // ---- FICHA DE VERANO (sorpresa): nada / balones / carta de verano / balón de verano ----
+  function buySummerToken(){
+    if(!spendCoins(TOKEN_COST)){ toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return; }
+    const r=Math.random();
+    if(r<0.55){                       // 55% nada
+      showFichaResult("nada");
+    } else if(r<0.90){                 // 35% balones
+      const amt=100+Math.floor(Math.random()*9)*25;   // 100–300
+      addCoins(amt);
+      showFichaResult("balones", {amt});
+    } else if(r<0.95){                 // 5% carta de verano (5 de cada 100)
+      const c=SUMMER_CARDS[Math.floor(Math.random()*SUMMER_CARDS.length)];
+      if(c){
+        state.owned[c.slug]=(state.owned[c.slug]||0)+1;
+        state.totalCards=(state.totalCards||0)+1;
+        save(); renderProgress(); renderPackStats(); renderAlbumSummer();
+        runOpener([{p:c, variant:"normal"}], "verano", {skipPack:true, noAgain:true});   // sin sobre: solo revelado de posición/media
+      }
+    } else {                          // 5% balón de verano
+      if(!state.skins) state.skins={};
+      if(ownsSkin("verano")){ const amt=400; addCoins(amt); showFichaResult("balones", {amt, dupBall:true}); }
+      else { state.skins["verano"]=1; save(); equipSkin("verano"); renderSkins(); showFichaResult("balon"); }
+    }
+    renderFichaBtn();
+  }
+  function closeFres(){ const o=$("#fres"); if(o){ o.classList.remove("show"); o.setAttribute("aria-hidden","true"); o.querySelector(".fres-coins")?.remove(); } }
+  function showFichaResult(type, data){
+    data=data||{};
+    const o=$("#fres"), box=$("#fres-in"); if(!o||!box) return;
+    let html="";
+    const icoNada=`<svg class="fres-ico fres-shake" viewBox="0 0 64 64" fill="none" stroke="#7a8089" stroke-width="4" stroke-linecap="round"><circle cx="32" cy="32" r="25"/><line x1="15" y1="15" x2="49" y2="49"/></svg>`;
+    const icoCoin=`<svg class="fres-ico fres-spin" viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="#ffc24d" stroke="#b9650f" stroke-width="3"/><circle cx="32" cy="32" r="20" fill="none" stroke="#fff3c0" stroke-width="2.5"/><line x1="32" y1="20" x2="32" y2="44" stroke="#b9650f" stroke-width="3.5" stroke-linecap="round"/><path d="M27 25h8a4 4 0 0 1 0 8h-8M27 33h9a4 4 0 0 1 0 8h-9" fill="none" stroke="#b9650f" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    const icoBall=`<svg class="fres-ico fres-spin" viewBox="0 0 64 64"><circle cx="32" cy="32" r="27" fill="#ff7a2e" stroke="#1a1a1a" stroke-width="3"/><g fill="none" stroke="#1a1a1a" stroke-width="3"><line x1="5" y1="32" x2="59" y2="32"/><line x1="32" y1="5" x2="32" y2="59"/><path d="M14 11c8 7 12 13 12 21s-4 14-12 21"/><path d="M50 11c-8 7-12 13-12 21s4 14 12 21"/></g></svg>`;
+    if(type==="nada"){
+      html=`${icoNada}
+        <div class="fres-title fres-rise">Nada esta vez</div>
+        <p class="fres-sub fres-rise">La ficha no dio premio. ¡Vuelve a intentarlo!</p>`;
+    } else if(type==="balones"){
+      html=`${icoCoin}
+        <div class="fres-title fres-rise">${data.dupBall?"Ya tenías el balón":"¡Balones!"}</div>
+        <div class="fres-amount fres-pop"><span class="coin-ico"></span>+${data.amt}</div>
+        ${data.dupBall?`<p class="fres-sub fres-rise">Ya tenías el <b>Balón de Verano</b>, así que recibes balones.</p>`:""}`;
+    } else if(type==="balon"){
+      html=`${icoBall}
+        <div class="fres-title fres-rise">¡Balón de Verano!</div>
+        <p class="fres-sub fres-rise">Balón especial de Verano desbloqueado y equipado.</p>`;
+    }
+    box.innerHTML = html + `<button class="btn btn-primary fres-rise" id="fres-ok">Genial</button>`;
+    o.classList.add("show"); o.setAttribute("aria-hidden","false");
+    if(type==="balones" && !data.dupBall){
+      const rain=document.createElement("div"); rain.className="fres-coins";
+      let s=""; for(let i=0;i<14;i++){ const left=Math.round(i*7+ (i%3)*3); const dur=(1.1+(i%5)*0.22).toFixed(2); const del=((i%7)*0.12).toFixed(2);
+        s+=`<i style="left:${left}%; animation-duration:${dur}s; animation-delay:${del}s"></i>`; }
+      rain.innerHTML=s; o.appendChild(rain);
+    }
+    box.querySelector("#fres-ok").addEventListener("click", closeFres);
+    o.addEventListener("click", e=>{ if(e.target===o) closeFres(); }, {once:true});
+  }
+  function renderFichaBtn(){ const b=$("#btn-ficha-buy"); if(b) b.classList.toggle("cant-afford", (state.coins||0) < TOKEN_COST); }
   function renderShop(){
-    const map={std:"#btn-std",elite:"#btn-elite",finals:"#btn-finals",psa:"#btn-psa"};
+    const map={std:"#btn-std",psa:"#btn-psa"};
     for(const k in map){ const b=document.querySelector(map[k]); if(!b) continue;
       b.classList.toggle("cant-afford", (state.coins||0) < PACK_COST[k]); }
+    renderFichaBtn();
   }
 
   // ---- RECOMPENSAS POR EQUIPO ----
@@ -2551,7 +2710,6 @@
     { id:"leg30",    t:"Consigue 30 leyendas 90s",      goal:30,  cur:_msLegends, r:{coins:1500} },
     { id:"score100", t:"Haz 100 puntos en una partida", goal:100, cur:()=>state.missions.stats.bestScore||0, r:{coins:500} },
     { id:"streak6",  t:"Racha de 6 en Encestes",        goal:6,   cur:()=>state.missions.stats.maxStreak||0, r:{coins:400} },
-    { id:"baskets100", t:"Encesta 100 canastas (en total)", goal:100, cur:()=>state.missions.stats.totalBaskets||0, r:{promo:"mk"}, card:"mk" },
     { id:"psa",      t:"Gradúa tu primera carta PSA",   goal:1,   cur:_msGraded, r:{coins:600} },
     { id:"skin",     t:"Compra una skin de balón",      goal:1,   cur:()=>state.missions.stats.boughtSkin?1:0, r:{coins:300} },
   ];
@@ -2695,12 +2853,15 @@
     openRewardPack();   // se abre la recompensa al instante desde la notificación
   }
 
-  const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c", noventas:"#b079ff"};
+  const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c", noventas:"#b079ff", verano:"#ff9e3d"};
   let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null, revealTimers=[];
   function clearRevealTimers(){ revealTimers.forEach(clearTimeout); revealTimers=[]; clearTimeout(tearTimer); }
-  function runOpener(cards, kind){
+  let openerNoAgain=false;
+  function runOpener(cards, kind, opts){
+    opts=opts||{};
     clearRevealTimers(); openerBusy=false;   // evita que timers de un destape anterior congelen este
     openerQueue=cards; openerIdx=0;
+    openerNoAgain=!!opts.noAgain;
     // precarga las fotos del sobre para que no tarden en aparecer al revelar
     cards.forEach(c=>{ const src=(c.variant==="finals" && FINALS_CARD[c.p.slug]) ? FINALS_CARD[c.p.slug] : c.p.foto; if(src){ const im=new Image(); im.src=src; } });
     const strip=$("#reveal-strip");
@@ -2708,8 +2869,17 @@
     $("#opener-card").innerHTML="";
     $("#opener-actions").style.display="none";
     const o=$("#opener"); o.classList.add("show"); o.setAttribute("aria-hidden","false");
-    // fase 1: mostrar el sobre de papel cerrado
     const pack=$("#pack3d");
+    // FICHA u otros: saltar el sobre y revelar directo posición/media
+    if(opts.skipPack){
+      pack.style.display="none";
+      strip.style.visibility="visible";
+      $("#opener-card").style.visibility="visible";
+      openerPhase="reveal";
+      revealNext();
+      return;
+    }
+    // fase 1: mostrar el sobre de papel cerrado
     pack.classList.remove("tearing");
     pack.style.setProperty("--pc", PACK_PC[kind] || "#386cff");
     pack.style.display="block";
@@ -2742,7 +2912,8 @@
   function revealNext(){
     if(openerBusy) return;
     if(openerIdx>=openerQueue.length){
-      $("#opener-hint").textContent="¡Sobre completo!";
+      $("#opener-hint").textContent= openerNoAgain ? "¡Carta de Verano conseguida!" : "¡Sobre completo!";
+      const again=$("#opener-again"); if(again) again.style.display = openerNoAgain ? "none" : "";
       $("#opener-actions").style.display="flex";
       return;
     }
@@ -3180,9 +3351,15 @@
       const slab=e.target.closest(".psa[data-slug]"); if(slab){ openDetail(slab.dataset.slug); return; }
       const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
     });
-
     // sobres
     $$("[data-pack]").forEach(b=>b.addEventListener("click",()=>openPack(b.dataset.pack)));
+    $("#btn-ficha")?.addEventListener("click", buySummerToken);
+    $("#btn-ficha-buy")?.addEventListener("click", buySummerToken);
+    // splash de temporada
+    const ss=$("#season-splash");
+    if(ss){ const hide=()=>{ ss.classList.remove("show"); ss.setAttribute("aria-hidden","true"); };
+      $("#season-go")?.addEventListener("click", hide);
+      ss.addEventListener("click", e=>{ if(e.target===ss) hide(); }); }
     $("#opener").addEventListener("click", e=>{
       if(e.target.closest("#opener-actions")) return;
       if(openerPhase==="pack"){ tearPack(); return; }
@@ -3261,6 +3438,7 @@
 
     bindEvents();
     bindAuth();
+    $("#season-splash")?.classList.add("show");   // splash de temporada al iniciar
     renderAll(); renderPsaBadge();
     startSession();   // Firebase: muestra login o reanuda sesión
 
@@ -3280,6 +3458,8 @@ window.MiniGame = (function(){
   let score, streak, timeLeft, running, best, timerId, msgTimeout;
   let particles = [], rings = [], rafId = null, active = false, inited = false;
   const GROUND = () => H - 40 * S;
+  // cubeta del piso (easter egg): boca a la izquierda, apoyada en la arena
+  function bucketGeo(){ const halfW=30*S, h=44*S, cx=halfW+22*S; return { cx, halfW, h, mouthY: GROUND()-h }; }
   function roundRect(x,y,w,h,r){ ctx.beginPath(); ctx.moveTo(x+r,y); ctx.arcTo(x+w,y,x+w,y+h,r);
     ctx.arcTo(x+w,y+h,x,y+h,r); ctx.arcTo(x,y+h,x,y,r); ctx.arcTo(x,y,x+w,y,r); ctx.closePath(); }
   const GRAV = 0.42;
@@ -3428,6 +3608,7 @@ window.MiniGame = (function(){
         if(Math.abs(ball.vy)<1.5*S){ if(!ball.done) miss(); } }
       ball.frames++; if(ball.frames>300 && !ball.done) miss();   // seguridad: nunca se queda atascada
       checkHoop();
+      checkBucket();
     }
     if(running && hoop.vx){ hoop.x+=hoop.vx; if(hoop.x-hoop.r<30*S||hoop.x+hoop.r>W-30*S) hoop.vx*=-1; }
     updateNet(hoop);
@@ -3451,6 +3632,25 @@ window.MiniGame = (function(){
         ball.x+=Math.cos(ang)*overlap; ball.y+=Math.sin(ang)*overlap;
         const dot=ball.vx*Math.cos(ang)+ball.vy*Math.sin(ang);
         ball.vx-=1.6*dot*Math.cos(ang); ball.vy-=1.6*dot*Math.sin(ang); ball.vx*=0.8; ball.vy*=0.8; } }
+  }
+  function checkBucket(){
+    if(!ball.flying || ball.vy<=0) return;
+    const b=bucketGeo();
+    if(typeof ball.py==='number' && ball.py<=b.mouthY && ball.y>=b.mouthY){
+      const span=(ball.y-ball.py)||1, t=(b.mouthY-ball.py)/span;
+      const crossX=(typeof ball.px==='number') ? ball.px+(ball.x-ball.px)*t : ball.x;
+      if(Math.abs(crossX-b.cx) < b.halfW*0.78) easterEggDrop();
+    }
+  }
+  // EASTER EGG: al caer dentro de la cubeta, la pelota reaparece arriba, centrada, en caída libre
+  function easterEggDrop(){
+    const b=bucketGeo();
+    // solo salpicadura de agua (sin aviso)
+    for(let i=0;i<22;i++){ const a=-Math.PI/2 + (Math.random()-0.5)*1.4, sp=(2+Math.random()*5)*S;
+      particles.push({x:b.cx,y:b.mouthY,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,color: Math.random()<0.5?'#62c8f2':'#bfeaff'}); }
+    ball.x=W/2; ball.y=-ball.r; ball.vx=0; ball.vy=0; ball.rot=0; ball.vrot=0;
+    ball.flying=true; ball.canScore=true; ball.done=false; ball.touchedRim=false; ball.frames=0; ball.trail=[];
+    ball.px=ball.x; ball.py=ball.y;
   }
   function burst(x,y,color){ for(let i=0;i<18;i++){ const a=Math.random()*Math.PI*2, sp=(1+Math.random()*4)*S;
     particles.push({x,y,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp-2*S,life:1,color}); } }
@@ -3490,6 +3690,15 @@ window.MiniGame = (function(){
     // base oscura
     let bg=ctx.createLinearGradient(0,0,0,H); bg.addColorStop(0,'#1b1730'); bg.addColorStop(1,'#0c0a16');
     ctx.fillStyle=bg; ctx.fillRect(0,0,W,H);
+    // fondo veraniego secreto (muy tenue, no afecta al juego)
+    const bgImg=getTex('verano-bg.jpg');
+    if(bgImg && bgImg.complete && bgImg.naturalWidth){
+      const sc=Math.max(W/bgImg.naturalWidth, H/bgImg.naturalHeight);
+      const dw=bgImg.naturalWidth*sc, dh=bgImg.naturalHeight*sc;
+      ctx.save(); ctx.globalAlpha=0.14;
+      ctx.drawImage(bgImg,(W-dw)/2,(H-dh)/2,dw,dh);
+      ctx.restore();
+    }
     // resplandor de focos (naranja) arriba
     let glow=ctx.createRadialGradient(W/2,-30*S,8,W/2,-30*S,H*0.7);
     glow.addColorStop(0,'rgba(242,85,44,.20)'); glow.addColorStop(1,'rgba(242,85,44,0)');
@@ -3498,17 +3707,36 @@ window.MiniGame = (function(){
     for(let i=0;i<48;i++){ const sx=((i*97.3)%W), sy=((i*53.7)%(H*0.60));
       ctx.fillStyle='rgba(255,255,255,'+(0.02+(i%5)*0.012).toFixed(3)+')';
       ctx.beginPath(); ctx.arc(sx,sy,(1+(i%3))*S,0,7); ctx.fill(); }
-    // suelo de madera
-    let wood=ctx.createLinearGradient(0,gy,0,H); wood.addColorStop(0,'#cf7d3f'); wood.addColorStop(1,'#92501c');
-    ctx.fillStyle=wood; ctx.fillRect(0,gy,W,H-gy);
-    ctx.strokeStyle='rgba(0,0,0,.08)'; ctx.lineWidth=1*S;
-    for(let i=0;i<6;i++){ const yy=gy+(i+1)*(H-gy)/7; ctx.beginPath(); ctx.moveTo(0,yy); ctx.lineTo(W,yy); ctx.stroke(); }
-    ctx.fillStyle='rgba(255,255,255,.2)'; ctx.fillRect(0,gy,W,2*S);
-    // zona (llave) en perspectiva + arco 3pt
-    const kx=W/2;
-    ctx.strokeStyle='rgba(255,255,255,.30)'; ctx.lineWidth=2.4*S;
-    ctx.beginPath(); ctx.moveTo(kx-46*S,H); ctx.lineTo(kx-30*S,gy); ctx.lineTo(kx+30*S,gy); ctx.lineTo(kx+46*S,H); ctx.stroke();
-    ctx.beginPath(); ctx.arc(kx,gy,66*S,Math.PI,0); ctx.stroke();
+    // ===== ARENA (suelo desigual con una montañita/duna a la derecha) =====
+    ctx.beginPath();
+    ctx.moveTo(0, gy+5*S);
+    ctx.lineTo(W*0.30, gy+1*S);
+    ctx.lineTo(W*0.58, gy+7*S);
+    ctx.quadraticCurveTo(W*0.82, gy-44*S, W, gy+3*S);   // duna a la derecha
+    ctx.lineTo(W, H); ctx.lineTo(0, H); ctx.closePath();
+    let sand=ctx.createLinearGradient(0,gy-44*S,0,H);
+    sand.addColorStop(0,'#f6dca0'); sand.addColorStop(1,'#d3a155');
+    ctx.fillStyle=sand; ctx.fill();
+    // brillo del borde de arena
+    ctx.strokeStyle='rgba(255,255,255,.25)'; ctx.lineWidth=2*S;
+    ctx.beginPath(); ctx.moveTo(0,gy+5*S); ctx.lineTo(W*0.30,gy+1*S); ctx.lineTo(W*0.58,gy+7*S);
+    ctx.quadraticCurveTo(W*0.82,gy-44*S,W,gy+3*S); ctx.stroke();
+    // motitas de arena
+    for(let i=0;i<60;i++){ const sx=((i*71.7)%W), sy=gy+10*S+((i*37.3)%(H-gy-10*S));
+      ctx.fillStyle='rgba(120,80,30,'+(0.05+(i%4)*0.03).toFixed(3)+')';
+      ctx.beginPath(); ctx.arc(sx,sy,(0.8+(i%2))*S,0,7); ctx.fill(); }
+    // ===== CUBETA a la izquierda (easter egg) =====
+    const b=bucketGeo();
+    const botHalf=b.halfW*0.72;
+    let bg2=ctx.createLinearGradient(b.cx-b.halfW,0,b.cx+b.halfW,0);
+    bg2.addColorStop(0,'#2f9bd6'); bg2.addColorStop(.5,'#62c8f2'); bg2.addColorStop(1,'#2f9bd6');
+    ctx.fillStyle=bg2;
+    ctx.beginPath(); ctx.moveTo(b.cx-b.halfW,b.mouthY); ctx.lineTo(b.cx+b.halfW,b.mouthY);
+    ctx.lineTo(b.cx+botHalf,gy+4*S); ctx.lineTo(b.cx-botHalf,gy+4*S); ctx.closePath(); ctx.fill();
+    ctx.fillStyle='#155a82'; ctx.beginPath(); ctx.ellipse(b.cx,b.mouthY,b.halfW,6*S,0,0,7); ctx.fill();
+    ctx.fillStyle='#0d3f5e'; ctx.beginPath(); ctx.ellipse(b.cx,b.mouthY,b.halfW*0.78,4.5*S,0,0,7); ctx.fill();
+    ctx.strokeStyle='#1d6f9e'; ctx.lineWidth=2.4*S; ctx.beginPath(); ctx.ellipse(b.cx,b.mouthY,b.halfW,6*S,0,0,7); ctx.stroke();
+    ctx.beginPath(); ctx.arc(b.cx,b.mouthY,b.halfW*0.92,Math.PI*1.06,Math.PI*-0.06); ctx.stroke();
     // viñeta
     let vg=ctx.createRadialGradient(W/2,H*0.46,H*0.28,W/2,H*0.5,H*0.78);
     vg.addColorStop(0,'rgba(0,0,0,0)'); vg.addColorStop(1,'rgba(0,0,0,.45)');
