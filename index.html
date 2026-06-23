@@ -173,6 +173,8 @@
   .card-img{position:absolute; inset:0; z-index:1;}
   .card-img img{width:100%; height:100%; object-fit:cover; object-position:center 16%;
     -webkit-mask-image:linear-gradient(180deg,#000 60%, transparent 99%); mask-image:linear-gradient(180deg,#000 60%, transparent 99%);}
+  /* cartas de Verano: mostrar el arte COMPLETO (sin recorte ni difuminado) */
+  .card.summer .card-img img{object-fit:contain; object-position:center; -webkit-mask-image:none; mask-image:none;}
   .card-img::after{content:""; position:absolute; inset:0;
     background:linear-gradient(180deg, transparent 38%, color-mix(in srgb,var(--c2) 70%,#000) 96%);}
 
@@ -906,7 +908,7 @@
   .pf-sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
   .pf-sec-head h3{font-size:18px; text-transform:uppercase; letter-spacing:.02em;}
   .pf-link{background:none; border:0; color:var(--accent); font-family:var(--display); font-weight:600; cursor:pointer; font-size:13px; text-transform:uppercase; letter-spacing:.04em;}
-  .pf-showcase{display:grid; grid-template-columns:repeat(auto-fill, minmax(118px,1fr)); gap:14px;}
+  .pf-showcase{display:grid; grid-template-columns:repeat(auto-fill, minmax(132px,1fr)); gap:14px;}
   .pf-empty{color:var(--muted-2); font-size:14px; padding:20px; border:1px dashed var(--line-strong); border-radius:14px; text-align:center;}
   .pf-search{max-width:420px; margin-bottom:14px;}
   .pf-search .btn{padding:9px 12px; flex:0 0 auto;}
@@ -1971,7 +1973,7 @@
     img.src=url;
   }
 
-  // ---- editor de vitrina (elige hasta 6 cartas tuyas) ----
+  // ---- editor de vitrina (elige hasta 5 cartas tuyas) ----
   function openShowcaseEditor(){
     // todas las cartas que puedes exponer: jugadores, leyendas 90s y promos
     const items=[];
@@ -1989,13 +1991,13 @@
     const grid = ()=> items.map(it=>{ const k=keyOf(it); const on=sel.includes(k);
       return `<div class="ver ${on?'sel':''}" data-key="${k}">${it.html}<span class="ver-name">${on?'Quitar':'Exponer'}</span></div>`;
     }).join("");
-    body.innerHTML = `<div class="picker-head"><h3>Tu vitrina · elige hasta 6</h3><span class="pf-link" id="sc-save">Guardar</span></div>
+    body.innerHTML = `<div class="picker-head"><h3>Tu vitrina · elige hasta 5</h3><span class="pf-link" id="sc-save">Guardar</span></div>
       <div class="picker-grid"><div class="ver-row" id="sc-grid">${grid()}</div></div>`;
     if(!items.length) body.querySelector("#sc-grid").innerHTML=`<div class="pf-empty">Aún no tienes cartas. Abre sobres primero.</div>`;
     body.querySelector("#sc-grid").addEventListener("click", e=>{
       const el=e.target.closest("[data-key]"); if(!el) return; const k=el.dataset.key;
       if(sel.includes(k)) sel=sel.filter(s=>s!==k);
-      else { if(sel.length>=6){ toast("Máximo 6 cartas"); return; } sel.push(k); }
+      else { if(sel.length>=5){ toast("Máximo 5 cartas"); return; } sel.push(k); }
       el.classList.toggle("sel"); el.querySelector(".ver-name").textContent = el.classList.contains("sel")?"Quitar":"Exponer";
     });
     body.querySelector("#sc-save").addEventListener("click", async ()=>{
@@ -2520,7 +2522,7 @@
     const f = noFoil ? {foil:0, glow:0} : foilFor(ovr(p));
     const nm = nameOverride || p.nombre;
     const boosted = p.finals || isFinals;   // muestra media mejorada + original
-    return `<button class="card ${p.finals?'finals':''} ${isFinals?'fcard':''}" style="--c1:${t.c1};--c2:${t.c2};--foil:${f.foil}" data-glow="${f.glow}" data-slug="${p.slug}" data-variant="${isFinals?'finals':'normal'}" aria-label="${esc(nm)}, media ${ovr(p)}${isFinals?' edición Finals':''}">
+    return `<button class="card ${p.finals?'finals':''} ${isFinals?'fcard':''} ${p.summer?'summer':''}" style="--c1:${t.c1};--c2:${t.c2};--foil:${f.foil}" data-glow="${f.glow}" data-slug="${p.slug}" data-variant="${isFinals?'finals':'normal'}" aria-label="${esc(nm)}, media ${ovr(p)}${isFinals?' edición Finals':''}">
       <div class="card-inner">
         <div class="card-img"><img loading="lazy" src="${esc(photo)}" alt="${esc(p.nombre)}" ${foco} ${p.summer&&p.fallback?`data-fb="${esc(p.fallback)}" onerror="if(this.dataset.fb){this.src=this.dataset.fb;this.removeAttribute('data-fb');}else{this.style.opacity=0;}"`:`onerror="this.style.opacity=0"`}></div>
         ${logo?`<div class="card-logo" style="background-image:url('${logo}')"></div>`:""}
