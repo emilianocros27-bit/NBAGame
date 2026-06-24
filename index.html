@@ -2216,7 +2216,7 @@
   // La tabla de clasificación de la liga arranca 1 hora después del lanzamiento.
   // Antes de esa hora se muestra una cuenta regresiva; después, el mejor puntaje
   // del minijuego entra automáticamente y solo se muestra el TOP 3.
-  const LEAGUE_START_MS = 1782257810151;
+  const LEAGUE_START_MS = 1782276502331;   // la liga ya está abierta desde ahora
   const leagueOpen = () => Date.now() >= LEAGUE_START_MS;
   function leagueCountdownText(){
     let ms = LEAGUE_START_MS - Date.now(); if(ms<0) ms=0;
