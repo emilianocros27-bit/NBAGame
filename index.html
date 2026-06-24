@@ -173,8 +173,8 @@
   .card-img{position:absolute; inset:0; z-index:1;}
   .card-img img{width:100%; height:100%; object-fit:cover; object-position:center 16%;
     -webkit-mask-image:linear-gradient(180deg,#000 60%, transparent 99%); mask-image:linear-gradient(180deg,#000 60%, transparent 99%);}
-  /* cartas de Verano: mostrar el arte COMPLETO (sin recorte ni difuminado) */
-  .card.summer .card-img img{object-fit:contain; object-position:center; -webkit-mask-image:none; mask-image:none;}
+  /* cartas de Verano: cubren toda la carta (cover) y sin difuminado abajo para ver el arte */
+  .card.summer .card-img img{object-fit:cover; -webkit-mask-image:none; mask-image:none;}
   .card-img::after{content:""; position:absolute; inset:0;
     background:linear-gradient(180deg, transparent 38%, color-mix(in srgb,var(--c2) 70%,#000) 96%);}
 
