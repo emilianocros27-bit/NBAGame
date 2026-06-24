@@ -2183,7 +2183,7 @@
   let scoresSub=null, scoresCache=[];
   function subscribeScores(){
     if(scoresSub || !window.DunkFire || !window.DunkFire.watchScores) return;
-    scoresSub = window.DunkFire.watchScores(list=>{ scoresCache=list; renderLeaderboard(list); }, 3);
+    scoresSub = window.DunkFire.watchScores(list=>{ scoresCache=list; renderLeaderboard(list); renderLiga(); }, 10);
   }
   function myDisplayName(){ return (myProfile&&myProfile.username) ? "@"+myProfile.username : (authUser? authUser.split("@")[0] : "jugador"); }
   function submitMyScore(score){
@@ -2238,7 +2238,15 @@
   ];
   const BP_PREMIUM_COST = 5000;
   function bpLevel(){ ensureLeague(); const xp=state.league.xp||0; let n=0; BP_TIERS.forEach(t=>{ if(xp>=t.xp) n++; }); return n; }
-  function leagueRank(){ const i=leagueCache.findIndex(r=>r.uid===currentUid); return i>=0 ? i+1 : 0; }
+  // tabla de la liga = mismos récords globales del minijuego (como la clasificación normal) + sembrados
+  function leagueBoard(){
+    const arr=(scoresCache||[]).slice();
+    arr.push({uid:"seed-huesca",username:"HuescaPro24",score:132});
+    arr.push({uid:"seed-elias",username:"@eliasyoya",score:152});
+    const by={}; arr.forEach(r=>{ const k=r.username||"jugador"; if(!by[k]||(r.score||0)>(by[k].score||0)) by[k]=r; });
+    return Object.values(by).sort((a,b)=>(b.score||0)-(a.score||0));
+  }
+  function leagueRank(){ const list=leagueBoard(); const i=list.findIndex(r=>r.uid===currentUid); return i>=0 ? i+1 : 0; }
   function hourKey(){ return new Date().toISOString().slice(0,13); }
   function claimHourReward(){
     ensureLeague();
@@ -2315,7 +2323,7 @@
           <div class="liga-cd-sub">Cuando arranque, el mejor puntaje del minijuego entra solo al <b>Top 3</b>.</div>
         </li>`;
       } else {
-        const list=(leagueCache||[]).slice().sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
+        const list=leagueBoard().slice(0,3);
         ol.innerHTML = list.length ? list.map((r,i)=>`<li class="lb-row ${r.uid===currentUid?'me':''}">
           <span class="lb-rank">${i+1}</span>
           <span class="lb-name">${esc(r.username||"jugador")}${r.uid===currentUid?" (tú)":""}</span>
@@ -3508,7 +3516,7 @@
     $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===v)));
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
     if(v==="misiones") renderMissions();
-    if(v==="liga"){ subscribeLeague(); renderLiga(); startLeagueTick(); }
+    if(v==="liga"){ subscribeScores(); subscribeLeague(); renderLiga(); startLeagueTick(); }
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
     if(v==="noventas") renderAlbum90s();
