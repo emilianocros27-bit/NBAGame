@@ -3858,7 +3858,7 @@ window.MiniGame = (function(){
         ball.vx-=1.6*dot*Math.cos(ang); ball.vy-=1.6*dot*Math.sin(ang); ball.vx*=0.8; ball.vy*=0.8; } }
   }
   function checkBucket(){
-    if(!ball.flying || ball.vy<=0) return;
+    if(!ball.flying || ball.vy<=0 || ball.eggUsed) return;   // solo una vez por intento (evita bucle)
     const b=bucketGeo();
     if(typeof ball.py==='number' && ball.py<=b.mouthY && ball.y>=b.mouthY){
       const span=(ball.y-ball.py)||1, t=(b.mouthY-ball.py)/span;
@@ -3874,6 +3874,7 @@ window.MiniGame = (function(){
       particles.push({x:b.cx,y:b.mouthY,vx:Math.cos(a)*sp,vy:Math.sin(a)*sp,life:1,color: Math.random()<0.5?'#62c8f2':'#bfeaff'}); }
     ball.x=W/2; ball.y=-ball.r; ball.vx=0; ball.vy=0; ball.rot=0; ball.vrot=0;
     ball.flying=true; ball.canScore=true; ball.done=false; ball.touchedRim=false; ball.frames=0; ball.trail=[];
+    ball.eggUsed=true;   // ya se usó la cubeta en este intento
     ball.px=ball.x; ball.py=ball.y;
   }
   function burst(x,y,color){ for(let i=0;i<18;i++){ const a=Math.random()*Math.PI*2, sp=(1+Math.random()*4)*S;
