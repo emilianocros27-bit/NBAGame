@@ -703,14 +703,14 @@
     .progress-chip{display:none}        /* en móvil se oculta para dejar sitio a la cuenta */
     .acct{width:34px; height:34px; font-size:14px;}
     .acct-menu{right:12px; top:58px;}
-    main{padding-bottom:104px}
+    main{padding-bottom:124px}
     .opener-actions{flex-wrap:wrap}
-    .bottom-nav{display:flex; position:fixed; left:10px; right:10px; bottom:10px; z-index:45;
-      gap:6px; padding:6px; border-radius:var(--radius-pill); border:1px solid var(--line-strong);
+    .bottom-nav{display:flex; flex-wrap:wrap; position:fixed; left:10px; right:10px; bottom:10px; z-index:45;
+      gap:5px; padding:6px; border-radius:22px; border:1px solid var(--line-strong);
       background:linear-gradient(180deg, rgba(23,25,34,.94), rgba(13,15,22,.97));
       backdrop-filter:saturate(150%) blur(16px); -webkit-backdrop-filter:saturate(150%) blur(16px);
       box-shadow:0 -6px 26px rgba(0,0,0,.5);}
-    .bottom-nav .tab{flex:1; text-align:center; padding:12px 6px; font-size:13px; border-radius:var(--radius-pill);
+    .bottom-nav .tab{flex:1 1 18%; min-width:0; text-align:center; padding:12px 6px; font-size:13px; border-radius:var(--radius-pill);
       background:transparent; color:var(--muted); font-family:var(--display); font-weight:600; letter-spacing:.04em;
       text-transform:uppercase; border:0;}
     .bottom-nav .tab[aria-selected="true"]{background:var(--accent); color:#fff; box-shadow:0 4px 14px rgba(242,85,44,.4);}
@@ -819,7 +819,7 @@
     font-size:17px; font-weight:700; padding:13px 32px; border-radius:40px; cursor:pointer;
     box-shadow:0 6px 0 #b53517; transition:transform .08s, box-shadow .08s;}
   .mg-btn:active{transform:translateY(3px); box-shadow:0 3px 0 #b53517;}
-  @media(max-width:640px){ .bottom-nav .tab{font-size:11.5px; padding:11px 3px; letter-spacing:.02em;} }
+  @media(max-width:640px){ .bottom-nav .tab{font-size:11px; padding:9px 3px; letter-spacing:0;} }
   /* ----- tabla de clasificación ----- */
   .lb{margin-top:26px;}
   .lb-record{display:flex; align-items:center; gap:14px; padding:16px 20px; border-radius:18px; margin-bottom:18px;
@@ -1629,6 +1629,20 @@
     console.log("%c CÓDIGO (1 uso) "+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
     return code;
   }
+  // Genera un código de UN SOLO USO que da sobres + tiradas de Ficha de Verano.
+  // Uso: DunkDev.makeRewardCode("VERANO3", { packs:3, ficha:1 })  |  DunkDev.makeRewardCode()=código aleatorio
+  async function makeRewardCodeDev(code, opts){
+    if(!window.DunkFire || !window.DunkFire.makeCode){ console.warn("Necesitas conexión/Firebase para generar códigos."); return; }
+    const o = opts || (typeof code==="object" ? code : {}) || {};
+    const payload = { reward:true, packs:Math.max(0,o.packs|0), ficha:Math.max(0,o.ficha|0) };
+    const chars="ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+    const rnd=n=>Array.from({length:n},()=>chars[Math.floor(Math.random()*chars.length)]).join("");
+    const finalCode = (typeof code==="string" && code.trim()) ? code.trim().toUpperCase() : `DUNK-${rnd(4)}-${rnd(4)}`;
+    try{ await window.DunkFire.makeCode(finalCode, payload); }
+    catch(e){ console.warn("No se pudo generar (¿reglas de Firestore?):", e); return; }
+    console.log("%c CÓDIGO (1 uso) "+finalCode+"  → "+payload.packs+" sobres + "+payload.ficha+" ficha ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
+    return finalCode;
+  }
   // borra tu récord de la clasificación y de la liga (consola: DunkDev.clearMyScore())
   async function clearMyScore(){
     state.bestScore=0; if(state.league) state.league.best=0; try{ localStorage.removeItem('basket_best'); }catch(e){}
@@ -1637,7 +1651,7 @@
     try{ renderLiga(); }catch(e){}
     return currentUid ? "OK: tu récord fue borrado de la tabla (scores + liga)" : "No has iniciado sesión: inicia sesión con tu cuenta y vuelve a correrlo";
   }
-  window.DunkDev = { giveAll, giveBasicsAndFinals, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev, makeBundleCode:makeBundleCodeDev, clearMyScore };
+  window.DunkDev = { giveAll, giveBasicsAndFinals, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev, makeBundleCode:makeBundleCodeDev, makeRewardCode:makeRewardCodeDev, clearMyScore };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
@@ -2315,10 +2329,10 @@
   function bpLevel(){ ensureLeague(); const xp=state.league.xp||0; let n=0; BP_TIERS.forEach(t=>{ if(xp>=t.xp) n++; }); return n; }
   // tabla de la liga = mismos récords globales del minijuego (como la clasificación normal) + sembrados
   function leagueBoard(){
-    const arr=(scoresCache||[]).slice();
-    arr.push({uid:"seed-huesca",username:"HuescaPro24",score:132});
-    arr.push({uid:"seed-elias",username:"@eliasyoya",score:152});
-    const by={}; arr.forEach(r=>{ const k=r.username||"jugador"; if(!by[k]||(r.score||0)>(by[k].score||0)) by[k]=r; });
+    const arr=(leagueCache||[]).slice();
+    // incluye tu mejor récord local aunque aún no haya subido a la nube (evita que te nieguen rango/premio siendo top)
+    if(currentUid){ const myBest=(state.league&&state.league.best)||0; if(myBest>0) arr.push({uid:currentUid, username:myDisplayName(), score:myBest}); }
+    const by={}; arr.forEach(r=>{ const k=r.uid||r.username||"jugador"; if(!by[k]||(r.score||0)>(by[k].score||0)) by[k]=r; });
     return Object.values(by).sort((a,b)=>(b.score||0)-(a.score||0));
   }
   function leagueRank(){ const list=leagueBoard(); const i=list.findIndex(r=>r.uid===currentUid); return i>=0 ? i+1 : 0; }
@@ -2341,7 +2355,7 @@
     store[idx]=true;
     const got=msApplyReward(track==="prem"?t.prem:t.free);
     save(); renderLiga(); renderRewards();
-    toast(`¡Recompensa nivel ${idx+1}! +${got}`);
+    toast(`¡Recompensa nivel ${idx+1}! ${got}`);
   }
   function buyPremium(){
     ensureLeague();
@@ -2418,7 +2432,7 @@
   }
   function renderLeaderboard(list){
     const ol=$("#lb-list"); if(!ol) return;
-    const _arr=(list||scoresCache||[]).slice(); _arr.push({uid:"seed-huesca",username:"HuescaPro24",score:132}); _arr.push({uid:"seed-elias",username:"@eliasyoya",score:152});
+    const _arr=(list||scoresCache||[]).slice();
     const _by={}; _arr.forEach(r=>{ const k=r.username||"jugador"; if(!_by[k]||(r.score||0)>(_by[k].score||0)) _by[k]=r; });
     list = Object.values(_by).sort((a,b)=>(b.score||0)-(a.score||0)).slice(0,3);
     if(!list.length){ ol.innerHTML=`<li class="pf-empty" style="list-style:none">Aún no hay récords. ¡Sé el primero en jugar Encestes!</li>`; return; }
@@ -2884,6 +2898,10 @@
   // ---- FICHA DE VERANO (sorpresa): nada / balones / carta de verano / balón de verano ----
   function buySummerToken(){
     if(!spendCoins(TOKEN_COST)){ toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return; }
+    spinFicha();
+  }
+  // Tirada de la Ficha de Verano SIN cobrar balones (para códigos de regalo).
+  function spinFicha(){
     const r=Math.random();
     if(r<0.55){                       // 55% nada
       showFichaResult("nada");
@@ -2905,6 +2923,28 @@
       else { state.skins["verano"]=1; save(); equipSkin("verano"); renderSkins(); showFichaResult("balon"); }
     }
     renderFichaBtn();
+  }
+  // ---- CÓDIGO DE REGALO: abre N sobres normales (todo en un destape) + N tiradas de Ficha ----
+  function claimRewardCode(payload){
+    const packs = Math.max(0, payload.packs|0);
+    const fichas = Math.max(0, payload.ficha|0);
+    if(packs>0){
+      const out=[];
+      for(let s=0; s<packs; s++){
+        const taken=new Set();
+        for(let i=0;i<5;i++){ const p=drawOne(PLAYERS, taken); taken.add(p.slug); out.push({p, variant:"normal"}); }
+      }
+      out.sort((a,b)=>ovr(a.p)-ovr(b.p));   // mejor carta al final
+      out.forEach(it=>{ state.owned[it.p.slug]=(state.owned[it.p.slug]||0)+1; });
+      state.packs+=packs; state.totalCards+=out.length;
+      ensureMissions(); state.missions.daily.packs+=packs;
+      checkTeamRewards(); save();
+      renderProgress(); renderPackStats(); renderRewards(); renderMessages(); renderAlbum(); renderAlbum90s(); renderAlbumSummer();
+      if(fichas>0) afterOpenerOnce=()=>{ for(let i=0;i<fichas;i++) spinFicha(); };
+      runOpener(out, "std", {noAgain:true, endHint:`¡${out.length} cartas!`});
+    } else if(fichas>0){
+      for(let i=0;i<fichas;i++) spinFicha();
+    }
   }
   function closeFres(){ const o=$("#fres"); if(o){ o.classList.remove("show"); o.setAttribute("aria-hidden","true"); o.querySelector(".fres-coins")?.remove(); } }
   function showFichaResult(type, data){
@@ -3151,12 +3191,12 @@
   const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c", noventas:"#b079ff", verano:"#ff9e3d"};
   let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null, revealTimers=[];
   function clearRevealTimers(){ revealTimers.forEach(clearTimeout); revealTimers=[]; clearTimeout(tearTimer); }
-  let openerNoAgain=false;
+  let openerNoAgain=false, openerEndHint=null, afterOpenerOnce=null;
   function runOpener(cards, kind, opts){
     opts=opts||{};
     clearRevealTimers(); openerBusy=false;   // evita que timers de un destape anterior congelen este
     openerQueue=cards; openerIdx=0;
-    openerNoAgain=!!opts.noAgain;
+    openerNoAgain=!!opts.noAgain; openerEndHint=opts.endHint||null;
     // precarga las fotos del sobre para que no tarden en aparecer al revelar
     cards.forEach(c=>{ const src=(c.variant==="finals" && FINALS_CARD[c.p.slug]) ? FINALS_CARD[c.p.slug] : c.p.foto; if(src){ const im=new Image(); im.src=src; } });
     const strip=$("#reveal-strip");
@@ -3207,7 +3247,7 @@
   function revealNext(){
     if(openerBusy) return;
     if(openerIdx>=openerQueue.length){
-      $("#opener-hint").textContent= openerNoAgain ? "¡Carta de Verano conseguida!" : "¡Sobre completo!";
+      $("#opener-hint").textContent= openerEndHint || (openerNoAgain ? "¡Carta de Verano conseguida!" : "¡Sobre completo!");
       const again=$("#opener-again"); if(again) again.style.display = openerNoAgain ? "none" : "";
       $("#opener-actions").style.display="flex";
       return;
@@ -3580,6 +3620,7 @@
     try{ res=await window.DunkFire.claimCode(code, currentUid); }
     catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo reclamar, intenta de nuevo"); return; }
     if(!res || !res.ok){ toast(res && res.reason==="used" ? "Ese código ya fue usado" : "Código no válido"); return; }
+    if(res.cards && res.cards.reward){ claimRewardCode(res.cards); toast("¡Código canjeado! 🎁"); return; }
     const n=grantBundle(res.cards||[]);
     toast(n ? `¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''}` : "Código válido, pero ya tenías esas cartas");
   }
@@ -3696,7 +3737,8 @@
   let lastPackKind="std";
   const _openPack=openPack;
   openPack=function(k, free){ lastPackKind=k; _openPack(k, free); };
-  function closeOpener(){ clearRevealTimers(); openerBusy=false; const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true"); }
+  function closeOpener(){ clearRevealTimers(); openerBusy=false; const o=$("#opener"); o.classList.remove("show"); o.setAttribute("aria-hidden","true");
+    if(afterOpenerOnce){ const f=afterOpenerOnce; afterOpenerOnce=null; setTimeout(f,260); } }
 
   /* =====================================================
      ARRANQUE
@@ -3745,8 +3787,7 @@
 
     bindEvents();
     bindAuth();
-    // splash de temporada: solo la primera vez (no vuelve a salir, no afecta la sesión)
-    try{ if(!localStorage.getItem("season2_splash_seen")){ $("#season-splash")?.classList.add("show"); localStorage.setItem("season2_splash_seen","1"); } }catch(e){ $("#season-splash")?.classList.add("show"); }
+    // splash de temporada desactivado: ya no se muestra la animación de verano al entrar
     renderAll(); renderPsaBadge();
     startSession();   // Firebase: muestra login o reanuda sesión
 
@@ -4496,10 +4537,10 @@ window.TenisLab = (function(){
     s.charm = Math.random()<0.08 ? (Math.random()<0.5?'inf':'neg') : null; }   // sello (muy raro)
 
   function buyOffer(i){ const s=S(); const o=s.shop[i]; if(!o) return; const b=B();
-    if(s.slots.indexOf(null)<0){ b.toast('Sin espacio'); return; }   // mano llena
     if(!pay(o.price)){ b.toast('Te faltan balones'); return; }
     const n=newOwned(o); s.owned.push(n);
-    const k=s.slots.indexOf(null); if(k>=0) s.slots[k]=n.uid;        // sube automáticamente a la mano
+    const k=s.slots.indexOf(null); if(k>=0) s.slots[k]=n.uid;        // sube a la mano si hay slot…
+    else b.toast('Sin slot libre · queda en inventario');           // …o se guarda en inventario (igual que los sobres)
     s.shop[i]=null; ensureSlots(); b.save(); render();
   }
   function sell(u){ const s=S(); const i=s.owned.findIndex(o=>o.uid===u); if(i<0) return; const o=s.owned[i];
@@ -4721,7 +4762,7 @@ window.TenisLab = (function(){
     const reroll=document.getElementById('tn-reroll');
     if(reroll) reroll.textContent = (s.freeReroll && hasV('baucher-rebobina')) ? 'Refrescar (gratis)' : 'Refrescar · 1000';
     const pk=document.getElementById('tn-packs');
-    if(pk){ const sobre=(slug,label,sub,price,pack)=>'<div class="tn-item"><div class="tn-card pack" style="--rc:#ffd24d" data-pack="'+pack+'"><div class="tn-top">Sobre</div><div class="tn-art"><img src="tenis/'+slug+'.png" alt="" onerror="this.style.opacity=0"></div><div class="tn-foot">'+label+'</div></div><div class="tn-meta"><div class="tn-desc">'+sub+'</div><button class="btn btn-primary tn-pack" data-pack="'+pack+'">Comprar · <span class="coin-ico"></span> '+price+'</button></div></div>';
+    if(pk){ const sobre=(slug,label,sub,price,pack)=>'<div class="tn-item"><div class="tn-card tn-sobre" style="--rc:#ffd24d" data-pack="'+pack+'"><div class="tn-top">Sobre</div><div class="tn-art"><img src="tenis/'+slug+'.png" alt="" onerror="this.style.opacity=0"></div><div class="tn-foot">'+label+'</div></div><div class="tn-meta"><div class="tn-desc">'+sub+'</div><button class="btn btn-primary tn-pack" data-pack="'+pack+'">Comprar · <span class="coin-ico"></span> '+price+'</button></div></div>';
       let h = sobre('sobre-pequeno','Sobre pequeño','Elige 1 de 2',400,'small') + sobre('sobre-grande','Sobre grande','Elige 1 de 4',1000,'big');
       if(s.charm==='inf') h+='<div class="tn-item" style="grid-column:1/-1"><button class="btn btn-primary tn-sello" data-sello="inf">Sello Infinito ∞ · <span class="coin-ico"></span> 8000</button></div>';
       if(s.charm==='neg') h+='<div class="tn-item" style="grid-column:1/-1"><button class="btn btn-primary tn-sello" data-sello="neg">Sello Negativo +1 ranura · <span class="coin-ico"></span> 9000</button></div>';
