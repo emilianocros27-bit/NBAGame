@@ -3802,7 +3802,7 @@
 <!-- ===== MINIJUEGO: ENCESTES (encapsulado) ===== -->
 <script>
 window.MiniGame = (function(){
-  let cv, ctx, stage, W, H, S;
+  let cv, ctx, stage, W, H, S, lastAvailW=0;
   let ball, hoop, dragging, dragStart, dragNow;
   let score, streak, timeLeft, running, best, timerId, msgTimeout;
   let bMod={hoopSpeed:1,hoopR:1,time:60,golden:true};
@@ -3824,17 +3824,21 @@ window.MiniGame = (function(){
     const navSpace = isMobile ? 84 : 16;                    // hueco para la barra inferior (solo móvil)
     let availH = Math.max(260, window.innerHeight - top - navSpace - 10);
     const availW = stage.clientWidth;
+    if(!availW){ return false; }                            // aún sin layout: no medir todavía
+    // ESTABILIDAD MÓVIL: si el juego ya tiene tamaño y SOLO cambió el alto disponible
+    // (la barra del navegador que aparece/desaparece al hacer scroll), NO reescalar.
+    // Antes esto encogía la canasta a media partida. Solo reescalamos si cambia el ANCHO (rotación).
+    if(!force && W && Math.abs(availW - lastAvailW) < 4) return false;
     let h = Math.min(availH, 700), w = h * 9 / 16;
     if(w > availW){ w = availW; h = w * 16 / 9; }
-    if(!availW){ return false; }                            // aún sin layout: no medir todavía
-    // ignora micro-cambios (p.ej. barra del navegador en móvil) para no reescalar el juego en plena partida
+    // ignora micro-cambios de ancho
     if(!force && W && Math.abs(w - W) < 8) return false;
     stage.style.height = h + 'px';                          // el escenario se ajusta al canvas (sin huecos)
     cv.style.width = w + 'px'; cv.style.height = h + 'px';
     const dpr = window.devicePixelRatio || 1;
     cv.width = w * dpr; cv.height = h * dpr;
     ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-    W = w; H = h; S = w / 400;
+    W = w; H = h; S = w / 400; lastAvailW = availW;
     return true;
   }
 
