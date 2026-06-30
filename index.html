@@ -771,9 +771,42 @@
     font-size:13px; letter-spacing:.5px;}
   .mg-stat span{color:#ffd24d}
   .mg-hud .big{font-size:22px}
-  .mg-msg{position:absolute; top:42%; left:50%; transform:translate(-50%,-50%); color:#fff; font-family:var(--display);
-    font-weight:800; font-size:32px; text-shadow:0 4px 20px rgba(0,0,0,.5); opacity:0; pointer-events:none;
-    transition:opacity .15s; text-align:center; white-space:nowrap;}
+  .mg-msg{position:absolute; top:54px; left:50%; transform:translateX(-50%); color:#fff; font-family:var(--display);
+    font-weight:700; font-size:14px; letter-spacing:.02em; text-shadow:0 2px 8px rgba(0,0,0,.7); opacity:0; pointer-events:none;
+    transition:opacity .15s; text-align:center; white-space:nowrap; background:rgba(0,0,0,.35); padding:3px 10px; border-radius:999px;}
+  /* marcador estilo Balatro (fichas × mult) — esquina derecha */
+  .mg-bal{position:absolute; right:10px; bottom:16px; z-index:6; display:flex; align-items:stretch;
+    box-shadow:0 6px 18px rgba(0,0,0,.5); pointer-events:none; border-radius:11px;
+    font-family:var(--display); font-weight:800; font-size:clamp(17px,5vw,26px); line-height:1;}
+  .mg-bal-chips,.mg-bal-mult{padding:8px 14px; min-width:48px; text-align:center; box-shadow:inset 0 0 0 2px rgba(255,255,255,.18);
+    display:inline-block; transform-origin:center;}
+  .mg-bal-chips{background:linear-gradient(180deg,#1f7fd6,#0e5aa6); color:#eaf6ff; border-radius:11px 0 0 11px;}
+  .mg-bal-mult{background:linear-gradient(180deg,#ef4d3a,#c41f12); color:#fff0ea; border-radius:0 11px 11px 0;}
+  .mg-bal-x{background:#0d0f16; color:#ff7a3d; padding:8px 7px; display:flex; align-items:center; font-size:.66em;}
+  .mg-bal.pop{animation:mgBalPop .22s ease;}
+  @keyframes mgBalPop{0%{transform:scale(1)}45%{transform:scale(1.12)}100%{transform:scale(1)}}
+  /* rebote de los números al sumar (juice tipo Balatro) */
+  .mg-bal-chips.juice,.mg-bal-mult.juice{animation:mgJuice .32s cubic-bezier(.2,1.4,.4,1);}
+  @keyframes mgJuice{0%{transform:scale(1) rotate(0)}30%{transform:scale(1.5) rotate(-5deg)}60%{transform:scale(.92) rotate(3deg)}100%{transform:scale(1) rotate(0)}}
+  /* en llamas */
+  .mg-bal.fire{animation:mgGlow .8s ease-in-out infinite alternate;}
+  .mg-bal.fire .mg-bal-mult{color:#fff;}
+  @keyframes mgGlow{0%{box-shadow:0 0 14px 2px rgba(255,120,30,.55),0 0 28px rgba(255,60,10,.35),0 6px 18px rgba(0,0,0,.5);}100%{box-shadow:0 0 24px 7px rgba(255,165,45,.9),0 0 48px rgba(255,80,15,.6),0 6px 18px rgba(0,0,0,.5);}}
+  /* solo glow de fuego, sin llamaradas */
+  .mg-fire{display:none !important;}
+  .mg-lvl{position:absolute; left:10px; top:10px; z-index:6; font-family:var(--display); font-weight:800; font-size:13px; letter-spacing:.02em; color:#fff; background:rgba(13,15,22,.72); padding:6px 11px; border-radius:9px; box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.14);}
+  .mg-fire i{display:block; width:12px; height:22px; transform-origin:50% 100%; filter:blur(.4px); mix-blend-mode:screen;
+    background:radial-gradient(ellipse 60% 80% at 50% 95%, #fff6b0 0%, #ffd24d 22%, #ff8a1a 48%, #ff2e1a 76%, rgba(255,46,26,0) 100%);
+    clip-path:polygon(50% 0,70% 32%,90% 72%,72% 100%,28% 100%,10% 72%,30% 32%);
+    animation:mgFlame .55s ease-in-out infinite;}
+  .mg-fire i:nth-child(2){height:28px;width:13px;animation-duration:.47s;animation-delay:-.12s}
+  .mg-fire i:nth-child(3){height:32px;width:14px;animation-duration:.66s;animation-delay:-.28s}
+  .mg-fire i:nth-child(4){height:26px;animation-duration:.5s;animation-delay:-.18s}
+  .mg-fire i:nth-child(5){height:20px;width:11px;animation-duration:.6s;animation-delay:-.34s}
+  @keyframes mgFlame{0%,100%{transform:scaleY(.82) scaleX(1.02) translateY(2px) skewX(0deg);opacity:.8}
+    25%{transform:scaleY(1.18) scaleX(.9) translateY(-4px) skewX(5deg);opacity:1}
+    50%{transform:scaleY(.96) scaleX(1.06) translateY(-1px) skewX(-4deg);opacity:.92}
+    75%{transform:scaleY(1.24) scaleX(.88) translateY(-5px) skewX(3deg);opacity:1}}
   .mg-hint{position:absolute; bottom:86px; left:50%; transform:translateX(-50%); text-align:center;
     color:rgba(255,255,255,.78); font-size:12.5px; pointer-events:none; transition:opacity .4s;
     background:rgba(0,0,0,.4); padding:6px 14px; border-radius:999px; backdrop-filter:blur(3px); white-space:nowrap;}
@@ -1005,6 +1038,7 @@
         <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
         <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
         <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
+        <button class="tab" role="tab" data-view="tenis" aria-selected="false">Tenis</button>
         <button class="tab" role="tab" data-view="liga" aria-selected="false">Liga</button>
       </nav>
       <div class="coins-chip" title="Balones (gana jugando Encestes)"><span class="coin-ico"></span><b class="coin-amount">0</b></div>
@@ -1251,7 +1285,15 @@
           <div class="mg-stat">RACHA <span id="mg-streak">0</span></div>
           <div class="mg-stat">TIEMPO <span id="mg-time">60</span>s</div>
         </div>
+        <div id="mg-lvl" class="mg-lvl"></div>
         <div id="mg-msg" class="mg-msg"></div>
+        <!-- marcador estilo Balatro: fichas × mult -->
+        <div id="mg-bal" class="mg-bal" aria-hidden="true">
+          <div class="mg-fire" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>
+          <span class="mg-bal-chips" id="mg-bal-chips">0</span>
+          <span class="mg-bal-x">×</span>
+          <span class="mg-bal-mult" id="mg-bal-mult">0</span>
+        </div>
         <div id="mg-hint" class="mg-hint">Arrastra desde el balón y suelta para lanzar</div>
         <div id="mg-over" class="mg-over">
           <h1>¡Tiempo!</h1>
@@ -1259,6 +1301,7 @@
           <div class="mg-final" id="mg-final">0</div>
           <p id="mg-best">Mejor: 0</p>
           <p class="mg-reward" id="mg-reward"></p>
+          <p class="mg-reward" id="mg-lvlres"></p>
           <button id="mg-again" class="mg-btn">Jugar otra vez</button>
         </div>
       </div>
@@ -1286,6 +1329,23 @@
       </div>
       <div class="pf-sec-head" style="margin-top:26px"><h3>Clasificación</h3></div>
       <ol class="lb-list" id="liga-list"><li class="pf-empty" style="list-style:none">Cargando…</li></ol>
+    </section>
+
+    <!-- ===== TENIS (comodines tipo Balatro para Encestes) ===== -->
+    <section class="view" id="view-tenis" role="tabpanel">
+      <div class="view-head"><div>
+        <h2>Tenis</h2>
+        <p>Tus comodines para Encestes. Cada canasta puntúa <b>fichas × mult</b>. Equipa hasta 3, arrástralos para ordenarlos y arma combos.</p>
+      </div></div>
+      <div class="tn-equip-head"><h3>Equipados</h3><span id="tn-slots-info" class="teams-done"></span></div>
+      <div class="tn-slots" id="tn-slots"></div>
+      <div class="pf-sec-head" style="margin-top:24px"><h3>Tienda de tenis</h3><button class="pf-link" id="tn-reroll"></button></div>
+      <div class="tn-shop" id="tn-shop"></div>
+      <div class="pf-sec-head" style="margin-top:24px"><h3>Sobres y bauchers</h3></div>
+      <div class="tn-shop" id="tn-packs"></div>
+      <div class="tn-shop" id="tn-vouchers"></div>
+      <div class="pf-sec-head" style="margin-top:24px"><h3>Tu inventario</h3></div>
+      <div class="tn-inv" id="tn-inv"></div>
     </section>
 
     <!-- ===== PERFIL ===== -->
@@ -1359,6 +1419,7 @@
     <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
     <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
     <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
+        <button class="tab" role="tab" data-view="tenis" aria-selected="false">Tenis</button>
         <button class="tab" role="tab" data-view="liga" aria-selected="false">Liga</button>
   </nav>
 
@@ -1384,6 +1445,11 @@
       </div>
     </div>
   </div>
+
+  <!-- overlay: elegir comodín del sobre -->
+  <div class="tn-pick" id="tn-pick"><div class="tn-pick-in" id="tn-pick-in"></div></div>
+  <!-- globo de info del comodín -->
+  <div class="tn-info" id="tn-info"><div class="tn-info-in" id="tn-info-in"></div></div>
 
   <!-- overlay resultado de la FICHA (nada / balones / balón) -->
   <div class="fres" id="fres" aria-hidden="true">
@@ -1498,6 +1564,11 @@
     // récord robusto: máx(nube, respaldo local), monotónico (nunca baja) → no se reinicia ni se farmea
     getBest:()=>{ let ls=0; try{ ls=+(localStorage.getItem('basket_best')||0); }catch(e){} return Math.max(state.bestScore||0, ls||0); },
     setBest:(v)=>{ v=Math.max(state.bestScore||0, v||0); state.bestScore=v; try{ localStorage.setItem('basket_best',v); }catch(e){} save(); } };
+  // puente para el sistema de TENIS (comodines, vive en otro script)
+  window.DunkTenisBridge = {
+    state: ()=>{ if(!state.tenis) state.tenis = { owned:[], slots:[null,null,null], vouchers:[], shop:null, freeReroll:true }; return state.tenis; },
+    save: ()=>save(), coins: ()=>state.coins||0, spend:(n)=>spendCoins(n), add:(n)=>addCoins(n), toast:(m)=>toast(m)
+  };
   // ---- DEV: dar todo para testear (consola: DunkDev.giveAll()) ----
   function giveAll(){
     PLAYERS.forEach(p=>{ state.owned[p.slug]=1; });
@@ -1558,7 +1629,15 @@
     console.log("%c CÓDIGO (1 uso) "+code+" ", "background:#f2552c;color:#fff;font-size:16px;padding:4px 8px;border-radius:6px;");
     return code;
   }
-  window.DunkDev = { giveAll, giveBasicsAndFinals, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev, makeBundleCode:makeBundleCodeDev };
+  // borra tu récord de la clasificación y de la liga (consola: DunkDev.clearMyScore())
+  async function clearMyScore(){
+    state.bestScore=0; if(state.league) state.league.best=0; try{ localStorage.removeItem('basket_best'); }catch(e){}
+    save();
+    if(window.DunkFire && window.DunkFire.deleteMyScore && currentUid){ try{ await window.DunkFire.deleteMyScore(currentUid); }catch(e){} }
+    try{ renderLiga(); }catch(e){}
+    return currentUid ? "OK: tu récord fue borrado de la tabla (scores + liga)" : "No has iniciado sesión: inicia sesión con tu cuenta y vuelve a correrlo";
+  }
+  window.DunkDev = { giveAll, giveBasicsAndFinals, coins:(n)=>addCoins(n), reset:resetAccount, givePromo:givePromoDev, makeCode:makeCodeDev, makeBundleCode:makeBundleCodeDev, clearMyScore };
 
   // ===== EVENTO TEMÁTICO: FINALES NBA =====
   const EVENT = {
@@ -2179,7 +2258,10 @@
     scoresSub = window.DunkFire.watchScores(list=>{ scoresCache=list; renderLeaderboard(list); renderLiga(); }, 10);
   }
   function myDisplayName(){ return (myProfile&&myProfile.username) ? "@"+myProfile.username : (authUser? authUser.split("@")[0] : "jugador"); }
+  const IS_LOCAL = ['localhost','127.0.0.1','0.0.0.0','::1',''].includes(location.hostname);
   function submitMyScore(score){
+    // en localhost (pruebas) NO se sube nada a la tabla real ni al pase de batalla
+    if(IS_LOCAL){ try{ renderLiga(); }catch(e){} return; }
     // liga + pase de batalla (local, aunque no estés logueado)
     ensureLeague();
     state.league.best = Math.max(state.league.best||0, score);
@@ -3510,6 +3592,7 @@
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
     if(v==="misiones") renderMissions();
     if(v==="liga"){ subscribeScores(); subscribeLeague(); renderLiga(); startLeagueTick(); }
+    if(v==="tenis" && window.TenisLab) window.TenisLab.render();
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
     if(v==="noventas") renderAlbum90s();
@@ -3681,6 +3764,8 @@ window.MiniGame = (function(){
   let cv, ctx, stage, W, H, S;
   let ball, hoop, dragging, dragStart, dragNow;
   let score, streak, timeLeft, running, best, timerId, msgTimeout;
+  let bMod={hoopSpeed:1,hoopR:1,time:60,golden:true};
+  function fmtN(n){ n=Math.round(n); return n<100000 ? ''+n : n.toExponential(2); }   // grandes → 1.23e+7
   let particles = [], rings = [], rafId = null, active = false, inited = false;
   const GROUND = () => H - 40 * S;
   // cubeta del piso (easter egg): boca a la izquierda, apoyada en la arena
@@ -3713,7 +3798,7 @@ window.MiniGame = (function(){
   }
 
   function newHoop(){
-    const r = 38 * S, margin = 70 * S;
+    const r = 38 * S * (bMod?bMod.hoopR:1), margin = 70 * S;
     // altura en una banda jugable (ni pegada al techo ni demasiado abajo)
     const yMin = 150 * S, yMax = yMin + H * 0.24;
     const y = yMin + Math.random() * (yMax - yMin);
@@ -3722,14 +3807,14 @@ window.MiniGame = (function(){
     const maxOff = (W / 2 - margin) * (1 - 0.5 * hf);
     const x = Math.max(margin, Math.min(W - margin, W / 2 + (Math.random() * 2 - 1) * maxOff));
     const moving = score >= 5;
-    hoop = { x, y, r, rimY: y, vx: moving ? (Math.random() < .5 ? -1 : 1) * (0.6 + Math.random() * 0.9) * S : 0, scored: false, golden: Math.random()<0.18 };
+    hoop = { x, y, r, rimY: y, vx: moving ? (Math.random() < .5 ? -1 : 1) * (0.6 + Math.random() * 0.9) * S * bMod.hoopSpeed : 0, scored: false, golden: (bMod.golden!==false) && Math.random()<0.18 };
     buildNet(hoop);
   }
   // Garantiza que el aro siempre quede DENTRO de la cancha (si no, lo recoloca).
   // Evita que un reescalado raro lo deje fuera de pantalla (aro invisible).
   function clampHoopToCourt(){
     if(!hoop) return;
-    hoop.r = 38 * S;
+    hoop.r = 38 * S * bMod.hoopR;
     const m = 70 * S;
     if(!(hoop.x > m && hoop.x < W - m && hoop.y > 60*S && hoop.y < H * 0.6)){ newHoop(); return; }
     hoop.rimY = hoop.y; buildNet(hoop);
@@ -3782,16 +3867,26 @@ window.MiniGame = (function(){
       document.getElementById('mg-time').textContent=timeLeft; if(timeLeft<=0) endGame(); },1000);
   }
   function startGame(){
-    score=0; streak=0; timeLeft=60; running=true;
+    bMod = (window.TenisLab && window.TenisLab.bossMods) ? window.TenisLab.bossMods() : {hoopSpeed:1,hoopR:1,time:60,golden:true};
+    score=0; streak=0; timeLeft=bMod.time||60; running=true;
+    if(window.TenisLab){ const li=window.TenisLab.levelInfo(); const el=document.getElementById('mg-lvl');
+      if(el) el.innerHTML='Nivel '+li.lvl+'-'+(li.boss?'BOS':(li.stg+1))+(li.boss?' · '+li.bossName:'')+' · Meta '+fmtN(li.target); }
+    if(window.TenisLab) window.TenisLab.onGameStart();    // reinicia contadores de combos
     if(window.DunkMissions) window.DunkMissions.game();   // misión diaria: jugar partida
     document.getElementById('mg-over').style.display='none';
     document.getElementById('mg-hint').style.opacity='1';
     document.getElementById('mg-time').textContent=timeLeft;
+    document.getElementById('mg-lvl').style.display='block';
+    var bx=document.getElementById('mg-bal'); if(bx){ bx.style.display='flex'; bx.classList.remove('fire','pop'); document.getElementById('mg-bal-chips').textContent='0'; document.getElementById('mg-bal-mult').textContent='0'; }
     updateHUD(); resetBall(); newHoop();
     startTimer();
   }
   function endGame(){
     running=false; clearInterval(timerId);
+    var _bx=document.getElementById('mg-bal'); if(_bx) _bx.style.display='none';   // ocultar marcador en la pantalla final
+    var _lv=document.getElementById('mg-lvl'); if(_lv) _lv.style.display='none';
+    let lvlRes=null;
+    if(window.TenisLab) lvlRes=window.TenisLab.onGameEnd(score);   // gasta rondas, evalúa nivel/bos
     // récord atado a la cuenta (estado en la nube), no a localStorage → no farmeable
     const stored=(window.DunkEconomy&&window.DunkEconomy.getBest)?window.DunkEconomy.getBest():best;
     best=Math.max(best||0, stored||0);
@@ -3799,8 +3894,12 @@ window.MiniGame = (function(){
     if(newBest){ best=score;
       if(window.DunkEconomy&&window.DunkEconomy.setBest) window.DunkEconomy.setBest(best);
       else localStorage.setItem('basket_best',best); }
-    document.getElementById('mg-final').textContent=score;
-    document.getElementById('mg-best').textContent='Mejor: '+best;
+    document.getElementById('mg-final').textContent=fmtN(score);
+    document.getElementById('mg-best').textContent='Mejor: '+fmtN(best);
+    const lr=document.getElementById('mg-lvlres');
+    if(lr){ lr.innerHTML = lvlRes ? (lvlRes.passed
+        ? (lvlRes.won?'¡Completaste los 8 niveles!':((lvlRes.boss?'BOS superado':'Nivel superado')+' · Meta '+fmtN(lvlRes.target)+' · +'+lvlRes.reward+' balones'))
+        : ('Meta '+fmtN(lvlRes.target)+' no alcanzada · reintenta')) : ''; }
     // recompensa en monedas
     const rate=(window.DunkEconomy && window.DunkEconomy.perPoint) || 10;
     let earned=score*rate; if(newBest && score>0) earned+=100;   // bonus por récord
@@ -3813,7 +3912,7 @@ window.MiniGame = (function(){
     document.getElementById('mg-over').style.display='flex';
   }
   function updateHUD(){
-    document.querySelector('#mg-score .big').textContent=score;
+    document.querySelector('#mg-score .big').textContent=fmtN(score);
     document.getElementById('mg-streak').textContent=streak;
   }
   function flash(text,color){ const m=document.getElementById('mg-msg'); m.textContent=text; m.style.color=color||'#ffd24d';
@@ -3884,27 +3983,35 @@ window.MiniGame = (function(){
     ball.canScore=false; ball.done=true; streak++;
     const mult = streak>=6?3 : streak>=3?2 : 1;
     const swish = !ball.touchedRim;
-    let pts = 2*mult;
-    if(swish) pts += 2;
+    let pts, tnBreak=null;
+    if(window.TenisLab){ const r=window.TenisLab.scoreBasket({swish, golden:!!hoop.golden, streak, timeLeft}); pts=r.pts; tnBreak=r; }
+    else { pts = 2*mult; if(swish) pts += 2; if(hoop.golden) pts += 3; }
     let addTime = 1;
-    if(hoop.golden){ pts += 3; addTime = 3; }
+    if(hoop.golden){ addTime = 3; }
     if(hoop.golden && swish){ addTime = 10; }   // dorado + swish: +10 segundos
     score += pts; updateHUD();
+    if(tnBreak){ const bx=document.getElementById('mg-bal'), ch=document.getElementById('mg-bal-chips'), mu=document.getElementById('mg-bal-mult');
+      if(bx&&ch&&mu){ ch.textContent=fmtN(tnBreak.chips); mu.textContent=fmtN(tnBreak.mult);
+        bx.classList.remove('pop'); ch.classList.remove('juice'); mu.classList.remove('juice'); void bx.offsetWidth;
+        bx.classList.add('pop'); ch.classList.add('juice'); mu.classList.add('juice');
+        bx.classList.toggle('fire', score>=600 || pts>=120); } }
     if(window.DunkMissions){ window.DunkMissions.basket(hoop.golden); window.DunkMissions.streak(streak); }
     const col = hoop.golden ? '#ffd24d' : swish ? '#7CFC9B' : streak>=3 ? '#ff7a3d' : '#ffd24d';
     burst(hoop.x,hoop.rimY, col);
     rings.push({x:hoop.x,y:hoop.rimY,r:hoop.r*0.5,life:1,color:col});
     let msg;
-    if(hoop.golden) msg='¡DORADO! +'+pts;
-    else if(swish) msg='¡SWISH! +'+pts;
-    else if(streak>=3) msg='¡EN LLAMAS x'+mult+'! +'+pts;
-    else msg='¡CANASTA! +'+pts;
+    if(tnBreak) msg = (hoop.golden?'¡DORADO! ':swish?'¡SWISH! ':'')+fmtN(tnBreak.chips)+' × '+fmtN(tnBreak.mult)+' = '+fmtN(pts);
+    else if(hoop.golden) msg='¡DORADO! +'+fmtN(pts);
+    else if(swish) msg='¡SWISH! +'+fmtN(pts);
+    else if(streak>=3) msg='¡EN LLAMAS x'+mult+'! +'+fmtN(pts);
+    else msg='¡CANASTA! +'+fmtN(pts);
     flash(msg, col);
     timeLeft=Math.min(timeLeft+addTime,99); document.getElementById('mg-time').textContent=timeLeft;
     setTimeout(()=>{ if(running){ resetBall(); newHoop(); } },700);
   }
-  function miss(){ ball.canScore=false; ball.done=true; if(streak>0) flash('Fallaste','#ff6b6b'); streak=0; updateHUD();
-    setTimeout(()=>{ if(running) resetBall(); },500); }
+  function miss(){ ball.canScore=false; ball.done=true; if(streak>0) flash('Fallaste','#ff6b6b');
+    if(!(window.TenisLab && window.TenisLab.keepStreak())) streak=Math.floor(streak/2);   // Kobe 4 salva la racha 1 vez
+    updateHUD(); setTimeout(()=>{ if(running) resetBall(); },500); }
 
   function draw(){
     ctx.clearRect(0,0,W,H);
@@ -4260,6 +4367,7 @@ window.MiniGame = (function(){
     },
     watchScores: (cb, n)=> onSnapshot(query(collection(db,"scores"), orderBy("score","desc"), limit(n||20)),
       qs=> cb(qs.docs.map(d=>d.data())), ()=>{}),
+    deleteMyScore: (uid)=> Promise.all([ deleteDoc(doc(db,"scores",uid)).catch(()=>{}), deleteDoc(doc(db,"league",uid)).catch(()=>{}) ]),
     // ---- LIGA (temporada nueva, ranking propio) ----
     submitLeague: async (uid, username, score)=>{
       return await runTransaction(db, async(tx)=>{
@@ -4287,6 +4395,459 @@ window.MiniGame = (function(){
     mapErr
   };
   window.dispatchEvent(new Event("dunkfire-ready"));
+</script>
+
+<!-- ===== TENIS: comodines tipo Balatro para Encestes ===== -->
+<script>
+window.TenisLab = (function(){
+  const B = ()=>window.DunkTenisBridge;
+  const PRICE = { comun:100, poco:250, rara:500, leg:1000 };
+  const RC = { comun:'#9aa0a8', poco:'#4aa3ff', rara:'#b06cff', leg:'#ffd24d' };
+  const RLBL = { comun:'Común', poco:'Poco común', rara:'Rara', leg:'Legendaria' };
+  // 21 tenis (id = nombre de imagen en tenis/<id>.png)
+  const DEFS = [
+    {id:'air-force-1', name:'Air Force 1', rarity:'comun', desc:'+6 fichas por canasta'},
+    {id:'superstar', name:'adidas Superstar', rarity:'comun', desc:'+8 fichas por canasta'},
+    {id:'clyde', name:'Puma Clyde', rarity:'comun', desc:'+10 fichas en cada swish'},
+    {id:'chuck-taylor', name:'Chuck Taylor', rarity:'comun', desc:'+1 al mult'},
+    {id:'air-max-90', name:'Air Max 90', rarity:'comun', desc:'Canasta que toca el aro: +10 fichas'},
+    {id:'nb-550', name:'New Balance 550', rarity:'comun', desc:'+5 fichas (+5 más en swish)'},
+    {id:'kd-15', name:'Nike KD 15', rarity:'poco', desc:'+15 fichas por canasta'},
+    {id:'curry-flow-10', name:'Curry Flow 10', rarity:'poco', desc:'Swish: ×2 mult'},
+    {id:'lebron-20', name:'LeBron 20', rarity:'poco', desc:'Cada nivel de racha: +1 mult'},
+    {id:'ja-1', name:'Nike Ja 1', rarity:'poco', desc:'+3 fichas acumulables por canasta'},
+    {id:'luka-2', name:'Jordan Luka 2', rarity:'poco', desc:'Aro dorado: ×3 (en vez de ×2)'},
+    {id:'jordan-11', name:'Air Jordan 11', rarity:'rara', desc:'+2 al mult'},
+    {id:'kyrie-7', name:'Kyrie 7', rarity:'rara', desc:'Racha ≥3: ×1.5 mult'},
+    {id:'penny-1', name:'Air Penny 1', rarity:'rara', desc:'+5 fichas × racha actual'},
+    {id:'more-uptempo', name:'Air More Uptempo', rarity:'rara', desc:'Cada 3ª canasta: ×4 mult'},
+    {id:'mag', name:'Nike Mag', rarity:'rara', desc:'El tenis a su izquierda se activa 2 veces'},
+    {id:'jordan-3', name:'Air Jordan 3', rarity:'rara', desc:'Los tenis a sus lados dan +50%'},
+    {id:'kobe-8', name:'Kobe 8 Protro', rarity:'leg', desc:'×2 al puntaje de cada canasta'},
+    {id:'jordan-1-chicago', name:'Air Jordan 1 Chicago', rarity:'leg', desc:'Toda canasta cuenta como dorada y swish ×2'},
+    {id:'off-white', name:'Off-White', rarity:'leg', desc:'Copia el tenis a su derecha'},
+    {id:'yeezy-350', name:'Yeezy 350', rarity:'leg', desc:'Copia el tenis del slot 1'},
+    // ===== NUEVOS (jokers de Balatro adaptados) =====
+    {id:'hyperdunk', name:'Nike Hyperdunk', rarity:'comun', desc:'+4 al mult'},
+    {id:'dame-8', name:'adidas Dame 8', rarity:'comun', desc:'+3 mult por cada tenis equipado'},
+    {id:'air-flight-89', name:'Air Flight 89', rarity:'comun', desc:'+1 ficha por cada 100 balones'},
+    {id:'gt-jump-2', name:'Nike GT Jump 2', rarity:'comun', desc:'+balones al terminar la partida'},
+    {id:'harden-8', name:'adidas Harden Vol 8', rarity:'comun', desc:'+1 mult por cada canasta de la partida'},
+    {id:'foamposite', name:'Nike Foamposite', rarity:'comun', desc:'×0.25 mult por cada tenis vendido'},
+    {id:'cosmic-unity', name:'Nike Cosmic Unity', rarity:'poco', desc:'+15 mult, 1/6 de expirar cada partida'},
+    {id:'curry-11', name:'Under Armour Curry 11', rarity:'poco', desc:'+2 mult por cada 200 balones'},
+    {id:'sabrina-1', name:'Nike Sabrina 1', rarity:'poco', desc:'×4 mult cada 6 canastas'},
+    {id:'book-1', name:'Nike Book 1', rarity:'poco', desc:'+2 mult por cada refresco de tienda'},
+    {id:'lebron-21', name:'Nike LeBron 21', rarity:'poco', desc:'+mult igual a tu racha actual'},
+    {id:'gt-jump', name:'Nike Zoom GT Jump', rarity:'poco', desc:'+100 fichas, −5 por canasta'},
+    {id:'adapt-bb', name:'Nike Adapt BB', rarity:'poco', desc:'+balones por partida (sube)'},
+    {id:'air-pippen', name:'Nike Air Pippen', rarity:'poco', desc:'gana valor de venta cada partida'},
+    {id:'jordan-38', name:'Air Jordan 38', rarity:'rara', desc:'×3 mult, mínima prob. de expirar'},
+    {id:'freak-5', name:'Nike Zoom Freak 5', rarity:'rara', desc:'×3 mult en los últimos 5 seg'},
+    {id:'pg-6', name:'Nike PG 6', rarity:'rara', desc:'Tus tenis poco comunes dan ×1.5'},
+    {id:'trae-3', name:'adidas Trae Young 3', rarity:'rara', desc:'+mult según el valor de venta de tus otros tenis'},
+    {id:'mb-03', name:'Puma MB.03', rarity:'rara', desc:'Al empezar: destruye el tenis a su derecha y +mult'},
+    {id:'kobe-6', name:'Kobe 6 Protro', rarity:'rara', desc:'Al empezar: ×mult y destruye un tenis al azar'},
+    {id:'shox-bb4', name:'Nike Shox BB4', rarity:'rara', desc:'+250 fichas, pero −1 slot'},
+    {id:'huarache-2k4', name:'Air Huarache 2K4', rarity:'rara', desc:'Interés en balones cada partida'},
+    {id:'flight-95', name:'Air Zoom Flight 95', rarity:'rara', desc:'Compra a crédito (balones negativos)'},
+    {id:'kobe-5', name:'Zoom Kobe 5', rarity:'rara', desc:'+valor de venta a todos tus tenis cada partida'},
+    {id:'gt-cut-3', name:'Nike GT Cut 3', rarity:'leg', desc:'×1 mult por cada slot vacío'},
+    {id:'question', name:'Reebok Question', rarity:'leg', desc:'Tras 2 partidas, véndelo y duplica un tenis'},
+    {id:'zoom-generation', name:'Air Zoom Generation', rarity:'leg', desc:'×mult por cada partida jugada'},
+    {id:'kobe-4', name:'Kobe 4 «Mamba»', rarity:'leg', desc:'El primer fallo de la partida no baja tu racha'},
+    {id:'and1-taichi', name:'AND1 Tai Chi', rarity:'leg', desc:'Al empezar: 2 tenis comunes gratis'},
+    {id:'bb-nxt', name:'Air Zoom BB NXT', rarity:'leg', desc:'+0 a +23 mult (al azar)'},
+    {id:'freak-4', name:'Nike Zoom Freak 4', rarity:'leg', desc:'+20 mult, −4 por partida'},
+  ];
+  const BY = Object.fromEntries(DEFS.map(d=>[d.id,d]));
+  const VOUCHERS = [
+    {id:'baucher-caja-de-zapatos', name:'Caja de Zapatos', price:1000, desc:'La tienda muestra 1 tenis extra (3)'},
+    {id:'baucher-rebobina', name:'Rebobina', price:800, desc:'1 refresco gratis de la tienda por partida'},
+    {id:'baucher-plantilla-de-oro', name:'Plantilla de Oro', price:1500, desc:'+ probabilidad de raros/legendarios'},
+    {id:'baucher-doble-suela', name:'Doble Suela', price:1200, desc:'Los tenis duran 3 rondas (en vez de 2)'},
+    {id:'baucher-trebol', name:'Trébol', price:2500, desc:'Duplica la probabilidad de Infinito y Negativo'},
+    {id:'baucher-cordones-de-oro', name:'Cordones de Oro', price:3500, desc:'Duplica al instante los balones que tienes'},
+  ];
+  const VBY = Object.fromEntries(VOUCHERS.map(v=>[v.id,v]));
+  let st = { n:0 };   // contadores por partida
+
+  function S(){ const s=B().state(); if(!s.owned)s.owned=[]; if(!s.slots)s.slots=[null,null,null]; if(!s.vouchers)s.vouchers=[]; if(typeof s.uid!=='number')s.uid=1; return s; }
+  function hasV(id){ return S().vouchers.indexOf(id)>=0; }
+  function maxSlots(){ const s=S(); const neg=s.owned.filter(o=>o.edition==='neg').length; const stunt=s.owned.filter(o=>o.id==='shox-bb4'&&s.slots.indexOf(o.uid)>=0).length; return Math.max(1, 5+neg-stunt); }
+  function pay(price){ const b=B(); if(b.coins()>=price){ b.spend(price); return true; } if(S().owned.some(o=>o.id==='flight-95') && (b.coins()-price)>=-2000){ b.add(-price); return true; } return false; }
+  function ensureSlots(){ const s=S(), m=maxSlots(); while(s.slots.length<m) s.slots.push(null); while(s.slots.length>m && s.slots[s.slots.length-1]==null) s.slots.pop(); }
+  function ownedByUid(u){ return S().owned.find(o=>o.uid===u); }
+
+  // ---- tienda ----
+  function shopCount(){ return hasV('baucher-caja-de-zapatos')?3:2; }
+  function rollRarity(){
+    const w = hasV('baucher-plantilla-de-oro') ? {comun:40,poco:30,rara:20,leg:10} : {comun:60,poco:25,rara:12,leg:3};
+    const r=Math.random()*100; let acc=0;
+    for(const k of ['comun','poco','rara','leg']){ acc+=w[k]; if(r<acc) return k; } return 'comun';
+  }
+  function rollEdition(){ const m=hasV('baucher-trebol')?2:1; const r=Math.random();
+    if(r < 0.02*m) return 'neg'; if(r < 0.02*m + 0.10*m) return 'inf'; return 'normal'; }
+  function genOffer(){ const rar=rollRarity(); const pool=DEFS.filter(d=>d.rarity===rar);
+    const d=pool[Math.floor(Math.random()*pool.length)]; const ed=rollEdition();
+    const price=Math.min(1000, Math.round(PRICE[rar]*(ed==='inf'?2:ed==='neg'?2.5:1))); return {id:d.id, edition:ed, price}; }
+  function pickVoucher(){ const s=S(); const av=VOUCHERS.filter(v=>!hasV(v.id)); s.voucherOffer = av.length? av[Math.floor(Math.random()*av.length)].id : null; }
+  function genShop(){ const s=S(); s.shop=[]; for(let i=0;i<shopCount();i++) s.shop.push(genOffer()); if(s.voucherOffer===undefined || (s.voucherOffer && hasV(s.voucherOffer))) pickVoucher();
+    s.charm = Math.random()<0.08 ? (Math.random()<0.5?'inf':'neg') : null; }   // sello (muy raro)
+
+  function buyOffer(i){ const s=S(); const o=s.shop[i]; if(!o) return; const b=B();
+    if(s.slots.indexOf(null)<0){ b.toast('Sin espacio'); return; }   // mano llena
+    if(!pay(o.price)){ b.toast('Te faltan balones'); return; }
+    const n=newOwned(o); s.owned.push(n);
+    const k=s.slots.indexOf(null); if(k>=0) s.slots[k]=n.uid;        // sube automáticamente a la mano
+    s.shop[i]=null; ensureSlots(); b.save(); render();
+  }
+  function sell(u){ const s=S(); const i=s.owned.findIndex(o=>o.uid===u); if(i<0) return; const o=s.owned[i];
+    if(o.id==='question' && (o.games||0)>=2){ const others=s.owned.filter(x=>x.uid!==u);
+      if(others.length){ const t=others[Math.floor(Math.random()*others.length)];
+        s.owned.push({uid:s.uid++, id:t.id, edition:t.edition, rounds:t.rounds, cost:t.cost, pop:t.pop, mad:t.mad, ice:t.ice, dagger:t.dagger, games:0, rk:t.rk}); B().toast('¡Tenis duplicado!'); } }
+    B().add(sellVal(o)); s.foamSold=(s.foamSold||0)+1;
+    const j=s.owned.findIndex(x=>x.uid===u); if(j>=0) s.owned.splice(j,1);
+    s.slots=s.slots.map(x=>x===u?null:x); ensureSlots(); B().save(); render(); }
+  function equip(u){ const s=S(); if(s.slots.indexOf(u)>=0) return; const k=s.slots.indexOf(null);
+    if(k<0){ B().toast('No tienes slots libres'); return; } s.slots[k]=u; B().save(); render(); }
+  function unequip(u){ const s=S(); s.slots=s.slots.map(x=>x===u?null:x); B().save(); render(); }
+  let selSlot=null;
+  function tapSlot(k){ const s=S(); const u=s.slots[k];
+    if(convMode){ if(u!=null){ const o=ownedByUid(u); if(o){ o.edition=convMode==='neg'?'neg':'inf'; o.rounds=Infinity; B().toast(convMode==='neg'?'¡Comodín NEGATIVO! +1 ranura':'¡Comodín INFINITO!'); convMode=null; ensureSlots(); B().save(); } } else B().toast('Toca un comodín equipado'); render(); return; }
+    if(u!=null){ const o=ownedByUid(u); if(o) showInfo(o.id, u); }   // toca = info
+  }
+  function moveSlot(k,dir){ const s=S(), j=k+dir; if(j<0||j>=s.slots.length) return; const t=s.slots[k]; s.slots[k]=s.slots[j]; s.slots[j]=t; B().save(); render(); }
+  function showInfo(tid, uid){ const d=BY[tid]; if(!d) return; const o=uid!=null?ownedByUid(uid):null;
+    const ov=document.getElementById('tn-info'), box=document.getElementById('tn-info-in'); if(!ov||!box) return;
+    let est=''; if(o){ est='<div class="tn-i-est">'+(o.edition==='inf'?'Infinito ∞ · no expira':o.edition==='neg'?'Negativo · +1 ranura':('Dura '+(o.rounds===Infinity?'∞':o.rounds)+' ronda'+(o.rounds===1?'':'s')))+'</div>'; }
+    box.innerHTML='<div class="tn-i-card">'+card(d,{edition:o?o.edition:'normal'})+'</div>'
+      +'<div class="tn-i-name">'+d.name+'</div>'
+      +'<div class="tn-i-rar" style="color:'+RC[d.rarity]+'">'+RLBL[d.rarity]+'</div>'
+      +'<div class="tn-i-desc">'+colorize(d.desc)+'</div>'+est;
+    ov.classList.add('show'); }
+  function reroll(){ const s=S(); const b=B();
+    if(s.freeReroll && hasV('baucher-rebobina')){ s.freeReroll=false; s.flashRerolls=(s.flashRerolls||0)+1; genShop(); b.save(); render(); return; }
+    if(!pay(1000)){ b.toast('Te faltan balones para refrescar (1000)'); return; } s.flashRerolls=(s.flashRerolls||0)+1; genShop(); b.save(); render(); }
+  function buyVoucher(id){ const s=S(); const v=VBY[id]; const b=B();
+    if(hasV(id)){ b.toast('Ya lo tienes'); return; }
+    if(!s.voucherReady){ b.toast('Pasa un nivel BOS para desbloquear'); return; }
+    if(!pay(v.price)){ b.toast('Te faltan balones'); return; }
+    if(id==='baucher-cordones-de-oro') b.add(b.coins());   // duplica saldo actual
+    if(id==='baucher-caja-de-zapatos' && s.shop && s.shop.length<3) s.shop.push(genOffer());
+    s.vouchers.push(id);                                   // todos one-time (no se repiten)
+    s.voucherReady = false;                                // se vuelve a desbloquear al pasar otro bos
+    pickVoucher(); b.save(); render(); }
+  // ---- sobres (elige 1 de N) ----
+  let packChoices=[], convMode=null;
+  function newOwned(o){ const s=S(); const rounds=(o.edition==='normal')?(hasV('baucher-doble-suela')?3:2):Infinity;
+    const n={uid:s.uid++, id:o.id, edition:o.edition, rounds, cost:o.price!=null?o.price:PRICE[BY[o.id].rarity]};
+    if(o.id==='freak-4')n.pop=20; if(o.id==='kobe-6')n.mad=1; if(o.id==='gt-jump')n.ice=100; if(o.id==='mb-03')n.dagger=0; if(o.id==='zoom-generation'||o.id==='question')n.games=0; if(o.id==='adapt-bb')n.rk=0;
+    return n; }
+  function openPack(size){ const n=size==='big'?4:2, price=size==='big'?1000:400, b=B();
+    if(!pay(price)){ b.toast('Te faltan balones'); return; }
+    packChoices = Array.from({length:n}, ()=>genOffer());
+    const ov=document.getElementById('tn-pick'), box=document.getElementById('tn-pick-in');
+    box.innerHTML='<div class="tn-pick-h">Elige 1 comodín</div><div class="tn-pick-grid">'
+      + packChoices.map((o,i)=>{ const d=BY[o.id]; return '<div class="tn-item" data-pick="'+i+'">'+card(d,{edition:o.edition})+'<div class="tn-meta">'+ratag(d,o)+'<div class="tn-desc">'+colorize(d.desc)+'</div></div></div>'; }).join('')+'</div>';
+    ov.classList.add('show');
+  }
+  function choosePack(i){ const s=S(); const o=packChoices[i]; if(!o) return; const n=newOwned(o); s.owned.push(n);
+    const k=s.slots.indexOf(null); if(k>=0) s.slots[k]=n.uid; else B().toast('Sin espacio (queda en inventario)');
+    document.getElementById('tn-pick').classList.remove('show'); ensureSlots(); B().save(); render(); }
+  function buySello(type){ const s=S(), b=B(); if(s.charm!==type) return;
+    if(!s.slots.some(x=>x!=null)){ b.toast('Equipa un comodín primero'); return; }
+    if(!pay(type==='inf'?8000:9000)){ b.toast('Te faltan balones'); return; }
+    s.charm=null; convMode=type; b.save(); render(); }
+
+  // ---- motor de puntuación ----
+  let gctx={};
+  function sellVal(o){ return Math.round((o.cost||PRICE[(BY[o.id]||{rarity:'comun'}).rarity])*0.5); }
+  function destroyOwned(u){ const s=S(); const i=s.owned.findIndex(o=>o.uid===u); if(i>=0){ s.owned.splice(i,1); s.slots=s.slots.map(x=>x===u?null:x); } }
+  function isEquipped(u){ return S().slots.indexOf(u)>=0; }
+  function contrib(id, c, o){ const sw=c.swish, gd=c.golden, stk=c.streak;
+    switch(id){
+      // ----- originales -----
+      case 'air-force-1': return {ac:6};
+      case 'superstar': return {ac:8};
+      case 'clyde': return sw?{ac:10}:{};
+      case 'chuck-taylor': return {am:1};
+      case 'air-max-90': return sw?{}:{ac:10};
+      case 'nb-550': return {ac: sw?10:5};
+      case 'kd-15': return {ac:15};
+      case 'curry-flow-10': return sw?{xm:2}:{};
+      case 'lebron-20': return {am:(stk>=3?1:0)+(stk>=6?1:0)};
+      case 'ja-1': return {ac:3*st.n};
+      case 'luka-2': return gd?{xm:1.5}:{};
+      case 'jordan-11': return {am:2};
+      case 'kyrie-7': return stk>=3?{xm:1.5}:{};
+      case 'penny-1': return {ac:5*stk};
+      case 'more-uptempo': return (st.n%3===0)?{xm:4}:{};
+      case 'kobe-8': return {xs:2};
+      case 'jordan-1-chicago': { const r={}; if(!gd){ r.ac=20; r.xm=2; } if(sw){ r.xm=(r.xm||1)*2; } return r; }
+      // ----- nuevos -----
+      case 'hyperdunk': return {am:4};
+      case 'dame-8': return {am: 3*gctx.equip};
+      case 'air-flight-89': return {ac: Math.floor(gctx.coins/100)};
+      case 'harden-8': return {am: st.n};
+      case 'foamposite': return {xm: 1 + 0.25*(S().foamSold||0)};
+      case 'cosmic-unity': return {am:15};
+      case 'curry-11': return {am: 2*Math.floor(gctx.coins/200)};
+      case 'sabrina-1': return (st.n%6===0)?{xm:4}:{};
+      case 'book-1': return {am: 2*(S().flashRerolls||0)};
+      case 'lebron-21': return {am: stk};
+      case 'gt-jump': return {ac: (o&&o.ice!=null?o.ice:100)};
+      case 'jordan-38': return {xm:3};
+      case 'freak-5': return (gctx.time<=5)?{xm:3}:{};
+      case 'trae-3': return {am: Math.floor((gctx.sellAll - (o?sellVal(o):0))/50)};
+      case 'mb-03': return {am: (o&&o.dagger)||0};
+      case 'kobe-6': return {xm: (o&&o.mad!=null?o.mad:1)};
+      case 'shox-bb4': return {ac:250};
+      case 'gt-cut-3': return {xm: 1 + gctx.empty};
+      case 'zoom-generation': return {xm: 1 + 0.25*((o&&o.games)||0)};
+      case 'bb-nxt': return {am: Math.floor(Math.random()*24)};
+      case 'freak-4': return {am: (o&&o.pop!=null?o.pop:20)};
+      default: return {};   // economía/meta sin puntaje directo
+    } }
+  function scoreBasket(c){ const s=S(); st.n++;
+    gctx = { coins:B().coins(), equip:s.slots.filter(x=>x!=null).length, empty:s.slots.filter(x=>x==null).length,
+             time:c.timeLeft||60, sellAll:s.owned.reduce((t,o)=>t+sellVal(o),0) };
+    let chips=10, mult = c.streak>=6?3 : c.streak>=3?2:1, xScore=1;
+    if(c.swish){ chips+=10; mult+=2; }   // swish: +10 fichas y +2 mult
+    if(c.golden){ chips+=20; mult*=2; }
+    const objs = s.slots.map(u=> u!=null?ownedByUid(u):null);
+    const ids = objs.map(o=>o?o.id:null);
+    const effIdx = ids.map((id,i)=> id==='off-white' ? (ids[i+1]!=null?i+1:-1) : id==='yeezy-350' ? (i===0?-1:(ids[0]!=null?0:-1)) : (id!=null?i:-1));
+    const con = effIdx.map(j=> j>=0 ? contrib(ids[j], c, objs[j]) : {});
+    // PG 6 (Baseball): tenis poco comunes +50%
+    if(ids.indexOf('pg-6')>=0) effIdx.forEach((j,i)=>{ if(j>=0 && (BY[ids[j]]||{}).rarity==='poco'){ const x=con[i]; if(x){ if(x.ac)x.ac*=1.5; if(x.am)x.am*=1.5; } } });
+    // Jordan 3: vecinos +50%
+    ids.forEach((id,i)=>{ if(id==='jordan-3'){ [i-1,i+1].forEach(k=>{ const x=con[k]; if(x){ if(x.ac)x.ac*=1.5; if(x.am)x.am*=1.5; } }); } });
+    const ap=(x)=>{ if(!x) return; if(x.ac)chips+=x.ac; if(x.am)mult+=x.am; if(x.xm)mult*=x.xm; if(x.xs)xScore*=x.xs; };
+    ids.forEach((id,i)=>{ ap(con[i]); if(id==='mag') ap(con[i-1]); });
+    objs.forEach(o=>{ if(o&&o.id==='gt-jump') o.ice=Math.max(0,(o.ice!=null?o.ice:100)-5); });   // Ice Cream decae
+    const m=mult*xScore, pts=Math.max(1,Math.round(chips*m));
+    return {pts, chips:Math.round(chips), mult:Math.round(m*100)/100};
+  }
+  function keepStreak(){ if(st.bonesUsed) return false; const s=S(); if(s.owned.some(o=>o.id==='kobe-4'&&isEquipped(o.uid))){ st.bonesUsed=true; return true; } return false; }
+  function onGameStart(){ st={n:0, bonesUsed:false}; const s=S();
+    s.owned.forEach(o=>{ if(o.id==='gt-jump') o.ice=100; });                         // recargar Ice Cream
+    s.owned.filter(o=>o.id==='kobe-6'&&isEquipped(o.uid)).forEach(o=>{ o.mad=(o.mad||1)+0.5;   // Madness
+      const v=s.owned.filter(x=>x.uid!==o.uid && x.id!=='kobe-6'); if(v.length) destroyOwned(v[Math.floor(Math.random()*v.length)].uid); });
+    s.slots.forEach((u,i)=>{ if(u==null) return; const o=ownedByUid(u); if(o&&o.id==='mb-03'){ const r=s.slots[i+1]; if(r!=null){ const t=ownedByUid(r); if(t){ o.dagger=(o.dagger||0)+2*sellVal(t); destroyOwned(t.uid); } } } });  // Dagger
+    s.owned.filter(o=>o.id==='and1-taichi'&&isEquipped(o.uid)).forEach(()=>{ for(let k=0;k<2;k++){ const pool=DEFS.filter(d=>d.rarity==='comun'); const d=pool[Math.floor(Math.random()*pool.length)]; s.owned.push({uid:s.uid++, id:d.id, edition:'normal', rounds:hasV('baucher-doble-suela')?3:2, cost:PRICE.comun}); } });  // Riff-Raff
+    ensureSlots(); B().save();
+  }
+  // ---- niveles estilo Balatro (8 niveles × 2 + bos) ----
+  const BOSSES=[
+    {id:'fast',  name:'Aro veloz',   mods:{hoopSpeed:2.4,hoopR:1,   time:60,golden:true}},
+    {id:'small', name:'Aro chico',   mods:{hoopSpeed:1,  hoopR:0.72,time:60,golden:true}},
+    {id:'short', name:'Tiempo justo',mods:{hoopSpeed:1,  hoopR:1,   time:42,golden:true}},
+    {id:'nogold',name:'Sin dorados', mods:{hoopSpeed:1.3,hoopR:1,   time:60,golden:false}},
+  ];
+  function tgt(lvl,stg){ const i=(lvl-1)*3+stg; let t=120*Math.pow(1.42,i); if(stg===2) t*=1.25; return Math.round(t/5)*5; }
+  function ensureLvl(){ const s=S(); if(s.lvl==null||s.lvl<1) s.lvl=1; if(s.stg==null) s.stg=0;
+    if(s.stg===2 && !s.bossId) s.bossId=BOSSES[Math.floor(Math.random()*BOSSES.length)].id; }
+  function curBoss(){ return BOSSES.find(b=>b.id===S().bossId)||BOSSES[0]; }
+  function levelInfo(){ ensureLvl(); const s=S(); const boss=s.stg===2; return {lvl:s.lvl,stg:s.stg,boss,target:tgt(s.lvl,s.stg),bossName:boss?curBoss().name:''}; }
+  function bossMods(){ ensureLvl(); const s=S(); return s.stg===2?Object.assign({},curBoss().mods):{hoopSpeed:1,hoopR:1,time:60,golden:true}; }
+
+  function onGameEnd(score){ const s=S(); const b=B(); let earn=0; s.gameCount=(s.gameCount||0)+1;
+    s.owned.forEach(o=>{ if(!isEquipped(o.uid)) return;
+      if(o.id==='gt-jump-2') earn+=80;
+      else if(o.id==='adapt-bb'){ o.rk=(o.rk||0)+1; earn+=40+o.rk*10; }
+      else if(o.id==='huarache-2k4') earn+=Math.min(300, Math.floor(b.coins()/50));
+      else if(o.id==='air-pippen') o.cost=(o.cost||0)+150;
+      else if(o.id==='kobe-5') s.owned.forEach(t=>{ t.cost=(t.cost||0)+40; });
+      if(o.id==='zoom-generation'||o.id==='question') o.games=(o.games||0)+1;
+    });
+    if(earn>0) b.add(earn);
+    s.owned.forEach(o=>{ if(o.id==='freak-4'){ o.pop=(o.pop!=null?o.pop:20)-4; if(o.pop<=0) o.rounds=0; } });   // Popcorn decae
+    s.owned.forEach(o=>{ if(o.id==='cosmic-unity'&&Math.random()<1/6) o.rounds=0; if(o.id==='jordan-38'&&Math.random()<1/1000) o.rounds=0; });  // expirar al azar
+    s.owned = s.owned.filter(o=>{ if(o.rounds===Infinity) return true; o.rounds--; if(o.rounds<=0){ s.slots=s.slots.map(x=>x===o.uid?null:x); return false; } return true; });
+    s.foamSold=0; s.flashRerolls=0;
+    // evaluar nivel / bos
+    ensureLvl(); const target=tgt(s.lvl,s.stg); const passed=(score||0)>=target;
+    const res={passed,target,score:score||0,lvl:s.lvl,stg:s.stg,boss:s.stg===2,reward:0,won:false};
+    if(passed){ const rew=100+s.lvl*60+(s.stg===2?200:0); b.add(rew); res.reward=rew;
+      if(s.stg===2){ s.voucherReady=true;                         // baucher tras pasar un bos
+        if(s.lvl>=8){ res.won=true; s.lvl=1; } else s.lvl++; s.stg=0; s.bossId=null; }
+      else { s.stg++; if(s.stg===2) s.bossId=BOSSES[Math.floor(Math.random()*BOSSES.length)].id; }
+    }
+    genShop(); s.freeReroll=true; ensureSlots(); b.save(); return res; }
+
+  // ---- UI ----
+  function timerBadge(o){
+    if(o.edition==='inf') return '<span class="tn-tmr inf">∞</span>';
+    if(o.edition==='neg') return '<span class="tn-tmr neg">+1</span>';
+    const n=o.rounds!=null?o.rounds:(hasV('baucher-doble-suela')?3:2); return '<span class="tn-tmr"><svg viewBox="0 0 24 24" width="11" height="11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"><path d="M9 2.5h6"/><circle cx="12" cy="14" r="7.5"/><path d="M12 10v4"/></svg>'+n+'</span>';
+  }
+  function ratag(d,o){ return '<span class="tn-rar" style="color:'+RC[d.rarity]+'">'+RLBL[d.rarity]+(o&&o.edition==='inf'?' ∞':o&&o.edition==='neg'?' Negativo':'')+'</span>'; }
+  // fichas en azul, +/× mult en rojo
+  function colorize(t){ return t
+    .replace(/(?:[+\-−]\s?)?(?:[\d.]+\s*)?fichas?/gi, m=>'<b style="color:#3aa0ff">'+m+'</b>')
+    .replace(/(?:[+×\-−]\s?)?(?:[\d.]+\s*)?mult/gi, m=>'<b style="color:#ff5a3d">'+m+'</b>')
+    .replace(/×\s?[\d.]+(?![^<]*<\/b>)/g, m=>'<b style="color:#ff5a3d">'+m+'</b>'); }
+  function card(d, o){
+    return '<div class="tn-card'+(o&&o.edition==='neg'?' neg':'')+(o&&o.edition==='inf'?' inf':'')+'" style="--rc:'+RC[d.rarity]+'" data-tid="'+d.id+'" data-uid="'+(o&&o.uid!=null?o.uid:'')+'">'
+      + timerBadge(o||{})
+      + '<div class="tn-top">Comodín</div>'
+      + '<div class="tn-art"><img src="tenis/'+d.id+'.png" alt="" onerror="this.style.opacity=0"></div>'
+      + '<div class="tn-foot">'+d.name+'</div>'
+      + '</div>';
+  }
+  function vcard(v){
+    return '<div class="tn-card vch">'
+      + '<div class="tn-top">Baucher</div>'
+      + '<div class="tn-art"><img src="tenis/'+v.id+'.png" alt="" onerror="this.style.opacity=0"></div>'
+      + '<div class="tn-foot">'+v.name+'</div>'
+      + '</div>';
+  }
+
+  function render(){
+    const s=S(); ensureSlots(); if(!s.shop) genShop();
+    if(s.voucherOffer===undefined) pickVoucher();
+    const slotsEl=document.getElementById('tn-slots'); if(!slotsEl) return;
+    document.getElementById('tn-slots-info').innerHTML = 'Arrastra para mover · toca para ver info · <b>'+s.slots.length+'</b> slots';
+    slotsEl.className='tn-bar';
+    slotsEl.innerHTML = s.slots.map((u,i)=>{
+      if(u==null) return '<div class="tn-slot empty '+(selSlot===i?'sel':'')+'" data-slot="'+i+'"><span>+</span></div>';
+      const o=ownedByUid(u), d=BY[o.id];
+      return '<div class="tn-slot" data-slot="'+i+'">'
+        + card(d, {uid:o.uid, tmr:true, rounds:o.rounds, edition:o.edition})
+        + '<button class="tn-x" data-uneq="'+o.uid+'">Quitar</button></div>';
+    }).join('');
+    // tienda
+    const reroll=document.getElementById('tn-reroll');
+    if(reroll) reroll.textContent = (s.freeReroll && hasV('baucher-rebobina')) ? 'Refrescar (gratis)' : 'Refrescar · 1000';
+    const pk=document.getElementById('tn-packs');
+    if(pk){ const sobre=(slug,label,sub,price,pack)=>'<div class="tn-item"><div class="tn-card pack" style="--rc:#ffd24d" data-pack="'+pack+'"><div class="tn-top">Sobre</div><div class="tn-art"><img src="tenis/'+slug+'.png" alt="" onerror="this.style.opacity=0"></div><div class="tn-foot">'+label+'</div></div><div class="tn-meta"><div class="tn-desc">'+sub+'</div><button class="btn btn-primary tn-pack" data-pack="'+pack+'">Comprar · <span class="coin-ico"></span> '+price+'</button></div></div>';
+      let h = sobre('sobre-pequeno','Sobre pequeño','Elige 1 de 2',400,'small') + sobre('sobre-grande','Sobre grande','Elige 1 de 4',1000,'big');
+      if(s.charm==='inf') h+='<div class="tn-item" style="grid-column:1/-1"><button class="btn btn-primary tn-sello" data-sello="inf">Sello Infinito ∞ · <span class="coin-ico"></span> 8000</button></div>';
+      if(s.charm==='neg') h+='<div class="tn-item" style="grid-column:1/-1"><button class="btn btn-primary tn-sello" data-sello="neg">Sello Negativo +1 ranura · <span class="coin-ico"></span> 9000</button></div>';
+      if(convMode) h+='<div class="tn-conv-hint" style="grid-column:1/-1">Toca un comodín equipado para hacerlo '+(convMode==='inf'?'INFINITO':'NEGATIVO')+'</div>';
+      pk.innerHTML=h; }
+    document.getElementById('tn-shop').innerHTML = (s.shop||[]).map((o,i)=> o==null ? '<div class="tn-item"><div class="tn-card sold">Comprado</div></div>' : (function(){ const d=BY[o.id];
+      return '<div class="tn-item">'+card(d,{tmr:false,edition:o.edition})+'<div class="tn-meta">'+ratag(d,o)+'<div class="tn-desc">'+colorize(d.desc)+'</div><button class="btn btn-primary tn-buy" data-buy="'+i+'">Comprar · <span class="coin-ico"></span> '+o.price+'</button></div></div>'; })()).join('') || '<div class="pf-empty">Sin oferta.</div>';
+    // 1 baucher (se desbloquea al pasar un nivel BOS)
+    const vEl=document.getElementById('tn-vouchers');
+    if(!s.voucherReady){ vEl.innerHTML = '<div class="pf-empty">Pasa un nivel <b>BOS</b> para desbloquear un baucher</div>'; }
+    else if(s.voucherOffer && VBY[s.voucherOffer]){ const v=VBY[s.voucherOffer];
+      vEl.innerHTML = '<div class="tn-item">'+vcard(v)+'<div class="tn-meta"><div class="tn-desc">'+v.desc+'</div><button class="btn btn-primary tn-bv" data-vid="'+v.id+'">Comprar · <span class="coin-ico"></span> '+v.price+'</button></div></div>';
+    } else { vEl.innerHTML = '<div class="pf-empty">Ya tienes todos los bauchers.</div>'; }
+    // inventario (no equipados)
+    const inv = s.owned.filter(o=> s.slots.indexOf(o.uid)<0);
+    document.getElementById('tn-inv').innerHTML = inv.length ? inv.map(o=>{ const d=BY[o.id];
+      return '<div class="tn-item">'+card(d,{uid:o.uid,tmr:true,rounds:o.rounds,edition:o.edition})+'<div class="tn-meta"><div class="tn-acts"><button class="btn btn-primary tn-eq" data-eq="'+o.uid+'">Equipar</button><button class="btn btn-ghost tn-sell" data-sell="'+o.uid+'">Vender '+Math.round((o.cost||0)*0.5)+'</button></div></div></div>'; }).join('')
+      : '<div class="pf-empty">No tienes tenis sin equipar. Cómpralos en la tienda.</div>';
+  }
+
+  function bind(){
+    const root=document.getElementById('view-tenis'); if(!root || root.dataset.b) return; root.dataset.b='1';
+    root.addEventListener('click', e=>{
+      const un0=e.target.closest('[data-uneq]'); if(un0){ unequip(+un0.dataset.uneq); return; }   // botón Quitar (dentro de slots)
+      if(e.target.closest('#tn-slots')) return;   // el resto de los slots lo maneja el drag por puntero
+      const buy=e.target.closest('[data-buy]'); if(buy){ buyOffer(+buy.dataset.buy); return; }
+      const bv=e.target.closest('[data-vid].tn-bv, button.tn-bv'); if(bv){ buyVoucher(bv.dataset.vid); return; }
+      const eq=e.target.closest('[data-eq]'); if(eq){ equip(+eq.dataset.eq); return; }
+      const un=e.target.closest('[data-uneq]'); if(un){ unequip(+un.dataset.uneq); return; }
+      const sl=e.target.closest('[data-sell]'); if(sl){ sell(+sl.dataset.sell); return; }
+      const pk=e.target.closest('[data-pack]'); if(pk){ openPack(pk.dataset.pack); return; }
+      const se=e.target.closest('[data-sello]'); if(se){ buySello(se.dataset.sello); return; }
+      const mv=e.target.closest('[data-mv]'); if(mv){ const p=mv.dataset.mv.split(':'); moveSlot(+p[0],+p[1]); return; }
+      const slot=e.target.closest('[data-slot]'); if(slot){ tapSlot(+slot.dataset.slot); return; }
+      const ic=e.target.closest('.tn-card[data-tid]'); if(ic && ic.dataset.tid){ showInfo(ic.dataset.tid, ic.dataset.uid?+ic.dataset.uid:null); return; }
+    });
+    const rr=document.getElementById('tn-reroll'); if(rr) rr.addEventListener('click', reroll);
+    const pkov=document.getElementById('tn-pick'); if(pkov) pkov.addEventListener('click', e=>{
+      const c=e.target.closest('[data-pick]'); if(c){ choosePack(+c.dataset.pick); return; }
+      if(e.target===pkov) pkov.classList.remove('show'); });
+    const iov=document.getElementById('tn-info'); if(iov) iov.addEventListener('click', ()=> iov.classList.remove('show'));
+    // arrastrar comodines entre ranuras (puntero, funciona en móvil)
+    const bar=document.getElementById('tn-slots');
+    if(bar && !bar._dnd){ bar._dnd=1; let from=null, el=null, moved=false, sx=0, sy=0;
+      const under=(x,y)=>{ const t=document.elementFromPoint(x,y); return t?t.closest('[data-slot]'):null; };
+      bar.addEventListener('pointerdown', e=>{ const sl=e.target.closest('[data-slot]'); if(!sl) return;
+        if(e.target.closest('[data-uneq]')) return; const k=+sl.dataset.slot; if(S().slots[k]==null) return;
+        from=k; el=sl; moved=false; sx=e.clientX; sy=e.clientY; sl.setPointerCapture(e.pointerId); });
+      bar.addEventListener('pointermove', e=>{ if(from==null) return;
+        if(!moved && Math.hypot(e.clientX-sx,e.clientY-sy)>8){ moved=true; el.classList.add('drag'); el.style.pointerEvents='none'; }
+        if(moved){ el.style.transform='translate('+(e.clientX-sx)+'px,'+(e.clientY-sy)+'px)';
+          const t=under(e.clientX,e.clientY); [].forEach.call(bar.children,c=>c.classList.toggle('over', c===t&&c!==el)); } });
+      const end=e=>{ if(from==null) return; const wasMoved=moved; const t=under(e.clientX,e.clientY);
+        el.style.transform=''; el.style.pointerEvents=''; el.classList.remove('drag'); [].forEach.call(bar.children,c=>c.classList.remove('over'));
+        const f=from; from=null; el=null;
+        if(wasMoved){ if(t&&t.dataset.slot!=null){ const to=+t.dataset.slot; if(to!==f){ const s=S(); const tmp=s.slots[f]; s.slots[f]=s.slots[to]; s.slots[to]=tmp; B().save(); render(); } } }
+        else tapSlot(f); };
+      bar.addEventListener('pointerup', end); bar.addEventListener('pointercancel', end);
+    }
+  }
+
+  // CSS
+  const css = document.createElement('style'); css.textContent = `
+  .tn-equip-head{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:6px 0 10px}
+  .tn-bar{display:flex;gap:10px;overflow-x:auto;padding:2px 2px 8px;-webkit-overflow-scrolling:touch}
+  .tn-bar .tn-slot{flex:0 0 108px;display:flex;flex-direction:column;align-items:stretch;gap:5px}
+  .tn-bar .tn-slot .tn-card{width:108px}
+  .tn-slot.empty{flex:0 0 108px;width:108px;aspect-ratio:3/4.2;border:1.6px dashed var(--line-strong);border-radius:14px;display:grid;place-items:center;color:var(--muted-2);font-size:30px;cursor:pointer}
+  .tn-slot.sel .tn-card{box-shadow:0 0 0 3px var(--accent)}
+  .tn-slot.empty.sel{border-color:var(--accent);box-shadow:0 0 0 2px rgba(242,85,44,.35)}
+  .tn-x{background:none;border:0;color:var(--muted);font-size:11px;cursor:pointer;text-transform:uppercase;letter-spacing:.04em;padding:0}
+  .tn-shop,.tn-inv,#tn-vouchers{display:grid;grid-template-columns:repeat(auto-fill,minmax(124px,1fr));gap:14px}
+  .tn-item{display:flex;flex-direction:column;gap:7px}
+  .tn-card{position:relative;aspect-ratio:3/4.2;border-radius:14px;overflow:hidden;border:2px solid var(--rc,#888);background:#0e0f15;box-shadow:0 8px 22px rgba(0,0,0,.45);cursor:pointer}
+  .tn-card.sold{display:grid;place-items:center;color:var(--muted-2);border-style:dashed;border-color:var(--line-strong);font-size:13px}
+  .tn-card.vch{border-color:#37d39b}
+  .tn-art{position:absolute;inset:0}
+  .tn-art img{width:100%;height:100%;object-fit:cover}
+  .tn-top{position:absolute;top:0;left:0;right:0;z-index:3;text-align:center;font-family:var(--display);font-weight:800;font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:#fff;padding:5px 4px;background:linear-gradient(180deg,rgba(0,0,0,.8),rgba(0,0,0,0))}
+  .tn-foot{position:absolute;bottom:0;left:0;right:0;z-index:3;text-align:center;font-family:var(--display);font-weight:700;font-size:12px;line-height:1.04;color:#fff;padding:16px 5px 7px;background:linear-gradient(0deg,rgba(0,0,0,.88),rgba(0,0,0,0))}
+  .tn-meta{text-align:center;display:flex;flex-direction:column;gap:3px}
+  .tn-rar{font-size:10px;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+  .tn-desc{font-size:11px;color:var(--muted);min-height:26px}
+  .tn-meta .btn{font-size:12px;padding:8px 10px}
+  .tn-acts{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+  .tn-tmr{position:absolute;top:6px;left:6px;z-index:4;display:inline-flex;align-items:center;gap:3px;background:rgba(0,0,0,.66);border:1px solid rgba(255,255,255,.3);color:#fff;font-family:var(--display);font-weight:700;font-size:11px;padding:2px 6px;border-radius:999px}
+  .tn-tmr.inf{font-size:14px;color:#ffd24d;border-color:#ffd24d}
+  .tn-tmr.neg{color:#b06cff;border-color:#b06cff}
+  .tn-packs{display:flex;flex-wrap:wrap;gap:10px}
+  .tn-packs .btn{font-size:13px}
+  .tn-sello{box-shadow:0 0 16px rgba(255,210,80,.5)}
+  .tn-conv-hint{width:100%;font-size:13px;color:#ffd24d;padding:6px 2px}
+  .tn-pick{position:fixed;inset:0;z-index:130;display:none;place-items:center;padding:20px;background:rgba(6,7,11,.85);backdrop-filter:blur(7px)}
+  .tn-pick.show{display:grid;animation:fade .25s ease both}
+  .tn-pick-in{max-width:520px;width:100%;text-align:center}
+  .tn-pick-h{font-family:var(--display);font-weight:800;font-size:22px;text-transform:uppercase;margin-bottom:14px;color:#fff}
+  .tn-pick-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(120px,1fr));gap:14px}
+  .tn-pick-grid .tn-item{cursor:pointer}
+  .tn-slot-ctrl{display:flex;align-items:center;justify-content:center;gap:8px}
+  .tn-slot-ctrl .tn-x{font-size:13px}
+  .tn-info{position:fixed;inset:0;z-index:140;display:none;place-items:center;padding:24px;background:rgba(6,7,11,.82);backdrop-filter:blur(6px)}
+  .tn-info.show{display:grid;animation:fade .2s ease both}
+  .tn-info-in{max-width:300px;width:100%;background:var(--surface-2);border:1px solid var(--line);border-radius:18px;padding:18px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.6);animation:fresPop .35s cubic-bezier(.2,1.3,.5,1) both}
+  .tn-i-card{width:130px;margin:0 auto 12px}
+  .tn-i-name{font-family:var(--display);font-weight:800;font-size:19px;line-height:1.05}
+  .tn-i-rar{font-size:11px;text-transform:uppercase;letter-spacing:.06em;font-weight:700;margin-top:2px}
+  .tn-i-desc{font-size:14px;color:var(--muted);margin-top:10px}
+  .tn-i-est{font-size:12px;color:var(--muted-2);margin-top:8px}
+  /* comodín negativo: oscuro con brillo negro */
+  .tn-card.neg{border-color:#1b1b22;box-shadow:0 0 0 1px #000,0 0 16px 3px rgba(0,0,0,.95),0 0 26px rgba(140,60,210,.55)}
+  .tn-card.neg .tn-art img{filter:brightness(.4) saturate(.7)}
+  .tn-card.neg .tn-top{background:linear-gradient(180deg,#08080c,rgba(0,0,0,0));color:#c39bff}
+  /* arrastrar comodines */
+  .tn-bar .tn-slot{touch-action:none}
+  .tn-slot.drag{opacity:.92;cursor:grabbing}
+  .tn-slot.over{outline:2px dashed var(--accent);outline-offset:3px;border-radius:14px}
+  /* sobres más pequeños */
+  #tn-packs{grid-template-columns:repeat(auto-fill,minmax(94px,1fr))}
+  #tn-packs .tn-foot{font-size:10px;padding:12px 4px 5px}
+  `;
+  document.head.appendChild(css);
+  document.addEventListener('DOMContentLoaded', bind);
+  if(document.readyState!=='loading') bind();
+
+  return { render:()=>{ bind(); render(); }, scoreBasket, onGameStart, onGameEnd, keepStreak, levelInfo, bossMods };
+})();
 </script>
 </body>
 </html>
