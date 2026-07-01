@@ -3628,7 +3628,9 @@
   /* =====================================================
      NAV / TOAST / EVENTOS
      ===================================================== */
+  const TENIS_ENABLED = false;   // desactivado temporalmente (pon true para reactivarlo)
   function showView(v){
+    if(v==="tenis" && !TENIS_ENABLED){ toast("La sección de Tenis está en mantenimiento 🔧"); v="album"; }
     $$(".tab").forEach(t=>t.setAttribute("aria-selected", String(t.dataset.view===v)));
     $$(".view").forEach(s=>s.classList.toggle("active", s.id==="view-"+v));
     if(v==="misiones") renderMissions();
@@ -3645,6 +3647,7 @@
   function toast(html){ const t=$("#toast"); t.innerHTML=html; t.classList.add("show"); clearTimeout(toastT); toastT=setTimeout(()=>t.classList.remove("show"),2200); }
 
   function bindEvents(){
+    if(!TENIS_ENABLED){ $$('.tab[data-view="tenis"]').forEach(t=>t.style.display="none"); }
     $$(".tab").forEach(t=>t.addEventListener("click",()=>showView(t.dataset.view)));
     $("#bell").addEventListener("click", openMessages);
     $("#banner-90s")?.addEventListener("click", ()=>showView("noventas"));
