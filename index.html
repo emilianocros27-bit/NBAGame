@@ -4145,6 +4145,11 @@
   ];
   const FANTASY_ELIGIBLE  = FANTASY_ALL_TEAMS.filter(t=>!FANTASY_EXCLUDED.includes(t));          // asignables (24)
   const FANTASY_SEASON_DAYS = 20;   // 20 días x 4 partidos = 80 de temporada regular, + Copa NBA + Playoffs
+  // este script clásico y el <script type="module"> de Firebase no comparten scope de const/let —
+  // se exponen en window para que DunkDev.startNewFantasySeason() (definido allá) los pueda leer.
+  window.FANTASY_ELIGIBLE = FANTASY_ELIGIBLE;
+  window.FANTASY_SEASON_DAYS = FANTASY_SEASON_DAYS;
+  window.FANTASY_DAY_MS = FANTASY_DAY_MS;
   const FANTASY_START_COINS = 1000;
   const FANTASY_WIN_REWARD = 150, FANTASY_LOSS_REWARD = 50;
   // premios de Copa NBA / Playoffs en dinero real ($M, se suman al presupuesto) — proporciones basadas en los
@@ -6775,7 +6780,7 @@ window.MiniGame = (function(){
   // Crea temporada N+1 de DT (equipos vacíos) y arranca el reloj en el mismo paso.
   window.DunkDev = window.DunkDev || {};
   window.DunkDev.startNewFantasySeason = async ()=>{
-    await window.DunkFire.fantasyResetSeason(FANTASY_ELIGIBLE, FANTASY_SEASON_DAYS, FANTASY_DAY_MS);
+    await window.DunkFire.fantasyResetSeason(window.FANTASY_ELIGIBLE, window.FANTASY_SEASON_DAYS, window.FANTASY_DAY_MS);
     const s = await window.DunkFire.fantasyStartSeason();
     console.log("Nueva temporada DT iniciada: #"+s.seasonNumber, s);
     return s;
