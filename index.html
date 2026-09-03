@@ -1484,15 +1484,6 @@
           <div class="pk-name">Sobre Élite</div>
           <button class="btn btn-primary pack-buy" data-pack="elite" id="btn-elite">Abrir · <span class="coin-ico"></span> 600</button>
         </div>
-        <div class="pack psa" id="pack-psa" style="--pc:#d23b3b">
-          <div class="pk-foil"></div>
-          <span class="pk-badge">Graduada · 1 carta</span>
-          <div class="pk-kicker">Sobre PSA</div>
-          <h3>PSA</h3>
-          <p class="pk-desc">Una carta encapsulada y graduada (nota 1-10, casi siempre alta). Las gemas PSA 10 son las más valiosas.</p>
-          <span class="pk-art">10</span>
-          <button class="btn btn-primary pack-buy" data-pack="psa" id="btn-psa">Abrir · <span class="coin-ico"></span> 1000</button>
-        </div>
       </div>
       <div class="pack-stats">Sobres abiertos: <b id="packs-opened">0</b> · Cartas obtenidas: <b id="cards-total">0</b></div>
 
@@ -1948,7 +1939,7 @@
   let state = defaultState();
 
   // ===== ECONOMÍA: monedas (se ganan jugando "Encestes") =====
-  const PACK_COST = { std:150, elite:600, finals:1200, psa:1000, reward:0, noventas:1100, retro:800, retrobox:3500 };
+  const PACK_COST = { std:150, elite:600, finals:1200, reward:0, noventas:1100, retro:800, retrobox:3500 };
   const RETRO_BOX_PACKS = 5;    // la caja trae 5 sobres
   const RETRO_PER_PACK  = 3;    // cada sobre retro trae 3 cartas
   const COINS_PER_POINT = 10;           // (legado) balones por punto — ya no se usa para la recompensa
@@ -3294,13 +3285,6 @@
     const isRetro = (kind==="retro" || kind==="retrobox");
     let out = picks.map(p=>({p, variant: isRetro ? "retro" : "normal"}));
     let gotGraded=null;
-    if(kind==="psa" && Math.random()<0.08){
-      const pool=CARD_PLAYERS.filter(p=>ovr(p)>=80);
-      const sp=drawOne(pool.length?pool:CARD_PLAYERS, new Set());
-      const grade=rollGrade();
-      gotGraded={p:sp,grade};
-      out[out.length-1] = {p:sp, variant:"graded", grade};   // graduada rara, como clímax
-    }
     out.forEach(it=>{
       if(it.variant==="finals") state.finals[it.p.slug]=(state.finals[it.p.slug]||0)+1;
       else if(it.variant==="graded") (state.graded[it.p.slug]=state.graded[it.p.slug]||[]).push(it.grade);
@@ -3349,7 +3333,7 @@
     }
   }
   function renderShop(){
-    const map={std:"#btn-std",elite:"#btn-elite",psa:"#btn-psa"};
+    const map={std:"#btn-std",elite:"#btn-elite"};
     for(const k in map){ const b=document.querySelector(map[k]); if(!b) continue;
       b.classList.toggle("cant-afford", (state.coins||0) < PACK_COST[k]); }
   }
@@ -3549,7 +3533,7 @@
     toast(`¡Equipo <b>${esc(team)}</b> completo! +<b>${TEAM_COMPLETE_REWARD}</b> balones`);
   }
 
-  const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", psa:"#d23b3b", reward:"#f2552c", noventas:"#b079ff", retro:"#c9a227"};
+  const PACK_PC = {std:"#386cff", elite:"#f2552c", finals:"#e8b84b", reward:"#f2552c", noventas:"#b079ff", retro:"#c9a227"};
   let openerQueue=[], openerIdx=0, openerLast=null, openerPhase="reveal", tearTimer=null, revealTimers=[];
   function clearRevealTimers(){ revealTimers.forEach(clearTimeout); revealTimers=[]; clearTimeout(tearTimer); }
   let openerNoAgain=false, openerEndHint=null, afterOpenerOnce=null;
