@@ -1342,7 +1342,7 @@
         <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
         <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
         <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
-        <button class="tab" role="tab" data-view="fantasy" aria-selected="false">Fantasy</button>
+        <button class="tab" role="tab" data-view="fantasy" aria-selected="false">DT</button>
       </nav>
       <button class="fantasy-badge" id="fantasy-badge" hidden title="Volver al partido en vivo"></button>
       <div class="coins-chip" title="Balones (gana jugando Encestes)"><span class="coin-ico"></span><b class="coin-amount">0</b></div>
@@ -1618,7 +1618,7 @@
     <section class="view" id="view-fantasy" role="tabpanel">
       <div class="view-head">
         <div>
-          <h2>Fantasy</h2>
+          <h2>DT</h2>
           <p>Tu equipo NBA por una temporada corta. Partidos en vivo, mercado y trades.</p>
         </div>
       </div>
@@ -1627,7 +1627,7 @@
       <div id="fantasy-join" class="fantasy-join" hidden>
         <div class="fantasy-join-card">
           <div class="fantasy-join-ico">🏀</div>
-          <h3 id="fantasy-join-title">Fantasy</h3>
+          <h3 id="fantasy-join-title">DT</h3>
           <p id="fantasy-join-sub">Te toca un equipo NBA al azar (sin repetir con nadie) por 10 días. Partidos en vivo, mercado y trades.</p>
           <button class="btn btn-primary" id="fantasy-join-btn">Unirme a la temporada</button>
         </div>
@@ -1796,7 +1796,7 @@
     <button class="tab" role="tab" data-view="trueques" aria-selected="false">Trades</button>
     <button class="tab" role="tab" data-view="misiones" aria-selected="false">Misiones</button>
     <button class="tab" role="tab" data-view="juego" aria-selected="false">Encestes</button>
-    <button class="tab" role="tab" data-view="fantasy" aria-selected="false">Fantasy</button>
+    <button class="tab" role="tab" data-view="fantasy" aria-selected="false">DT</button>
   </nav>
 
   <!-- overlay apertura de sobre -->
@@ -3488,7 +3488,7 @@
       if(m.type==="trade") return `
         <div class="msg">
           <div class="msg-ico">🏀</div>
-          <div class="msg-body"><h4>Fantasy — Transferencias</h4>
+          <div class="msg-body"><h4>DT — Transferencias</h4>
             <p>${esc(m.text)}</p></div>
         </div>`;
       return `
@@ -4549,8 +4549,8 @@
     if(!m.daily || m.daily.day!==msToday()) m.daily={ day:msToday(), gamesPlayed:0, gamesWon:0, timeouts:0, claimed:{} };
   }
   const FANTASY_DAILY_MISSIONS = [
-    { id:"play1", t:"Juega 1 partido Fantasy", goal:1, cur:()=>state.fantasy.missions.daily.gamesPlayed, r:{coins:80} },
-    { id:"win1",  t:"Gana 1 partido Fantasy",  goal:1, cur:()=>state.fantasy.missions.daily.gamesWon,   r:{coins:150} },
+    { id:"play1", t:"Juega 1 partido DT", goal:1, cur:()=>state.fantasy.missions.daily.gamesPlayed, r:{coins:80} },
+    { id:"win1",  t:"Gana 1 partido DT",  goal:1, cur:()=>state.fantasy.missions.daily.gamesWon,   r:{coins:150} },
     { id:"to1",   t:"Pide un tiempo muerto",   goal:1, cur:()=>state.fantasy.missions.daily.timeouts,   r:{coins:50} },
   ];
   const FANTASY_ACH_MISSIONS = [
@@ -4569,7 +4569,7 @@
       <div class="ms-info">
         <div class="ms-title">${esc(mi.t)}</div>
         <div class="ms-bar"><span style="width:${pct}%"></span></div>
-        <div class="ms-reward">Recompensa: 🏀 ${mi.r.coins} Fantasy</div>
+        <div class="ms-reward">Recompensa: 🏀 ${mi.r.coins} DT</div>
       </div>
       <div class="ms-act">${act}</div>
     </div>`;
@@ -4589,7 +4589,7 @@
     store[id]=true;
     state.fantasy.coins=(state.fantasy.coins||0)+mi.r.coins;
     save(); renderFantasyMissions(); renderFantasyHeader();
-    toast(`¡Misión Fantasy completada! +${mi.r.coins} 🏀`);
+    toast(`¡Misión DT completada! +${mi.r.coins} 🏀`);
   }
 
   // ---- estado / entrada ----
@@ -5152,7 +5152,7 @@
   }
   async function fantasyOpenMail(){
     const body=$("#sheet-body");
-    body.innerHTML = `<div class="picker-head"><h3>✉️ Correo de Fantasy</h3></div>
+    body.innerHTML = `<div class="picker-head"><h3>✉️ Correo de DT</h3></div>
       <p class="fantasy-hint" style="padding:0 20px">Ofertas que te mandaron por tus jugadores.</p>
       <div id="fantasy-mail-list" style="padding:0 20px"><p style="color:var(--muted);font-size:13px">Cargando…</p></div>`;
     showSheet();
@@ -5354,7 +5354,7 @@
     }
     if(!currentUid){
       fantasyHideAll(); $("#fantasy-join").hidden=false;
-      $("#fantasy-join-title").textContent="Inicia sesión para jugar Fantasy";
+      $("#fantasy-join-title").textContent="Inicia sesión para jugar DT";
       $("#fantasy-join-sub").textContent="Los equipos no se repiten entre jugadores: necesitamos saber quién eres.";
       $("#fantasy-join-btn").textContent="Iniciar sesión";
       return;
@@ -5379,11 +5379,11 @@
           : "Esperando que el comisionado inicie la temporada.";
       } else {
         fantasyHideAll(); $("#fantasy-join").hidden=false;
-        $("#fantasy-join-title").textContent="Fantasy";
+        $("#fantasy-join-title").textContent="DT";
         $("#fantasy-join-sub").textContent="Te toca un equipo NBA al azar (sin repetir con nadie) por 10 días. Partidos en vivo, mercado y trades.";
         $("#fantasy-join-btn").textContent="Unirme a la temporada";
       }
-    }catch(e){ console.error(e); toast("No se pudo cargar Fantasy (revisa tu conexión)"); }
+    }catch(e){ console.error(e); toast("No se pudo cargar DT (revisa tu conexión)"); }
   }
   async function fantasyJoinSeason(){
     if(!currentUid){ showAuth(); return; }
@@ -5392,7 +5392,7 @@
       fantasyMyTeam = res.team; fantasySeasonData = res.season;
       toast(`¡Te tocó <b>${esc(res.team)}</b>!`);
       await renderFantasy();
-    }catch(e){ toast(e.message||"No se pudo unir a Fantasy"); }
+    }catch(e){ toast(e.message||"No se pudo unir a DT"); }
   }
   async function fantasyStartSeasonAction(){
     try{
@@ -5480,7 +5480,7 @@
         <div class="fantasy-stat"><b>${esc(fantasyFmtMoney(fantasyMyBudget()))}</b><span>Presupuesto</span></div>
         ${extraLine}
       </div>
-      <button class="fantasy-mail-btn" id="fantasy-mail-btn" title="Correo de Fantasy">✉️<span class="fantasy-mail-badge" id="fantasy-mail-badge" hidden>0</span></button>`;
+      <button class="fantasy-mail-btn" id="fantasy-mail-btn" title="Correo de DT">✉️<span class="fantasy-mail-badge" id="fantasy-mail-badge" hidden>0</span></button>`;
     $("#fantasy-mail-btn")?.addEventListener("click", fantasyOpenMail);
     fantasyRefreshMailBadge();
   }
@@ -5770,7 +5770,7 @@
     save();
     const moneyLbl = e && e.type ? `${esc(fantasyFmtMoney(money))} (taquilla/streaming + ${esc(FANTASY_TYPE_LABEL[e.type])})` : `${esc(fantasyFmtMoney(money))} (taquilla/streaming)`;
     const myScore = isHome?g.finalHome:g.finalAway, oppScore = isHome?g.finalAway:g.finalHome;
-    toast(`Partido terminado: <b>${myScore}-${oppScore}</b>. ${won?"¡Ganaste!":"Perdiste."} +${reward} 🏀 Fantasy + ${moneyLbl}`);
+    toast(`Partido terminado: <b>${myScore}-${oppScore}</b>. ${won?"¡Ganaste!":"Perdiste."} +${reward} 🏀 DT + ${moneyLbl}`);
     if(fantasySchedule){
       try{ await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, fantasySchedule.games); }catch(err){}
       await fantasyCheckCopa();
@@ -6770,6 +6770,15 @@ window.MiniGame = (function(){
     },
     fantasyDeleteNews: (id)=> deleteDoc(doc(db,"fantasyNews",id)),
     mapErr
+  };
+  // Consola (solo comisionado, lo filtra la regla de Firestore): DunkDev.startNewFantasySeason()
+  // Crea temporada N+1 de DT (equipos vacíos) y arranca el reloj en el mismo paso.
+  window.DunkDev = window.DunkDev || {};
+  window.DunkDev.startNewFantasySeason = async ()=>{
+    await window.DunkFire.fantasyResetSeason(FANTASY_ELIGIBLE, FANTASY_SEASON_DAYS, FANTASY_DAY_MS);
+    const s = await window.DunkFire.fantasyStartSeason();
+    console.log("Nueva temporada DT iniciada: #"+s.seasonNumber, s);
+    return s;
   };
   window.dispatchEvent(new Event("dunkfire-ready"));
 </script>
