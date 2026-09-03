@@ -1650,6 +1650,7 @@
 
         <div class="fantasy-subnav" id="fantasy-subnav" role="tablist">
           <button class="fantasy-subtab active" data-sub="partidos" role="tab" aria-selected="true">Partidos</button>
+          <button class="fantasy-subtab" data-sub="copa" role="tab" aria-selected="false">🏆 NBA Cup</button>
           <button class="fantasy-subtab" data-sub="equipo" role="tab" aria-selected="false">Equipo</button>
           <button class="fantasy-subtab" data-sub="transfer" role="tab" aria-selected="false">Transferencias</button>
           <button class="fantasy-subtab" data-sub="misiones" role="tab" aria-selected="false">Misiones</button>
@@ -1659,6 +1660,11 @@
 
         <div class="fantasy-subview" id="fantasy-sub-partidos">
           <div class="fantasy-sched" id="fantasy-sched"></div>
+        </div>
+
+        <div class="fantasy-subview" id="fantasy-sub-copa" hidden>
+          <p class="fantasy-hint">Los primeros 4 partidos de la temporada, aparte del calendario regular. Gana al menos 3 de 4 para clasificar a la Final.</p>
+          <div class="fantasy-sched" id="fantasy-copa-sched"></div>
         </div>
 
         <div class="fantasy-subview" id="fantasy-sub-equipo" hidden>
@@ -4605,12 +4611,13 @@
   async function switchFantasySub(tab){
     fantasySubTab=tab;
     $$("#fantasy-subnav .fantasy-subtab").forEach(t=>{ const on=t.dataset.sub===tab; t.classList.toggle("active",on); t.setAttribute("aria-selected",String(on)); });
-    ["partidos","equipo","transfer","misiones","stats","news"].forEach(k=>{ const el=$("#fantasy-sub-"+k); if(el) el.hidden = k!==tab; });
+    ["partidos","copa","equipo","transfer","misiones","stats","news"].forEach(k=>{ const el=$("#fantasy-sub-"+k); if(el) el.hidden = k!==tab; });
     // trades/suspensiones/dinero los puede cambiar el comisionado desde fuera — refresca antes de pintar
     // cualquier pestaña que dependa de fantasySeasonData, para no mostrar plantillas/presupuestos viejos.
     if(tab==="equipo" || tab==="transfer" || tab==="stats"){
       try{ const fresh = await window.DunkFire.fantasyGetSeason(); if(fresh) fantasySeasonData = fresh; }catch(e){}
     }
+    if(tab==="copa") renderFantasyCopa();
     if(tab==="equipo") renderFantasyEquipo();
     if(tab==="transfer") renderFantasyTransfer();
     if(tab==="misiones") renderFantasyMissions();
@@ -5490,34 +5497,53 @@
     fantasyRefreshMailBadge();
   }
   const FANTASY_TYPE_LABEL = { "copa-final":"🏆 Final Copa NBA", "playoff-qf":"Cuartos de Playoffs", "playoff-sf":"Semifinal de Playoffs", "playoff-final":"Final de Playoffs" };
-  function renderFantasySchedule(){
+  const fantasyFmtKick = ts => new Date(ts).toLocaleString("es-MX", {timeZone:"America/Mexico_City", day:"numeric", month:"short", hour:"numeric", minute:"2-digit"});
+  function fantasyGameRowHTML(g, day){
     const now=Date.now();
+    const unlocked = g.type ? true : now >= (g.scheduledAt||0);   // copa/playoffs: disponibles al instante en cuanto se generan
+    const locked = !unlocked;
+    const myScore = g.role==="away" ? g.finalAway : g.finalHome, oppScore = g.role==="away" ? g.finalHome : g.finalAway;
+    // "en curso": ya arrancó pero todavía no cumple los ~9 min de partido — al abrirlo cae en el minuto que va
+    const running = !locked && g.status!=="final" && g.scheduledAt && (now - g.scheduledAt) < FANTASY_TOTAL_REAL*1000;
+    const tag = g.status==="final" ? `<span class="fantasy-game-result ${g.won?"win":"loss"}">${g.won?"GANASTE":"PERDISTE"} ${myScore!=null?esc(String(myScore))+"-"+esc(String(oppScore)):""}</span>`
+      : locked ? `<span class="fantasy-game-tag">🔒 ${g.scheduledAt?esc(fantasyFmtKick(g.scheduledAt)):"día "+day}</span>`
+      : running ? `<span class="fantasy-game-tag fantasy-game-tag-live">🔴 En curso</span>`
+      : `<span class="fantasy-game-tag">Disponible</span>`;
+    const isFinalStage = !!g.type;
+    const stageBadge = isFinalStage
+      ? `<span class="fantasy-final-badge">🏆 ${esc(FANTASY_TYPE_LABEL[g.type]||"Final")}</span>`
+      : g.copaGroup ? `<span class="fantasy-copa-badge">🏀 Copa NBA</span>` : "";
+    return `<button class="fantasy-game-row ${locked?"locked":""} ${isFinalStage?"fantasy-final-row":""}" ${locked?"disabled":""} data-game="${esc(g.id)}" data-opponent="${esc(g.opponent)}" data-role="${esc(g.role||"home")}" data-day="${day}">
+      <span class="fantasy-vs">vs ${esc(g.opponent)}${stageBadge}${g.scheduledAt&&!locked&&g.status!=="final"?` · ${esc(fantasyFmtKick(g.scheduledAt))}`:""}</span>${tag}</button>`;
+  }
+  // Copa NBA vive fuera del calendario regular: se pinta aparte en renderFantasyCopa().
+  function fantasyIsCopaGame(g){ return !!(g.copaGroup || g.type==="copa-final"); }
+  function renderFantasySchedule(){
     const wrap=$("#fantasy-sched"); wrap.innerHTML="";
     const maxDay = Math.max(FANTASY_SEASON_DAYS, ...fantasySchedule.games.map(g=>g.day));
-    const fmtKick = ts => new Date(ts).toLocaleString("es-MX", {timeZone:"America/Mexico_City", day:"numeric", month:"short", hour:"numeric", minute:"2-digit"});
     for(let day=1; day<=maxDay; day++){
-      const dayGames=fantasySchedule.games.filter(g=>g.day===day);
+      const dayGames=fantasySchedule.games.filter(g=>g.day===day && !fantasyIsCopaGame(g));
       if(!dayGames.length) continue;
       const box=document.createElement("div"); box.className="fantasy-day";
       const lbl = day<=FANTASY_SEASON_DAYS ? `Día ${day}` : (FANTASY_TYPE_LABEL[dayGames[0].type] || `Día ${day}`);
-      box.innerHTML = `<div class="fantasy-day-lbl">${esc(lbl)}</div>` + dayGames.map(g=>{
-        const unlocked = g.type ? true : now >= (g.scheduledAt||0);   // copa/playoffs: disponibles al instante en cuanto se generan
-        const locked = !unlocked;
-        const myScore = g.role==="away" ? g.finalAway : g.finalHome, oppScore = g.role==="away" ? g.finalHome : g.finalAway;
-        // "en curso": ya arrancó pero todavía no cumple los ~9 min de partido — al abrirlo cae en el minuto que va
-        const running = !locked && g.status!=="final" && g.scheduledAt && (now - g.scheduledAt) < FANTASY_TOTAL_REAL*1000;
-        const tag = g.status==="final" ? `<span class="fantasy-game-result ${g.won?"win":"loss"}">${g.won?"GANASTE":"PERDISTE"} ${myScore!=null?esc(String(myScore))+"-"+esc(String(oppScore)):""}</span>`
-          : locked ? `<span class="fantasy-game-tag">🔒 ${g.scheduledAt?esc(fmtKick(g.scheduledAt)):"día "+day}</span>`
-          : running ? `<span class="fantasy-game-tag fantasy-game-tag-live">🔴 En curso</span>`
-          : `<span class="fantasy-game-tag">Disponible</span>`;
-        const isFinalStage = !!g.type;
-        const stageBadge = isFinalStage
-          ? `<span class="fantasy-final-badge">🏆 ${esc(FANTASY_TYPE_LABEL[g.type]||"Final")}</span>`
-          : g.copaGroup ? `<span class="fantasy-copa-badge">🏀 Copa NBA</span>` : "";
-        return `<button class="fantasy-game-row ${locked?"locked":""} ${isFinalStage?"fantasy-final-row":""}" ${locked?"disabled":""} data-game="${esc(g.id)}" data-opponent="${esc(g.opponent)}" data-role="${esc(g.role||"home")}" data-day="${day}">
-          <span class="fantasy-vs">vs ${esc(g.opponent)}${stageBadge}${g.scheduledAt&&!locked&&g.status!=="final"?` · ${esc(fmtKick(g.scheduledAt))}`:""}</span>${tag}</button>`;
-      }).join("");
+      box.innerHTML = `<div class="fantasy-day-lbl">${esc(lbl)}</div>` + dayGames.map(g=>fantasyGameRowHTML(g, day)).join("");
       wrap.appendChild(box);
+    }
+  }
+  function renderFantasyCopa(){
+    const wrap=$("#fantasy-copa-sched"); if(!wrap) return;
+    wrap.innerHTML="";
+    if(!fantasySchedule){ wrap.innerHTML=`<p class="fantasy-hint">Todavía no hay calendario.</p>`; return; }
+    const group = fantasySchedule.games.filter(g=>g.copaGroup).sort((a,b)=>(a.scheduledAt||0)-(b.scheduledAt||0));
+    const final = fantasySchedule.games.find(g=>g.type==="copa-final");
+    if(!group.length){ wrap.innerHTML=`<p class="fantasy-hint">Todavía no hay partidos de Copa NBA.</p>`; return; }
+    const groupBox=document.createElement("div"); groupBox.className="fantasy-day";
+    groupBox.innerHTML = `<div class="fantasy-day-lbl">Fase de grupos</div>` + group.map((g,i)=>fantasyGameRowHTML(g, g.day)).join("");
+    wrap.appendChild(groupBox);
+    if(final){
+      const finalBox=document.createElement("div"); finalBox.className="fantasy-day";
+      finalBox.innerHTML = `<div class="fantasy-day-lbl">Final</div>` + fantasyGameRowHTML(final, final.day);
+      wrap.appendChild(finalBox);
     }
   }
 
@@ -5800,13 +5826,15 @@
     // fantasy
     $("#fantasy-join-btn")?.addEventListener("click", fantasyJoinSeason);
     $("#fantasy-start-btn")?.addEventListener("click", fantasyStartSeasonAction);
-    $("#fantasy-sched")?.addEventListener("click", e=>{
+    const fantasyGameRowClick = e=>{
       const b=e.target.closest(".fantasy-game-row"); if(!b || b.disabled) return;
       const isAway = b.dataset.role==="away";
       const home = isAway ? b.dataset.opponent : fantasyMyTeam;
       const away = isAway ? fantasyMyTeam : b.dataset.opponent;
       openFantasyGame(b.dataset.game, home, away, +b.dataset.day);
-    });
+    };
+    $("#fantasy-sched")?.addEventListener("click", fantasyGameRowClick);
+    $("#fantasy-copa-sched")?.addEventListener("click", fantasyGameRowClick);
     $("#fantasy-live-back")?.addEventListener("click", fantasyLiveBack);
     $("#fantasy-timeout-btn")?.addEventListener("click", fantasyRequestTimeout);
     $("#fantasy-subnav")?.addEventListener("click", e=>{
