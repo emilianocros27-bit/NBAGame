@@ -6611,6 +6611,7 @@ window.MiniGame = (function(){
       });
     },
     // reinicia la temporada de cero (solo comisionado, lo filtra la regla de Firestore): borra el mapa de equipos
+    // y de paso limpia todas las Noticias de DT -- cada temporada arranca con el tablon vacio.
     fantasyResetSeason: async (eligibleTeams, seasonDays, dayMs)=>{
       const ref=doc(db,"fantasySeason","current");
       const snap=await getDoc(ref);
@@ -6618,6 +6619,10 @@ window.MiniGame = (function(){
       const teams={}; eligibleTeams.forEach(t=>{ teams[t]=null; });
       const data={ seasonNumber: prev?(prev.seasonNumber||1)+1:1, started:false, startedAt:null, endsAt:null, seasonDays, dayMs, teams, playerMoves:{}, budgetBonus:{} };
       await setDoc(ref, data);
+      try{
+        const newsSnap=await getDocs(collection(db,"fantasyNews"));
+        await Promise.all(newsSnap.docs.map(d=>deleteDoc(d.ref)));
+      }catch(e){}
       return data;
     },
     // ajusta el presupuesto compartido de un equipo (premios de Copa/Playoffs, o dinero de un trade aceptado)
