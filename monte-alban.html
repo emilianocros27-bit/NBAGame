@@ -1,0 +1,662 @@
+<title>Monte Albán 3D</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Alegreya+SC:wght@500;700&family=Alegreya+Sans:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: escena WebGL a sangre completa + códice flotante a la izquierda (abajo en móvil) */
+:root {
+  --ink: #f3ead9;
+  --muted: #c9bba3;
+  --panel: rgba(31, 25, 20, 0.8);
+  --line: rgba(243, 234, 217, 0.16);
+  --grana: #c8452f;
+  --ocre: #d9a55b;
+  --ground: #1d1814;
+  --display: "Alegreya SC", Georgia, serif;
+  --body: "Alegreya Sans", system-ui, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; margin: 0; overflow: hidden; background: var(--ground); color: var(--ink); font-family: var(--body); }
+#scene { position: fixed; inset: 0; width: 100%; height: 100%; display: block; touch-action: none; }
+.codex {
+  position: fixed; left: 16px; top: calc(16px + env(safe-area-inset-top, 0px));
+  width: min(340px, calc(100% - 32px)); max-height: calc(100% - 32px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box; overflow: auto; padding: 18px 18px 16px;
+  background: var(--panel); -webkit-backdrop-filter: blur(10px); backdrop-filter: blur(10px);
+  border: 1px solid var(--line); border-radius: 6px;
+  display: flex; flex-direction: column; gap: 14px; font-size: 15px; line-height: 1.45;
+}
+.head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ocre); }
+h1 { font-family: var(--display); font-weight: 700; font-size: 34px; line-height: 1; margin: 4px 0 0; letter-spacing: 0.01em; text-wrap: balance; }
+h1 span { color: var(--grana); }
+.lede { margin: 0; color: var(--muted); }
+.toggle { flex: none; background: none; border: 1px solid var(--line); color: var(--ink); border-radius: 4px; font: 500 12px var(--mono); padding: 5px 8px; cursor: pointer; }
+.sites { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.sites button {
+  text-align: left; background: rgba(243, 234, 217, 0.05); border: 1px solid var(--line); color: var(--ink);
+  border-radius: 4px; padding: 7px 9px; font: 500 14px/1.2 var(--body); cursor: pointer; min-width: 0;
+}
+.sites button:hover { background: rgba(243, 234, 217, 0.11); }
+.sites button[aria-pressed="true"] { border-color: var(--grana); background: rgba(200, 69, 47, 0.22); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ocre); outline-offset: 2px; }
+.detail { border-left: 2px solid var(--grana); padding-left: 12px; }
+.detail h2 { font-family: var(--display); font-weight: 500; font-size: 20px; margin: 0 0 2px; }
+.detail .era { font-family: var(--mono); font-size: 11px; color: var(--ocre); letter-spacing: 0.04em; }
+.detail p { margin: 6px 0 0; max-width: 60ch; }
+.controls { display: flex; flex-direction: column; gap: 10px; border-top: 1px solid var(--line); padding-top: 12px; }
+.row { display: flex; align-items: center; gap: 10px; }
+.row label { font-size: 13px; color: var(--muted); }
+.row input[type="range"] { flex: 1; min-width: 0; accent-color: var(--grana); }
+.clock { font-family: var(--mono); font-size: 13px; font-variant-numeric: tabular-nums; min-width: 3.2em; text-align: right; }
+.note { font-size: 12.5px; color: var(--muted); margin: 0; }
+.codex.collapsed > :not(.head) { display: none; }
+@media (max-width: 640px) {
+  .codex { top: auto; bottom: calc(16px + env(safe-area-inset-bottom, 0px)); max-height: 42%; padding: 14px; gap: 10px; }
+  h1 { font-size: 26px; }
+  .lede { display: none; }
+}
+</style>
+
+<canvas id="scene" aria-label="Maqueta 3D interactiva de la Gran Plaza de Monte Albán"></canvas>
+
+<aside class="codex" id="codex">
+  <div class="head">
+    <div>
+      <div class="eyebrow">Valle de Oaxaca · 1 940 m s.n.m.</div>
+      <h1>Monte <span>Albán</span></h1>
+    </div>
+    <button class="toggle" id="toggle" aria-expanded="true">Ocultar</button>
+  </div>
+  <p class="lede">Capital zapoteca levantada sobre un cerro aplanado, unos 400 m por encima del valle. Arrastra para girar, rueda o pellizca para acercar.</p>
+  <div class="sites" id="sites" role="group" aria-label="Edificios"></div>
+  <div class="detail" id="detail" aria-live="polite"></div>
+  <div class="controls">
+    <div class="row">
+      <label for="hour">Hora del día</label>
+      <input type="range" id="hour" min="6.5" max="18" step="0.1" value="15.5">
+      <span class="clock" id="clock">15:30</span>
+    </div>
+    <div class="row">
+      <input type="checkbox" id="spin">
+      <label for="spin">Rotación automática</label>
+    </div>
+    <p class="note">Los cuerpos combinan talud y tablero de doble escapulario, el rasgo arquitectónico más característico de los zapotecas.</p>
+  </div>
+</aside>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/utils/BufferGeometryUtils.js"></script>
+<script>
+(function () {
+  "use strict";
+  const reduceMotion = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+  // ---------- Renderer / cámara ----------
+  const canvas = document.getElementById("scene");
+  const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+  renderer.shadowMap.enabled = true;
+  renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+  renderer.outputEncoding = THREE.sRGBEncoding;
+
+  const scene = new THREE.Scene();
+  const camera = new THREE.PerspectiveCamera(50, 1, 1, 60000);
+  const controls = new THREE.OrbitControls(camera, canvas);
+  controls.enableDamping = true;
+  controls.dampingFactor = 0.08;
+  controls.maxPolarAngle = Math.PI * 0.485;
+  controls.minDistance = 12;
+  controls.maxDistance = 3000;
+  controls.autoRotateSpeed = 0.35;
+
+  // ---------- Ruido ----------
+  function hash(x, y) { const s = Math.sin(x * 127.1 + y * 311.7) * 43758.5453; return s - Math.floor(s); }
+  function vnoise(x, y) {
+    const xi = Math.floor(x), yi = Math.floor(y), xf = x - xi, yf = y - yi;
+    const u = xf * xf * (3 - 2 * xf), v = yf * yf * (3 - 2 * yf);
+    const a = hash(xi, yi), b = hash(xi + 1, yi), c = hash(xi, yi + 1), d = hash(xi + 1, yi + 1);
+    return a + (b - a) * u + (c - a) * v + (a - b - c + d) * u * v;
+  }
+  function fbm(x, y, o) { let s = 0, a = 0.5, f = 1; for (let i = 0; i < (o || 5); i++) { s += a * vnoise(x * f, y * f); f *= 2.03; a *= 0.5; } return s; }
+  const sstep = (a, b, x) => { const t = Math.min(Math.max((x - a) / (b - a), 0), 1); return t * t * (3 - 2 * t); };
+  let seed = 7;
+  const rand = () => { seed = (seed * 16807) % 2147483647; return (seed - 1) / 2147483646; };
+
+  // ---------- Terreno: meseta nivelada + laderas + valle + sierra ----------
+  // x = este, z = sur. La Gran Plaza está centrada en el origen.
+  function plateauDist(x, z) {
+    const dx = Math.max(Math.abs(x) - 150, 0);
+    const dz = Math.max(z < 0 ? -z - 280 : z - 262, 0);
+    return Math.hypot(dx, dz);
+  }
+  function terrainH(x, z) {
+    const d = plateauDist(x, z);
+    const r = Math.hypot(x, z);
+    let h = (fbm(x / 35, z / 35, 3) - 0.5) * 0.5;
+    if (d > 0) {
+      const e = d * (0.75 + 0.5 * fbm(x / 260 + 3, z / 260 - 1, 3));
+      h += -430 * sstep(0, 780, e) - (fbm(x / 70, z / 70, 4) - 0.5) * 34 * sstep(0, 90, e);
+    }
+    h += (fbm(x / 1400 + 7, z / 1400 + 3, 4) - 0.5) * 90 * sstep(900, 1600, r);
+    h += sstep(3000, 8500, r) * (220 + 1000 * fbm(x / 2600 + 11, z / 2600 - 5, 5));
+    return h;
+  }
+
+  function lin(hex) { return new THREE.Color(hex).convertSRGBToLinear(); }
+  const C = {
+    grass: lin("#9e8c63"), grass2: lin("#86825a"), dirt: lin("#b09d7a"),
+    scrub: lin("#7c7445"), scrub2: lin("#5d6639"), valley: lin("#a08f68"), field: lin("#77804d"), rock: lin("#8a7f68")
+  };
+
+  function buildTerrain() {
+    const rings = [0];
+    let r = 3;
+    while (r < 26000) { rings.push(r); r = r * 1.052 + 2.5; }
+    const seg = 512;
+    const pos = [], col = [], idx = [];
+    const c = new THREE.Color();
+    for (let i = 0; i < rings.length; i++) {
+      for (let j = 0; j < seg; j++) {
+        const a = (j / seg) * Math.PI * 2;
+        const x = Math.cos(a) * rings[i], z = Math.sin(a) * rings[i];
+        const h = terrainH(x, z);
+        pos.push(x, h, z);
+        const d = plateauDist(x, z);
+        const n = fbm(x / 22, z / 22, 3);
+        if (d < 30) {
+          c.copy(C.grass).lerp(C.grass2, sstep(0.35, 0.7, n));
+          if (fbm(x / 9 + 40, z / 9, 2) > 0.62) c.lerp(C.dirt, 0.6);
+          c.lerp(C.scrub, sstep(0, 30, d));
+        } else if (h > -380 || Math.hypot(x, z) < 1200) {
+          c.copy(C.scrub).lerp(C.scrub2, sstep(0.3, 0.7, fbm(x / 60, z / 60, 3)));
+          c.lerp(C.rock, 0.25 * sstep(0.55, 0.75, n));
+        } else {
+          c.copy(C.valley).lerp(C.field, sstep(0.45, 0.6, fbm(x / 180, z / 180, 3)));
+        }
+        col.push(c.r, c.g, c.b);
+      }
+    }
+    for (let i = 0; i < rings.length - 1; i++) {
+      for (let j = 0; j < seg; j++) {
+        const a = i * seg + j, b = i * seg + ((j + 1) % seg), c2 = (i + 1) * seg + j, d = (i + 1) * seg + ((j + 1) % seg);
+        idx.push(a, b, c2, b, d, c2);
+      }
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute("position", new THREE.Float32BufferAttribute(pos, 3));
+    g.setAttribute("color", new THREE.Float32BufferAttribute(col, 3));
+    g.setIndex(idx);
+    g.computeVertexNormals();
+    const m = new THREE.Mesh(g, new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, metalness: 0 }));
+    m.receiveShadow = true;
+    scene.add(m);
+  }
+
+  // ---------- Textura de piedra (sillares irregulares, tileable) ----------
+  function stoneTextures() {
+    const S = 512;
+    const cv = document.createElement("canvas"); cv.width = cv.height = S;
+    const bm = document.createElement("canvas"); bm.width = bm.height = S;
+    const g = cv.getContext("2d"), b = bm.getContext("2d");
+    g.fillStyle = "#6f6653"; g.fillRect(0, 0, S, S);
+    b.fillStyle = "#000"; b.fillRect(0, 0, S, S);
+    const rows = []; let tot = 0;
+    while (tot < S) { const h = 20 + rand() * 28; rows.push(h); tot += h; }
+    const k = S / tot; let y = 0;
+    rows.forEach((rh0) => {
+      const rh = rh0 * k, widths = []; let wt = 0;
+      while (wt < S) { const w = 26 + rand() * 70; widths.push(w); wt += w; }
+      const kw = S / wt; let x = rand() * S;
+      widths.forEach((w0) => {
+        const w = w0 * kw, l = 50 + rand() * 16, hue = 34 + rand() * 12, sat = 8 + rand() * 12;
+        for (const off of [0, -S]) {
+          g.fillStyle = `hsl(${hue},${sat}%,${l}%)`;
+          g.fillRect(x + off + 1.5, y + 1.5, w - 3, rh - 3);
+          b.fillStyle = `hsl(0,0%,${55 + rand() * 30}%)`;
+          b.fillRect(x + off + 2, y + 2, w - 4, rh - 4);
+        }
+        x = (x + w) % S;
+      });
+      y += rh;
+    });
+    const img = g.getImageData(0, 0, S, S), d = img.data;
+    for (let i = 0; i < d.length; i += 4) {
+      const n = (rand() - 0.5) * 26;
+      d[i] += n; d[i + 1] += n; d[i + 2] += n * 0.9;
+      if (rand() < 0.012) { d[i] -= 40; d[i + 1] -= 38; d[i + 2] -= 34; }
+    }
+    g.putImageData(img, 0, 0);
+    const max = renderer.capabilities.getMaxAnisotropy();
+    const map = new THREE.CanvasTexture(cv), bump = new THREE.CanvasTexture(bm);
+    [map, bump].forEach((t) => { t.wrapS = t.wrapT = THREE.RepeatWrapping; t.anisotropy = max; });
+    map.encoding = THREE.sRGBEncoding;
+    return { map, bump };
+  }
+
+  // ---------- Constructores de geometría ----------
+  const parts = { stone: [], stair: [], slab: [], plaster: [] };
+  const topTint = [lin("#bba77a"), lin("#a99b67"), lin("#c9b58e")];
+  const white = new THREE.Color(1, 1, 1);
+
+  function T(x, y, z, ry) { return new THREE.Matrix4().makeRotationY(ry || 0).setPosition(x, y, z); }
+
+  function add(geo, G, list, tint) {
+    if (G) geo.applyMatrix4(G);
+    if (geo.index) geo = geo.toNonIndexed();
+    geo.clearGroups();
+    geo.computeVertexNormals();
+    const p = geo.attributes.position, n = geo.attributes.normal, cnt = p.count;
+    const uv = new Float32Array(cnt * 2), col = new Float32Array(cnt * 3);
+    const S = 1 / 7;
+    const tc = topTint[Math.floor(rand() * 3)];
+    for (let i = 0; i < cnt; i++) {
+      const x = p.getX(i), y = p.getY(i), z = p.getZ(i);
+      const ax = Math.abs(n.getX(i)), ay = Math.abs(n.getY(i)), az = Math.abs(n.getZ(i));
+      let u, v;
+      if (ay >= ax && ay >= az) { u = x; v = z; } else if (ax >= az) { u = z; v = y; } else { u = x; v = y; }
+      uv[i * 2] = u * S; uv[i * 2 + 1] = v * S;
+      const c = tint !== false && n.getY(i) > 0.7 ? tc : white;
+      col[i * 3] = c.r; col[i * 3 + 1] = c.g; col[i * 3 + 2] = c.b;
+    }
+    geo.setAttribute("uv", new THREE.BufferAttribute(uv, 2));
+    geo.setAttribute("color", new THREE.BufferAttribute(col, 3));
+    (list || parts.stone).push(geo);
+  }
+  const box = (w, h, d) => new THREE.BoxGeometry(w, h, d);
+
+  // Pirámide truncada: base w×d en y=0, cima tw×td en y=h
+  function frustum(w, h, d, tw, td) {
+    const g = box(w, h, d); g.translate(0, h / 2, 0);
+    const p = g.attributes.position;
+    for (let i = 0; i < p.count; i++) if (p.getY(i) > h / 2) { p.setX(i, p.getX(i) * tw / w); p.setZ(i, p.getZ(i) * td / d); }
+    return g;
+  }
+
+  // Cuerpos escalonados de talud + tablero de doble escapulario (frente = +z local)
+  function stepped(G, w, d, tiers, tierH, step) {
+    let y = -1.5, cw = w, cd = d, tw = w, td = d;
+    for (let i = 0; i < tiers; i++) {
+      const th = tierH * 0.68 + (i === 0 ? 1.5 : 0), sl = tierH * 0.2;
+      add(frustum(cw, th, cd, cw - 2 * sl, cd - 2 * sl).translate(0, y, 0), G);
+      y += th; tw = cw - 2 * sl; td = cd - 2 * sl;
+      const bh = tierH * 0.32;
+      add(box(tw, bh * 0.6, td).translate(0, y + bh * 0.3, 0), G);
+      add(box(tw + 0.8, bh * 0.4, td + 0.8).translate(0, y + bh * 0.8, 0), G);
+      // escapulario: faldón colgante bajo la moldura
+      add(box(tw + 0.8, bh * 0.25, td + 0.8).translate(0, y + bh * 0.47, 0), G);
+      add(box(tw + 0.2, bh * 0.2, td + 0.2).translate(0, y + bh * 0.1, 0), G);
+      y += bh; cw = tw - 2 * step; cd = td - 2 * step;
+    }
+    return { top: y, w: tw, d: td };
+  }
+
+  // Escalinata con alfardas. Borde superior en z=0 local, baja hacia +z.
+  function stair(G, width, H, run, y0) {
+    y0 = y0 || 0;
+    const n = Math.max(4, Math.round(H / 0.3)), sh = H / n, tr = run / n;
+    for (let i = 0; i < n; i++) {
+      const depth = run - i * tr + 1;
+      add(box(width, sh, depth).translate(0, y0 + sh * (i + 0.5), depth / 2 - 1), G, parts.stair, false);
+    }
+    const wb = Math.min(3, 0.8 + width * 0.06);
+    for (const s of [-1, 1]) {
+      const g = box(wb, H + 0.5, run);
+      const p = g.attributes.position;
+      for (let i = 0; i < p.count; i++) if (p.getY(i) > 0 && p.getZ(i) > 0) p.setY(i, -(H + 0.5) / 2 + 0.9);
+      g.translate(s * (width / 2 + wb / 2), y0 + (H + 0.5) / 2, run / 2);
+      add(g, G, parts.stair, false);
+    }
+  }
+
+  // Muros bajos de cuartos sobre una cima (puerta al frente, +z)
+  function rooms(G, y, w, d, h) {
+    h = h || 1.6;
+    const t = 0.9;
+    add(box(w, h, t).translate(0, y + h / 2, -d / 2), G);
+    add(box(t, h, d).translate(-w / 2, y + h / 2, 0), G);
+    add(box(t, h, d).translate(w / 2, y + h / 2, 0), G);
+    const fw = (w - 5) / 2;
+    add(box(fw, h, t).translate(-(fw / 2 + 2.5), y + h / 2, d / 2), G);
+    add(box(fw, h, t).translate(fw / 2 + 2.5, y + h / 2, d / 2), G);
+  }
+
+  function column(x, y, z, r, h) {
+    add(new THREE.CylinderGeometry(r * 0.92, r, h, 12).translate(x, y + h / 2, z), null, parts.stair, false);
+  }
+
+  // Edificio genérico: centro, orientación (ry: 0 frente al sur, π/2 al este, -π/2 al oeste, π al norte)
+  function building(cx, cz, ry, w, d, tiers, tierH, step, opt) {
+    opt = opt || {};
+    const G = T(cx, opt.y || 0, cz, ry);
+    const r = stepped(G, w, d, tiers, tierH, step);
+    const run = (s) => Math.max(s.run || 0, (d - r.d) / 2 + 3, r.top * 0.8);
+    if (opt.stair) stair(G.clone().multiply(T(0, 0, r.d / 2 - 0.4)), opt.stair.w, r.top, run(opt.stair));
+    if (opt.back) stair(G.clone().multiply(T(0, 0, -r.d / 2 + 0.4, Math.PI)), opt.back.w, r.top, run(opt.back));
+    if (opt.rooms) rooms(G, r.top, r.w - opt.rooms, r.d - opt.rooms, 1.5);
+    return Object.assign({ G }, r);
+  }
+
+  // ---------- Plataforma Norte ----------
+  function northPlatform() {
+    const cz = -205, G = T(0, 0, cz);
+    const base = stepped(G, 220, 100, 1, 8, 0);
+    const y = base.top, W = base.w - 10, D = base.d - 10;
+    const hx = 28, hz0 = -28, hz1 = 20, uh = 4.2;
+    // Anillo superior alrededor del Patio Hundido
+    const strips = [
+      [0, (-D / 2 + hz0) / 2, W, hz0 + D / 2],
+      [0, (D / 2 + hz1) / 2, W, D / 2 - hz1],
+      [(-W / 2 - hx) / 2, (hz0 + hz1) / 2, W / 2 - hx, hz1 - hz0],
+      [(W / 2 + hx) / 2, (hz0 + hz1) / 2, W / 2 - hx, hz1 - hz0]
+    ];
+    strips.forEach(([x, z, w, d]) => {
+      add(frustum(w, uh * 0.75, d, w - 1.2, d - 1.2).translate(x, y, z), G);
+      add(box(w - 0.4, uh * 0.25, d - 0.4).translate(x, y + uh * 0.875, z), G);
+    });
+    const top = y + uh;
+    // Escalinata principal (~40 m de ancho)
+    stair(G.clone().multiply(T(0, 0, D / 2 - 0.4)), 42, top, 22);
+    // Escaleras interiores del patio
+    stair(T(0, y, cz + hz0, 0), 16, uh, 5.5);
+    stair(T(0, y, cz + hz1, Math.PI), 16, uh, 5.5);
+    stair(T(-hx, y, cz + (hz0 + hz1) / 2, Math.PI / 2), 12, uh, 5);
+    stair(T(hx, y, cz + (hz0 + hz1) / 2, -Math.PI / 2), 12, uh, 5);
+    // Altar central
+    building(0, cz - 4, 0, 9, 9, 1, 2.2, 0, { y: y });
+    // Pórtico de columnas
+    for (let i = 0; i < 6; i++) for (let j = 0; j < 2; j++) column(-25 + i * 10, top, cz + D / 2 - 7 - j * 9, 1.15, 4.2);
+    // Montículos sobre la plataforma
+    building(0, cz - 40, 0, 36, 12, 1, 5, 0, { y: top });
+    for (const s of [-1, 1]) building(s * 72, cz - 2, 0, 38, 34, 2, 4, 1.2, { y: top, stair: { w: 12 }, rooms: 6 });
+  }
+
+  // ---------- Sistema (plataforma frontal + patio + templo) ----------
+  function sistema(cx, cz) {
+    // Plataforma frontal (mira al este)
+    const f = building(cx + 22, cz, Math.PI / 2, 46, 34, 2, 4.2, 1.4, { stair: { w: 20, run: 11 }, rooms: 8 });
+    // Cuerpos salientes que flanquean la escalinata
+    for (const s of [-1, 1]) building(cx + 22 + 17, cz + s * 17, Math.PI / 2, 10, 9, 2, 4.2, 0.5);
+    // Muros laterales del patio
+    for (const s of [-1, 1]) building(cx - 2, cz + s * 21, 0, 18, 6, 1, 3, 0);
+    // Adoratorio al centro del patio
+    building(cx - 1, cz, 0, 6, 6, 1, 1.6, 0);
+    // Templo al fondo, escalinata hacia el patio
+    building(cx - 22, cz, Math.PI / 2, 36, 26, 3, 3.8, 1.3, { stair: { w: 14, run: 10 }, rooms: 5 });
+    return f;
+  }
+
+  // ---------- Edificio J (punta de flecha) ----------
+  function buildingJ(cx, cz) {
+    const ry = (3 * Math.PI) / 4;
+    const shape = (s, len, tip) => {
+      const sh = new THREE.Shape();
+      sh.moveTo(-s, -len); sh.lineTo(s, -len); sh.lineTo(s, 8 * (s / 12)); sh.lineTo(0, tip); sh.lineTo(-s, 8 * (s / 12)); sh.closePath();
+      return sh;
+    };
+    const G = T(cx, 0, cz, ry);
+    const lower = new THREE.ExtrudeGeometry(shape(12, 18, 24), { depth: 6.5, bevelEnabled: false });
+    lower.rotateX(-Math.PI / 2); lower.translate(0, -1, 0);
+    add(lower, G);
+    const band = new THREE.ExtrudeGeometry(shape(12.5, 18.5, 24.8), { depth: 1, bevelEnabled: false });
+    band.rotateX(-Math.PI / 2); band.translate(0, 5.5, 0);
+    add(band, G);
+    const upper = new THREE.ExtrudeGeometry(shape(9, 15, 18), { depth: 3, bevelEnabled: false });
+    upper.rotateX(-Math.PI / 2); upper.translate(0, 6.5, 0);
+    add(upper, G);
+    stair(G.clone().multiply(T(0, 0, 18.2)), 12, 9.5, 11);
+  }
+
+  // ---------- Juego de pelota (planta en I) ----------
+  function ballcourt(cx, cz) {
+    add(box(30, 0.3, 56).translate(cx, 0, cz), null, parts.plaster, false);
+    for (const s of [-1, 1]) {
+      add(frustum(13, 5.5, 40, 5, 38).translate(cx + s * 10.5, -0.5, cz), null);
+      add(box(5.4, 0.7, 38.4).translate(cx + s * 10.5, 5.3, cz), null);
+      add(box(30, 2.6, 1.6).translate(cx, 1.3, cz + s * 28), null);
+    }
+    for (const s of [-1, 1]) for (const e of [-1, 1]) add(box(1.6, 2.6, 8).translate(cx + s * 15, 1.3, cz + e * 24), null);
+    stair(T(cx - 10.5, 0, cz + 20.2, 0), 4, 5.5, 5);
+  }
+
+  // ---------- Palacio ----------
+  function palacio(cx, cz) {
+    const b = building(cx, cz, -Math.PI / 2, 44, 42, 1, 4, 0, { stair: { w: 12, run: 6 } });
+    const G = b.G, y = b.top, h = 2.4;
+    rooms(G, y, 34, 34, h);
+    rooms(G, y, 16, 16, h);
+    for (const s of [-1, 1]) {
+      add(box(0.9, h, 9).translate(s * 12.5, y + h / 2, 0), G);
+      add(box(9, h, 0.9).translate(0, y + h / 2, s * 12.5), G);
+    }
+    add(box(15, 0.2, 15).translate(0, y + 0.1, 0), G, parts.plaster, false);
+  }
+
+  function slabs(list) {
+    list.forEach(([x, z, ry]) => add(box(1.3, 1.9, 0.35).translate(0, 0.8, 0), T(x, 0, z, ry), parts.slab, false));
+  }
+
+  function buildSite() {
+    northPlatform();
+    // Plataforma Sur, la más alta
+    const sp = building(0, 196, Math.PI, 124, 92, 3, 7, 2, { stair: { w: 40, run: 30 } });
+    for (const s of [-1, 1]) {
+      const G = T(s * 34, sp.top, 196 + 10);
+      stepped(G, 30, 30, 1, 6, 0);
+    }
+    // Centro: G, H, I sobre un basamento común
+    building(0, -40, 0, 46, 140, 1, 2.2, 0);
+    building(0, -92, Math.PI, 30, 24, 2, 4, 1.2, { stair: { w: 12 } });
+    building(0, -40, Math.PI / 2, 52, 38, 3, 3.4, 1.2, { stair: { w: 18 }, back: { w: 14 }, rooms: 10 });
+    building(0, 12, Math.PI / 2, 30, 30, 2, 4, 1.2, { stair: { w: 12 }, rooms: 8 });
+    buildingJ(12, 100);
+    // Costado poniente
+    sistema(-104, -98);
+    sistema(-104, 38);
+    const L = building(-104, 116, Math.PI / 2, 38, 34, 2, 4, 1.4, { stair: { w: 14 } });
+    // Danzantes: lápidas al pie de la fachada
+    const dz = [];
+    for (let z = 99; z <= 133; z += 1.8) if (Math.abs(z - 116) > 10) dz.push([-104 + 17 + 3.5, z, Math.PI / 2]);
+    for (let x = -120; x <= -88; x += 1.8) dz.push([x, 116 + 17 + 3.5, 0]);
+    slabs(dz);
+    // Costado oriente
+    ballcourt(100, -124);
+    building(100, -70, -Math.PI / 2, 32, 30, 2, 4.5, 1.2, { stair: { w: 14 }, rooms: 8 });
+    palacio(106, -18);
+    building(100, 32, -Math.PI / 2, 32, 30, 2, 4, 1.2, { stair: { w: 14 }, rooms: 8 });
+    building(92, 92, -Math.PI / 2, 26, 22, 1, 4, 0, { stair: { w: 10 } });
+    building(72, 142, Math.PI, 24, 18, 1, 3.5, 0, { stair: { w: 10 } });
+    // Estelas sueltas en la plaza
+    slabs([[-30, 150, 0.2], [28, 150, -0.1], [40, -140, 0.3], [-22, -128, 0], [58, 120, 0.7]]);
+  }
+
+  // ---------- Árboles ----------
+  function buildTrees() {
+    const canopy = new THREE.IcosahedronGeometry(1, 1);
+    const trunk = new THREE.CylinderGeometry(0.12, 0.18, 1, 5).translate(0, 0.5, 0);
+    const spots = [];
+    const plaza = [[-60, 148], [-141, -40], [-142, 72], [138, 78], [140, -64], [-128, -150], [-142, 160], [120, 175], [-40, -268], [140, -175]];
+    plaza.forEach(([x, z]) => spots.push([x, z, 4 + rand() * 2]));
+    let tries = 0;
+    while (spots.length < 3200 && tries < 60000) {
+      tries++;
+      const a = rand() * Math.PI * 2, r = 150 + Math.pow(rand(), 1.6) * 3200;
+      const x = Math.cos(a) * r, z = Math.sin(a) * r * 1.2;
+      const d = plateauDist(x, z);
+      if (d < 4) continue;
+      const dens = d < 700 ? 0.9 : 0.35;
+      if (rand() > dens * sstep(0.35, 0.6, fbm(x / 120, z / 120, 3))) continue;
+      spots.push([x, z, 2.5 + rand() * 3.5]);
+    }
+    const n = spots.length;
+    const cMat = new THREE.MeshStandardMaterial({ roughness: 1, flatShading: true });
+    const tMat = new THREE.MeshStandardMaterial({ color: lin("#4d3b2a"), roughness: 1 });
+    const cM = new THREE.InstancedMesh(canopy, cMat, n), tM = new THREE.InstancedMesh(trunk, tMat, n);
+    const m = new THREE.Matrix4(), q = new THREE.Quaternion(), c = new THREE.Color();
+    const greens = ["#56612e", "#6b6c35", "#4a5a2c", "#7a7440", "#5e6a38"].map(lin);
+    spots.forEach(([x, z, s], i) => {
+      const y = terrainH(x, z);
+      const th = s * 0.9;
+      m.compose(new THREE.Vector3(x, y - 0.2, z), q, new THREE.Vector3(s * 0.8, th, s * 0.8));
+      tM.setMatrixAt(i, m);
+      m.compose(new THREE.Vector3(x, y + th + s * 0.45, z), q.setFromAxisAngle(new THREE.Vector3(0, 1, 0), rand() * 6), new THREE.Vector3(s * 1.1, s * 0.85, s * 1.1));
+      cM.setMatrixAt(i, m);
+      c.copy(greens[Math.floor(rand() * greens.length)]);
+      cM.setColorAt(i, c);
+    });
+    [cM, tM].forEach((o) => { o.castShadow = true; o.receiveShadow = true; scene.add(o); });
+  }
+
+  // ---------- Cielo ----------
+  const skyU = { top: { value: new THREE.Color() }, horizon: { value: new THREE.Color() }, low: { value: new THREE.Color() } };
+  const sky = new THREE.Mesh(
+    new THREE.SphereGeometry(50000, 32, 16),
+    new THREE.ShaderMaterial({
+      uniforms: skyU, side: THREE.BackSide, depthWrite: false, fog: false,
+      vertexShader: "varying vec3 vp; void main(){ vp = normalize(position); gl_Position = projectionMatrix * modelViewMatrix * vec4(position,1.0); }",
+      fragmentShader: "uniform vec3 top; uniform vec3 horizon; uniform vec3 low; varying vec3 vp; void main(){ float h = vp.y; vec3 c = h > 0.0 ? mix(horizon, top, pow(smoothstep(0.0, 0.55, h), 0.8)) : mix(horizon, low, smoothstep(0.0, -0.2, h)); gl_FragColor = vec4(c, 1.0); }"
+    })
+  );
+  scene.add(sky);
+
+  // ---------- Luz ----------
+  const hemi = new THREE.HemisphereLight(0xcfe0f5, 0x8a7a58, 0.55);
+  scene.add(hemi);
+  const sun = new THREE.DirectionalLight(0xffffff, 1.6);
+  sun.castShadow = true;
+  sun.shadow.mapSize.set(4096, 4096);
+  Object.assign(sun.shadow.camera, { left: -330, right: 330, top: 330, bottom: -330, near: 10, far: 2400 });
+  sun.shadow.bias = -0.0004;
+  sun.shadow.normalBias = 0.4;
+  scene.add(sun, sun.target);
+  scene.fog = new THREE.Fog(0xffffff, 700, 12500);
+
+  const sunDir = new THREE.Vector3(0, 1, 0);
+  const col = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t);
+  function setHour(h) {
+    const t = (h - 6) / 12;
+    const el = Math.max(0.03, Math.sin(Math.PI * t) * 1.2);
+    const hx = Math.cos(Math.PI * t), hz = 0.42 * Math.sin(Math.PI * t);
+    const hl = Math.hypot(hx, hz);
+    const dir = new THREE.Vector3((hx / hl) * Math.cos(el), Math.sin(el), (hz / hl) * Math.cos(el));
+    sunDir.copy(dir);
+    const day = sstep(0.02, 0.55, el);
+    sun.color.copy(col("#ff9a5c", "#fff3df", day)).convertSRGBToLinear();
+    sun.intensity = 0.5 + 0.95 * day;
+    hemi.intensity = 0.28 + 0.34 * day;
+    hemi.color.copy(col("#f0b894", "#cfe0f5", day)).convertSRGBToLinear();
+    const horizon = col("#e9a47a", "#d6e0e8", day);
+    skyU.top.value.copy(col("#2e3d63", "#5b8fd2", day));
+    skyU.horizon.value.copy(horizon);
+    skyU.low.value.copy(col("#8f7d78", "#a9b7c4", day));
+    scene.fog.color.copy(horizon).convertSRGBToLinear();
+    const hh = Math.floor(h), mm = Math.round((h - hh) * 60) % 60;
+    document.getElementById("clock").textContent = `${hh}:${String(mm).padStart(2, "0")}`;
+  }
+
+  // ---------- Construcción ----------
+  buildTerrain();
+  buildSite();
+  buildTrees();
+  const tex = stoneTextures();
+  const mats = {
+    stone: new THREE.MeshStandardMaterial({ map: tex.map, bumpMap: tex.bump, bumpScale: 0.9, vertexColors: true, roughness: 0.95, color: lin("#efe8da") }),
+    stair: new THREE.MeshStandardMaterial({ map: tex.map, bumpMap: tex.bump, bumpScale: 0.7, vertexColors: true, roughness: 0.95, color: lin("#dcd6ca") }),
+    slab: new THREE.MeshStandardMaterial({ map: tex.map, vertexColors: true, roughness: 0.9, color: lin("#fff4dc") }),
+    plaster: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 1, color: lin("#cdbb97") })
+  };
+  Object.keys(parts).forEach((k) => {
+    if (!parts[k].length) return;
+    const g = THREE.BufferGeometryUtils.mergeBufferGeometries(parts[k]);
+    const mesh = new THREE.Mesh(g, mats[k]);
+    mesh.castShadow = mesh.receiveShadow = true;
+    scene.add(mesh);
+  });
+
+  // ---------- Recorrido ----------
+  const sites = [
+    { name: "Vista general", era: "c. 500 a.C. – 800 d.C.", cam: [300, 230, 420], tgt: [0, 0, -10],
+      text: "La Gran Plaza mide cerca de 300 × 200 m y se niveló sobre la cima del cerro. Monte Albán fue la capital zapoteca durante más de mil años. Patrimonio de la Humanidad desde 1987." },
+    { name: "Encuadre de la foto", era: "Desde la Plataforma Sur", cam: [-8, 42, 136], tgt: [-86, 3, 18],
+      text: "Vista hacia el noroeste: el Sistema M con su escalinata en primer plano, el Sistema IV y la Plataforma Norte al fondo, y la sierra difuminada en el horizonte." },
+    { name: "Plataforma Norte", era: "Monte Albán II–IIIB", cam: [70, 60, -80], tgt: [0, 8, -200],
+      text: "El conjunto más grande del sitio. Una escalinata de unos 40 m de ancho sube a un pórtico de columnas y a un patio hundido con altar central. Era el recinto del poder político y religioso." },
+    { name: "Plataforma Sur", era: "Monte Albán IIIA", cam: [80, 55, 95], tgt: [0, 12, 190],
+      text: "La estructura más alta de la plaza; desde su cima se domina todo el eje norte‑sur. En ella se hallaron estelas con cautivos y glifos calendáricos." },
+    { name: "Edificio J", era: "Monte Albán II · 100 a.C.–200 d.C.", cam: [70, 32, 150], tgt: [12, 4, 100],
+      text: "Tiene forma de punta de flecha y está girado unos 45° respecto al resto de la plaza. Sus lápidas registran lugares conquistados; se ha propuesto que funcionó como observatorio." },
+    { name: "Edificios G, H, I", era: "Eje central", cam: [80, 40, 15], tgt: [0, 5, -40],
+      text: "Tres construcciones unidas que forman la espina central de la plaza, con escalinatas hacia ambos lados. Probablemente templos." },
+    { name: "Los Danzantes", era: "Monte Albán I · 500–100 a.C.", cam: [-50, 16, 150], tgt: [-96, 3, 120],
+      text: "Su fachada tenía más de 300 lápidas grabadas con figuras humanas en posturas contorsionadas. Hoy se interpretan como cautivos sacrificados, no como bailarines." },
+    { name: "Sistema IV", era: "Monte Albán IIIB", cam: [-30, 32, -48], tgt: [-100, 4, -98],
+      text: "Esquema típico de «sistema»: plataforma frontal con escalinata, patio con adoratorio y templo al fondo. El Sistema M, más al sur, repite el mismo plan." },
+    { name: "Juego de pelota", era: "Planta en I", cam: [60, 30, -92], tgt: [100, 0, -124],
+      text: "Cancha con taludes inclinados y sin anillos, delimitada por cabezales en ambos extremos." },
+    { name: "Palacio", era: "Residencia de élite", cam: [55, 30, 10], tgt: [106, 2, -18],
+      text: "Conjunto de cuartos alrededor de un patio central, sobre una plataforma baja con escalinata hacia la plaza." }
+  ];
+  const sitesEl = document.getElementById("sites"), detailEl = document.getElementById("detail");
+  let fly = null;
+  function select(i, instant) {
+    const s = sites[i];
+    [...sitesEl.children].forEach((b, j) => b.setAttribute("aria-pressed", String(i === j)));
+    detailEl.innerHTML = "";
+    const h2 = document.createElement("h2"); h2.textContent = s.name;
+    const era = document.createElement("div"); era.className = "era"; era.textContent = s.era;
+    const p = document.createElement("p"); p.textContent = s.text;
+    detailEl.append(h2, era, p);
+    const toCam = new THREE.Vector3(...s.cam), toTgt = new THREE.Vector3(...s.tgt);
+    if (instant || reduceMotion) { camera.position.copy(toCam); controls.target.copy(toTgt); fly = null; return; }
+    fly = { t0: performance.now(), dur: 1800, fc: camera.position.clone(), ft: controls.target.clone(), toCam, toTgt };
+  }
+  sites.forEach((s, i) => {
+    const b = document.createElement("button");
+    b.type = "button"; b.textContent = s.name;
+    b.addEventListener("click", () => select(i));
+    sitesEl.appendChild(b);
+  });
+
+  const hourEl = document.getElementById("hour");
+  hourEl.addEventListener("input", () => setHour(parseFloat(hourEl.value)));
+  const spinEl = document.getElementById("spin");
+  spinEl.addEventListener("change", () => { controls.autoRotate = spinEl.checked; });
+  const codex = document.getElementById("codex"), toggle = document.getElementById("toggle");
+  toggle.addEventListener("click", () => {
+    const c = codex.classList.toggle("collapsed");
+    toggle.textContent = c ? "Mostrar" : "Ocultar";
+    toggle.setAttribute("aria-expanded", String(!c));
+  });
+  controls.addEventListener("start", () => { fly = null; });
+
+  function resize() {
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    renderer.setSize(w, h, false);
+    camera.aspect = w / h;
+    camera.updateProjectionMatrix();
+  }
+  window.addEventListener("resize", resize);
+  resize();
+  setHour(parseFloat(hourEl.value));
+  select(1, true);
+
+  function loop(now) {
+    if (fly) {
+      const k = Math.min(1, (now - fly.t0) / fly.dur), e = k < 0.5 ? 4 * k * k * k : 1 - Math.pow(-2 * k + 2, 3) / 2;
+      camera.position.lerpVectors(fly.fc, fly.toCam, e);
+      controls.target.lerpVectors(fly.ft, fly.toTgt, e);
+      if (k >= 1) fly = null;
+    }
+    controls.update();
+    sun.target.position.set(controls.target.x * 0.5, 0, controls.target.z * 0.5);
+    sun.position.copy(sunDir).multiplyScalar(1000).add(sun.target.position);
+    renderer.render(scene, camera);
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  window.__ready = true;
+})();
+</script>
