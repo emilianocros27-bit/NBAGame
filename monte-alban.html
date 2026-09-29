@@ -650,16 +650,12 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--ocre); outl
       controls.target.lerpVectors(fly.ft, fly.toTgt, e);
       if (k >= 1) fly = null;
     }
-    if (!window.__MA.paused) { controls.update(); draw(); }
-    requestAnimationFrame(loop);
-  }
-  function draw() {
+    controls.update();
     sun.target.position.set(controls.target.x * 0.5, 0, controls.target.z * 0.5);
     sun.position.copy(sunDir).multiplyScalar(1000).add(sun.target.position);
     renderer.render(scene, camera);
+    requestAnimationFrame(loop);
   }
-  // Gancho para renderizar video cuadro por cuadro
-  window.__MA = { paused: false, camera, controls, sites, setHour, draw, canvas };
   requestAnimationFrame(loop);
   window.__ready = true;
 })();
