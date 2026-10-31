@@ -3,3 +3,5 @@ node_modules/
 *.log
 tienda-cards/**/.DS_Store
 .DS_Store
+noticias-del-dia.md
+graphify-out/

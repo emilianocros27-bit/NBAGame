@@ -21,7 +21,7 @@
 </head>
 <body>
 <div id="hud">
-  <div id="score">🏀 0</div>
+  <div id="score">Puntos: 0</div>
   <div id="help">← → apuntar · ESPACIO (mantener) potencia · soltar = tiro · R reiniciar</div>
 </div>
 <div id="powerWrap"><div id="power"></div></div>
@@ -205,7 +205,7 @@ function physicsStep(dt) {
     if (Math.sqrt(dx * dx + dz * dz) < 0.45 - BALL_R * 0.5) {
       scored = true;
       score++;
-      document.getElementById('score').textContent = '🏀 ' + score;
+      document.getElementById('score').textContent = 'Puntos: ' + score;
       showMsg('¡ENCESTE!');
     }
   }

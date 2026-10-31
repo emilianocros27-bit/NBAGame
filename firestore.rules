@@ -54,12 +54,15 @@ service cloud.firestore {
     // un trade ya aceptado, y acreditar el dinero de ese trade (playerMoves/budgetBonus) — el propio
     // código de la app solo dispara esos cambios al firmar una oferta, no hay botón libre para tocarlos.
     // Solo el comisionado puede arrancar/reiniciar el reloj de temporada (started/startedAt/endsAt).
+    // Con "locked" (DT cerrado), nadie más puede tocar la temporada, ni reclamar equipo, hasta que el comisionado la abra.
     match /fantasySeason/{id} {
       allow read: if request.auth != null;
       allow create: if request.auth != null;
       allow update: if request.auth != null &&
-        (request.resource.data.started == resource.data.started
-         || request.auth.token.email == "emilianocros27@gmail.com");
+        (request.auth.token.email == "emilianocros27@gmail.com"
+         || (request.resource.data.started == resource.data.started
+             && resource.data.get("locked", false) == false
+             && request.resource.data.get("locked", false) == false));
     }
     match /fantasySchedules/{team} {
       allow read, write: if request.auth != null;
@@ -104,16 +107,19 @@ service cloud.firestore {
              && resource.data.status == "countered"
              && request.resource.data.status == "accepted"
              && request.resource.data.diff(resource.data).affectedKeys().hasOnly(["status"])));
-      allow delete: if false;
+      // borrar: solo el comisionado, al reiniciar DT
+      allow delete: if request.auth != null && request.auth.token.email == "emilianocros27@gmail.com";
     }
     // Buzón privado de avisos de Fantasy (ej. "se aceptó tu oferta"): el comisionado los crea,
     // cada quien solo puede leer/marcar-leído los suyos.
     match /fantasyInbox/{id} {
-      allow read: if request.auth != null && resource.data.toUid == request.auth.uid;
+      allow read: if request.auth != null &&
+        (resource.data.toUid == request.auth.uid || request.auth.token.email == "emilianocros27@gmail.com");
       allow create: if request.auth != null && request.auth.token.email == "emilianocros27@gmail.com";
       allow update: if request.auth != null && resource.data.toUid == request.auth.uid
                     && request.resource.data.toUid == resource.data.toUid;
-      allow delete: if false;
+      // borrar: solo el comisionado, al reiniciar DT
+      allow delete: if request.auth != null && request.auth.token.email == "emilianocros27@gmail.com";
     }
     // Noticias de la temporada: cualquiera autenticado puede leer; publicarlas las hace el comisionado
     // (el dueño de la cuenta, vía Claude) — no hay UI de redactar dentro del juego.

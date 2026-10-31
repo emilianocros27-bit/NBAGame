@@ -1404,7 +1404,7 @@
     </div>
     <!-- ===== BANNER EVENTO SEMANA 90s ===== -->
     <div id="banner-90s" class="event-banner banner-90s" role="button" tabindex="0" title="Ir al sobre 90s">
-      <div class="event-trophy">🏀</div>
+      <div class="event-trophy"><svg viewBox="0 0 24 24" width="32" height="32" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg></div>
       <div class="event-body">
         <span class="event-text"><b>Semana 90s</b> · Leyendas de la vieja escuela. Abre el <b>Sobre 90s</b> y consigue 2 leyendas.</span>
         <span class="event-count">Evento especial · sobre de 2 cartas</span>
@@ -1530,7 +1530,7 @@
       <div class="pf-sec-head"><h3>Skins de aro</h3></div>
       <div class="shop-skins" id="shop-nets"></div>
 
-      <div class="pf-sec-head" id="polvos-head" style="display:none"><h3>Polvos ✨</h3></div>
+      <div class="pf-sec-head" id="polvos-head" style="display:none"><h3>Polvos</h3></div>
       <div id="polvos-section" style="display:none">
         <div class="polvo-bal">
           <div class="polvo-bal-ico" id="polvo-bal-ico"></div>
@@ -1566,9 +1566,9 @@
           <p>Completa retos y reclama balones y sobres. Las diarias se reinician cada día.</p>
         </div>
       </div>
-      <h3 class="ms-head">🔁 Diarias</h3>
+      <h3 class="ms-head">Diarias</h3>
       <div class="ms-list" id="ms-daily"></div>
-      <h3 class="ms-head">🏆 Logros</h3>
+      <h3 class="ms-head">Logros</h3>
       <div class="ms-list" id="ms-ach"></div>
     </section>
 
@@ -1617,7 +1617,6 @@
       <!-- estado: sin unirse todavia -->
       <div id="fantasy-join" class="fantasy-join" hidden>
         <div class="fantasy-join-card">
-          <div class="fantasy-join-ico">🏀</div>
           <h3 id="fantasy-join-title">DT</h3>
           <p id="fantasy-join-sub">Te toca un equipo NBA al azar (sin repetir con nadie) por 10 días. Partidos en vivo, mercado y trades.</p>
           <button class="btn btn-primary" id="fantasy-join-btn">Unirme a la temporada</button>
@@ -1627,11 +1626,9 @@
       <!-- estado: ya tengo equipo pero la temporada todavía no arranca -->
       <div id="fantasy-pending" class="fantasy-join" hidden>
         <div class="fantasy-join-card">
-          <div class="fantasy-join-ico">⏳</div>
           <h3>Ya tienes equipo: <span id="fantasy-pending-team"></span></h3>
           <p id="fantasy-pending-sub">Esperando que el comisionado inicie la temporada.</p>
           <p id="fantasy-pending-list" style="color:var(--muted);font-size:12.5px"></p>
-          <button class="btn btn-primary" id="fantasy-start-btn" hidden>Iniciar temporada ahora</button>
         </div>
       </div>
 
@@ -1641,7 +1638,7 @@
 
         <div class="fantasy-subnav" id="fantasy-subnav" role="tablist">
           <button class="fantasy-subtab active" data-sub="partidos" role="tab" aria-selected="true">Partidos</button>
-          <button class="fantasy-subtab" data-sub="copa" role="tab" aria-selected="false">🏆 NBA Cup</button>
+          <button class="fantasy-subtab" data-sub="copa" role="tab" aria-selected="false">NBA Cup</button>
           <button class="fantasy-subtab" data-sub="equipo" role="tab" aria-selected="false">Equipo</button>
           <button class="fantasy-subtab" data-sub="transfer" role="tab" aria-selected="false">Transferencias</button>
           <button class="fantasy-subtab" data-sub="misiones" role="tab" aria-selected="false">Misiones</button>
@@ -1671,9 +1668,9 @@
         </div>
 
         <div class="fantasy-subview" id="fantasy-sub-misiones" hidden>
-          <h3 class="ms-head">🔁 Diarias</h3>
+          <h3 class="ms-head">Diarias</h3>
           <div class="ms-list" id="fantasy-ms-daily"></div>
-          <h3 class="ms-head">🏆 Logros de temporada</h3>
+          <h3 class="ms-head">Logros de temporada</h3>
           <div class="ms-list" id="fantasy-ms-ach"></div>
         </div>
 
@@ -1710,7 +1707,7 @@
         <div class="fantasy-scoreboard" id="fantasy-scoreboard"></div>
         <div class="fantasy-timeout-banner" id="fantasy-timeout-banner" hidden></div>
         <div class="fantasy-live-actions" id="fantasy-live-actions">
-          <button class="btn btn-ghost" id="fantasy-timeout-btn">⏱ Tiempo muerto (<span id="fantasy-timeout-left">2</span>)</button>
+          <button class="btn btn-ghost" id="fantasy-timeout-btn">Tiempo muerto (<span id="fantasy-timeout-left">2</span>)</button>
         </div>
         <div class="fantasy-lastplay" id="fantasy-lastplay"></div>
         <div class="fantasy-boxscore" id="fantasy-boxscore"></div>
@@ -3110,7 +3107,7 @@
     const dust=dustValueFor(slug, v);
     addPolvos(dust); save();
     try{ renderAlbum(); renderAlbum90s(); renderTienda(); }catch(e){}
-    toast(`Convertida en <b>${dust}</b> polvos 🍶`);
+    toast(`Convertida en <b>${dust}</b> polvos`);
     openDetail(slug);
   }
   // convertir TODAS las repetidas (deja 1 de cada) en polvos, en todas las categorías
@@ -3122,7 +3119,7 @@
     if(!extra){ toast("No tienes cartas repetidas"); return; }
     addPolvos(polvos); save();
     try{ renderAlbum(); renderAlbum90s(); renderTienda(); }catch(e){}
-    toast(`Convertiste <b>${extra}</b> repetida${extra>1?'s':''} en <b>${polvos}</b> polvos 🍶`);
+    toast(`Convertiste <b>${extra}</b> repetida${extra>1?'s':''} en <b>${polvos}</b> polvos`);
   }
   // vista simple para promos que no son de un jugador base (coach, winner, PSA10)
   function openPromoPreview(id){
@@ -3402,9 +3399,9 @@
   function msApplyReward(r){
     const txt=[];
     if(r.coins){ addCoins(r.coins); txt.push(`<span class="coin-ico"></span> ${r.coins}`); }
-    if(r.rewardPacks){ state.rewardPacks=(state.rewardPacks||0)+r.rewardPacks; txt.push(`🎁 ${r.rewardPacks} sobre${r.rewardPacks>1?"s":""}`); }
+    if(r.rewardPacks){ state.rewardPacks=(state.rewardPacks||0)+r.rewardPacks; txt.push(`${r.rewardPacks} sobre${r.rewardPacks>1?"s":""}`); }
     if(r.promo && PROMO_BY[r.promo]){ grantPromo([r.promo]); txt.push(`carta <b>${esc(PROMO_BY[r.promo].nombre)}</b>`); }
-    if(r.skin && SKIN_BY[r.skin]){ state.skins=state.skins||{}; state.skins[r.skin]=1; equipSkin(r.skin); txt.push(`🏀 balón <b>${esc(SKIN_BY[r.skin].nombre)}</b>`); }
+    if(r.skin && SKIN_BY[r.skin]){ state.skins=state.skins||{}; state.skins[r.skin]=1; equipSkin(r.skin); txt.push(`balón <b>${esc(SKIN_BY[r.skin].nombre)}</b>`); }
     ["net","frame","title","trail"].forEach(type=>{ if(r[type] && COSMETICS[type] && COSMETICS[type][r[type]]){ grantCosmetic(type, r[type]); applyCosmetics(); const nm=COSMETICS[type][r[type]].name; txt.push(type==="title"?`título <b>${esc(nm)}</b>`:`<b>${esc(nm)}</b>`); } });
     return txt.join(" + ");
   }
@@ -3423,7 +3420,7 @@
     const cur=Math.min(mi.cur(), mi.goal), done=mi.cur()>=mi.goal;
     const store = kind==="daily"?state.missions.daily.claimed:state.missions.claimed;
     const claimed=!!store[mi.id], pct=Math.round(cur/mi.goal*100);
-    const rwd=(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` 🎁 ${mi.r.rewardPacks}`:"")+(mi.r.promo&&PROMO_BY[mi.r.promo]?` carta ${esc(PROMO_BY[mi.r.promo].nombre)}`:"");
+    const rwd=(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` ${mi.r.rewardPacks} sobre${mi.r.rewardPacks>1?"s":""}`:"")+(mi.r.promo&&PROMO_BY[mi.r.promo]?` carta ${esc(PROMO_BY[mi.r.promo].nombre)}`:"");
     const act = claimed ? `<span class="ms-claimed">Reclamado ✓</span>`
       : done ? `<button class="btn btn-primary ms-claim" data-ms-kind="${kind}" data-ms-id="${mi.id}">Reclamar</button>`
       : `<span class="ms-count">${cur}/${mi.goal}</span>`;
@@ -3477,7 +3474,7 @@
         </div>`;
       if(m.type==="trade") return `
         <div class="msg">
-          <div class="msg-ico">🏀</div>
+          <div class="msg-ico">${trophy}</div>
           <div class="msg-body"><h4>DT — Transferencias</h4>
             <p>${esc(m.text)}</p></div>
         </div>`;
@@ -3973,7 +3970,7 @@
       let btn;
       if(isEq) btn=`<button class="btn btn-primary" data-net-equip="">Quitar</button>`;
       else if(owned) btn=`<button class="btn btn-primary" data-net-equip="${id}">Equipar</button>`;
-      else btn=`<button class="btn btn-ghost" disabled>🔒 Pase de Batalla</button>`;
+      else btn=`<button class="btn btn-ghost" disabled>Pase de Batalla (bloqueado)</button>`;
       out.push(`<div class="skin-card ${isEq?'on':''}">
         ${bpNetSVG(c.color)}
         <div class="skin-name">${esc(c.name)}</div>
@@ -4021,8 +4018,8 @@
   }
   function buyPolvoItem(id){
     const it=POLVO_SHOP.find(x=>x.id===id); if(!it) return;
-    if(it.promo){ if(ownsPromo(it.promo)){ toast("Ya la tienes"); return; } if(!spendPolvos(it.price)){ toast("Te faltan polvos 🍶"); return; } grantPromo([it.promo]); renderPolvosStore(); toast(`¡Carta <b>${esc(PROMO_BY[it.promo].nombre)}</b> desbloqueada!`); }
-    else if(it.skin){ if(ownsSkin(it.skin)){ toast("Ya la tienes"); return; } if(!spendPolvos(it.price)){ toast("Te faltan polvos 🍶"); return; } state.skins=state.skins||{}; state.skins[it.skin]=1; equipSkin(it.skin); renderPolvosStore(); toast(`¡Balón <b>${esc(SKIN_BY[it.skin].nombre)}</b> desbloqueado!`); }
+    if(it.promo){ if(ownsPromo(it.promo)){ toast("Ya la tienes"); return; } if(!spendPolvos(it.price)){ toast("Te faltan polvos"); return; } grantPromo([it.promo]); renderPolvosStore(); toast(`¡Carta <b>${esc(PROMO_BY[it.promo].nombre)}</b> desbloqueada!`); }
+    else if(it.skin){ if(ownsSkin(it.skin)){ toast("Ya la tienes"); return; } if(!spendPolvos(it.price)){ toast("Te faltan polvos"); return; } state.skins=state.skins||{}; state.skins[it.skin]=1; equipSkin(it.skin); renderPolvosStore(); toast(`¡Balón <b>${esc(SKIN_BY[it.skin].nombre)}</b> desbloqueado!`); }
   }
   function openSkinPack(){
     const pool=BALL_SKINS.filter(s=>s.pack && !ownsSkin(s.id));
@@ -4030,7 +4027,7 @@
     if(!spendCoins(SKIN_PACK_PRICE)){ toast(`Te faltan balones. Juega <b>Encestes</b> para ganar más.`); showView("juego"); return; }
     const got=pool[Math.floor(Math.random()*pool.length)];
     state.skins[got.id]=1; equipSkin(got.id);
-    toast(`¡Sacaste el balón <b>${esc(got.nombre)}</b>! Equipado 🏀`);
+    toast(`¡Sacaste el balón <b>${esc(got.nombre)}</b>! Equipado`);
   }
   function buySkin(id){
     const s=SKIN_BY[id]; if(!s||ownsSkin(id)) return;
@@ -4068,7 +4065,7 @@
       const parts=[];
       if(r.coins){ addCoins(r.coins); parts.push(`+<b>${r.coins}</b> balones`); }
       if(r.promo && r.promo.length){ const n=grantPromo(r.promo); parts.push(n?`<b>${n}</b> carta${n>1?'s':''}`:`carta (ya la tenías)`); }
-      if(r.pack90s) parts.push("1 sobre 90s 🎁");
+      if(r.pack90s) parts.push("1 sobre 90s");
       save(); try{ renderAll(); }catch(e){}
       toast(`¡Código canjeado! ${parts.join(" + ")||'✓'}`);
       if(r.pack90s) openPack("noventas", true);   // sobre 90s gratis (con su animación)
@@ -4089,7 +4086,7 @@
     try{ res=await window.DunkFire.claimCode(code, currentUid); }
     catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo reclamar, intenta de nuevo"); return; }
     if(!res || !res.ok){ toast(res && res.reason==="used" ? "Ese código ya fue usado" : "Código no válido"); return; }
-    if(res.cards && res.cards.reward){ claimRewardCode(res.cards); toast("¡Código canjeado! 🎁"); return; }
+    if(res.cards && res.cards.reward){ claimRewardCode(res.cards); toast("¡Código canjeado!"); return; }
     const n=grantBundle(res.cards||[]);
     toast(n ? `¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''}` : "Código válido, pero ya tenías esas cartas");
   }
@@ -4117,7 +4114,7 @@
   /* =====================================================
      FANTASY
      ===================================================== */
-  const FANTASY_EXCLUDED = ["Oklahoma City Thunder","Philadelphia 76ers","New York Knicks","San Antonio Spurs"];
+  const FANTASY_EXCLUDED = ["Oklahoma City Thunder","Philadelphia 76ers","New York Knicks"];
   const FANTASY_ALL_TEAMS = Object.keys(TEAMS).filter(t=>TEAMS[t].id);                          // los 30 reales
   const FANTASY_EAST_TEAMS = new Set(["Atlanta Hawks","Boston Celtics","Brooklyn Nets","Charlotte Hornets","Chicago Bulls",
     "Cleveland Cavaliers","Detroit Pistons","Indiana Pacers","Miami Heat","Milwaukee Bucks","New York Knicks",
@@ -4133,7 +4130,7 @@
     [12, 15, 18, 20.5],    // tarde-noche (el de antes)
     [14, 17, 19, 21.5],    // nocturno
   ];
-  const FANTASY_ELIGIBLE  = FANTASY_ALL_TEAMS.filter(t=>!FANTASY_EXCLUDED.includes(t));          // asignables (24)
+  const FANTASY_ELIGIBLE  = FANTASY_ALL_TEAMS.filter(t=>!FANTASY_EXCLUDED.includes(t));          // asignables (27)
   const FANTASY_SEASON_DAYS = 20;   // 20 días x 4 partidos = 80 de temporada regular, + Copa NBA + Playoffs
   // este script clásico y el <script type="module"> de Firebase no comparten scope de const/let —
   // se exponen en window para que DunkDev.startNewFantasySeason() (definido allá) los pueda leer.
@@ -4412,20 +4409,28 @@
     }catch(e){}
     return null;
   }
+  // margen tras el inicio de temporada: ningún partido arranca antes de esto, para que nadie llegue
+  // con partidos ya simulados (sin alineación) por haber iniciado a media tarde
+  const FANTASY_FIRST_GAME_BUFFER_MS = 60*60*1000;
   function fantasyGenerateSchedule(myTeam, seasonNumber, startedAt){
     const grid=fantasyBuildLeagueGrid(seasonNumber);
-    const midnight0=fantasyMexicoMidnight(startedAt||Date.now());
+    const start=startedAt||Date.now();
+    const midnight0=fantasyMexicoMidnight(start);
     const games=[];
     let round=0;
     for(let day=1; day<=FANTASY_SEASON_DAYS; day++){
       const hours=FANTASY_KICKOFF_TEMPLATES[day%FANTASY_KICKOFF_TEMPLATES.length];
       for(let s=0; s<hours.length; s++){
+        const scheduledAt=midnight0+(day-1)*24*60*60*1000+hours[s]*60*60*1000;
+        // turnos del día 1 que ya pasaron al iniciar: se saltan (la ronda se consume igual para todos,
+        // así el cruce de cada turno sigue siendo el mismo en todos los clientes)
+        if(scheduledAt < start+FANTASY_FIRST_GAME_BUFFER_MS){ round++; continue; }
         const pair=grid[round].find(p=>p.includes(myTeam));
         if(pair){
           const [a,b]=pair, isHome=a===myTeam, opponent=isHome?b:a;
-          const scheduledAt=midnight0+(day-1)*24*60*60*1000+hours[s]*60*60*1000;
           const matchId=`s${seasonNumber}-d${day}-s${s}-${fantasyTeamSlug(a)}-${fantasyTeamSlug(b)}`;
-          games.push({ id:matchId, day, opponent, role:isHome?"home":"away", status:"scheduled", scheduledAt, copaGroup: round<FANTASY_COPA_GROUP_GAMES });
+          // Copa = los primeros N partidos que de verdad se juegan, con el mismo flujo en vivo que la temporada
+          games.push({ id:matchId, day, opponent, role:isHome?"home":"away", status:"scheduled", scheduledAt, copaGroup: games.length<FANTASY_COPA_GROUP_GAMES });
         }
         round++;
       }
@@ -4455,7 +4460,7 @@
     // arranca en cuanto se genera: entra al mismo reloj que el resto, así se resuelve solo si no lo ves
     fantasySchedule.games.push({ id:matchId, day:lastDay, opponent, role, status:"scheduled", scheduledAt:Date.now(), type:"copa-final" });
     try{ await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, fantasySchedule.games); }catch(e){}
-    toast(`🏆 ¡Clasificaste a la Final de la Copa NBA! Nuevo partido disponible.`);
+    toast(`¡Clasificaste a la Final de la Copa NBA! Nuevo partido disponible.`);
   }
   // ---- Playoffs: al terminar los 20 días de temporada regular, si ganaste suficientes partidos,
   // se generan hasta 3 rondas extra (Cuartos y Semis a 1 partido, Final a mejor de 3). ----
@@ -4492,12 +4497,12 @@
         const {opponent, role, matchId} = pick;
         fantasySchedule.games.push({ id:matchId, day:lastDay+FANTASY_PLAYOFF_ROUNDS.indexOf(type)+1, opponent, role, status:"scheduled", scheduledAt:Date.now(), type });
         try{ await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, fantasySchedule.games); }catch(e){}
-        toast(`🏀 ¡Avanzaste a ${FANTASY_PLAYOFF_ROUND_LABEL[type]}!`);
+        toast(`¡Avanzaste a ${FANTASY_PLAYOFF_ROUND_LABEL[type]}!`);
         return;
       } else {
         const wins = roundGames.filter(g=>g.status==="final" && g.won).length;
         const losses = roundGames.filter(g=>g.status==="final" && !g.won).length;
-        if(wins>=2){ if(roundGames.length===wins+losses && !fantasyPlayoffChampAnnounced){ fantasyPlayoffChampAnnounced=true; toast(`🏆🏆 ¡CAMPEÓN DE PLAYOFFS! ¡Ganaste la Final!`); } return; }
+        if(wins>=2){ if(roundGames.length===wins+losses && !fantasyPlayoffChampAnnounced){ fantasyPlayoffChampAnnounced=true; toast(`¡CAMPEÓN DE PLAYOFFS! ¡Ganaste la Final!`); } return; }
         if(losses>=2) return;   // perdiste la final
         const gi = wins+losses+1;
         if(roundGames.length>=gi) continue;
@@ -4512,7 +4517,7 @@
         }
         fantasySchedule.games.push({ id:matchId, day:lastDay+FANTASY_PLAYOFF_ROUNDS.indexOf(type)+gi, opponent, role, status:"scheduled", scheduledAt:Date.now(), type });
         try{ await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, fantasySchedule.games); }catch(e){}
-        toast(`🏀 Final de Playoffs — partido ${gi} disponible.`);
+        toast(`Final de Playoffs — partido ${gi} disponible.`);
         return;
       }
     }
@@ -4564,7 +4569,7 @@
       <div class="ms-info">
         <div class="ms-title">${esc(mi.t)}</div>
         <div class="ms-bar"><span style="width:${pct}%"></span></div>
-        <div class="ms-reward">Recompensa: 🏀 ${mi.r.coins} DT</div>
+        <div class="ms-reward">Recompensa: ${mi.r.coins} DT</div>
       </div>
       <div class="ms-act">${act}</div>
     </div>`;
@@ -4584,7 +4589,7 @@
     store[id]=true;
     state.fantasy.coins=(state.fantasy.coins||0)+mi.r.coins;
     save(); renderFantasyMissions(); renderFantasyHeader();
-    toast(`¡Misión DT completada! +${mi.r.coins} 🏀`);
+    toast(`¡Misión DT completada! +${mi.r.coins} DT`);
   }
 
   // ---- estado / entrada ----
@@ -4682,7 +4687,7 @@
     const body=$("#sheet-body");
     const render=()=>{
       const susp=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug];
-      const suspBanner = (susp&&susp.gamesLeft>0) ? `<p style="padding:0 20px;color:#ff6b6b;font-size:12.5px;font-weight:700">🚫 Suspendido — no juega los próximos ${susp.gamesLeft} partido${susp.gamesLeft>1?"s":""}</p>` : "";
+      const suspBanner = (susp&&susp.gamesLeft>0) ? `<p style="padding:0 20px;color:#ff6b6b;font-size:12.5px;font-weight:700">Suspendido — no juega los próximos ${susp.gamesLeft} partido${susp.gamesLeft>1?"s":""}</p>` : "";
       body.innerHTML = `<div class="picker-head"><h3>${esc(p.nombre)}</h3></div>
         <p style="padding:0 20px;color:var(--muted);font-size:12.5px">${esc(p.posicion||"")} · ${esc(p.equipo)} · Media ${p.media}</p>
         ${suspBanner}
@@ -4692,7 +4697,7 @@
         </div>
         ${fantasyStatBlockHTML(p, fantasyStatModalMode)}
         <p style="padding:8px 20px 0;color:var(--muted);font-size:11px;text-align:center">Estadísticas simuladas de temporada</p>
-        ${opts.subKey?`<div class="ff-actions" style="margin-top:16px"><button class="btn btn-primary" id="fs-sub-btn">🔄 Sustituir</button></div>`:""}`;
+        ${opts.subKey?`<div class="ff-actions" style="margin-top:16px"><button class="btn btn-primary" id="fs-sub-btn">Sustituir</button></div>`:""}`;
       body.querySelectorAll("[data-fsm]").forEach(b=>b.addEventListener("click", ()=>{ fantasyStatModalMode=b.dataset.fsm; render(); }));
       if(opts.subKey){ body.querySelector("#fs-sub-btn").addEventListener("click", ()=>fantasySlotClick(opts.subKey)); }
     };
@@ -4729,7 +4734,7 @@
       return `<div class="fantasy-standings-row ${r.team===fantasyMyTeam?"mine":""}">
       <span class="fs-rank">${r.rank}</span><span class="fs-team">${esc(r.team)}</span>
       <span class="fs-rec">${r.w}-${r.l} <span class="fs-leader-unit">${pct}%</span></span>
-      ${r.live?`<button class="fantasy-live-watch" data-spectate="${esc(r.team)}" type="button">🔴 En vivo</button>`:""}
+      ${r.live?`<button class="fantasy-live-watch" data-spectate="${esc(r.team)}" type="button">En vivo</button>`:""}
     </div>`;};
     const east = rows.filter(r=>fantasyConference(r.team)==="Este").map((r,i)=>Object.assign({},r,{rank:i+1}));
     const west = rows.filter(r=>fantasyConference(r.team)==="Oeste").map((r,i)=>Object.assign({},r,{rank:i+1}));
@@ -4757,7 +4762,7 @@
         const last=plays[plays.length-1];
         const hs=last?last.scoreH:0, as=last?last.scoreA:0;
         const tH=teamOf(game.home), tA=teamOf(game.away);
-        body.innerHTML = `<div class="picker-head"><h3>👀 ${esc(game.home)} vs ${esc(game.away)}</h3></div>
+        body.innerHTML = `<div class="picker-head"><h3>${esc(game.home)} vs ${esc(game.away)}</h3></div>
           <div class="fantasy-scoreboard" style="margin:0 20px 14px">
             <div class="fantasy-sb-clock">${st.finished?"<b>FIN DEL PARTIDO</b>":(st.onBreak?`<b>${esc(st.onBreak)}</b>`:esc(fantasyClockLabel(st.gameSec)))}</div>
             <div class="fantasy-sb-teams">
@@ -4878,7 +4883,7 @@
       </div>` : "";
     const suspended = roster.filter(p=>{ const s=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug]; return s&&s.gamesLeft>0; });
     const suspendedHTML = suspended.length ? `<div class="ff-suspended">
-        <div class="ff-suspended-lbl">🚫 Suspendidos (no disponibles)</div>
+        <div class="ff-suspended-lbl">Suspendidos (no disponibles)</div>
         ${suspended.map(p=>{ const s=fantasySeasonData.suspensions[p.slug]; return `<div class="ff-suspended-row">
           <img src="${esc(p.foto)}" onerror="this.style.opacity=0">
           <span>${esc(p.nombre)}</span>
@@ -4894,7 +4899,7 @@
       </div>
       ${suspendedHTML}
       ${editable?`<p class="ff-hint2">${fantasySelectedSlot?"Toca a otro jugador para intercambiarlos de posición.":"Toca un jugador para sustituirlo · doble toque para moverlo de posición · o cambia la formación arriba."}</p>
-      <div class="ff-actions"><button class="btn btn-primary" id="fantasy-save-lineup">💾 Guardar plantilla</button></div>`:""}
+      <div class="ff-actions"><button class="btn btn-primary" id="fantasy-save-lineup">Guardar plantilla</button></div>`:""}
     </div>`;
   }
   let fantasyEditStarters=null, fantasyEditMode=null, fantasyEditFormation=FANTASY_DEFAULT_FORMATION;
@@ -5032,7 +5037,7 @@
     const list = raw.filter(it=>!stale.includes(it));
     if(stale.length){ stale.forEach(it=>{ window.DunkFire.fantasyRemoveTransferListing(it.slug).then(d=>{ fantasySeasonData=d; }).catch(()=>{}); }); }
     if(!list.length){ wrap.innerHTML=""; return; }
-    wrap.innerHTML = `<div class="pf-sec-head"><h3>📋 Lista de transferencias</h3></div>
+    wrap.innerHTML = `<div class="pf-sec-head"><h3>Lista de transferencias</h3></div>
       <p class="fantasy-hint" style="margin-top:-8px">Jugadores señalados como posible fichaje o que buscan salir de su equipo.</p>
       ${list.map(item=>{
         const p=BY[item.slug]; if(!p) return "";
@@ -5102,7 +5107,7 @@
     const counterNote = o.status==="countered" ? `<div style="padding:0 20px;font-size:12.5px;color:#c3a6ff;margin-bottom:10px">Ahora piden: ${[fantasyOfferedList(o.offeredSlug).length?esc(fantasyOfferedNames(o.offeredSlug)):null, o.amount?esc(fantasyFmtMoney(o.amount)):null].filter(Boolean).join(" + ")||"—"}</div>` : "";
     const cancelBtn = (o.status==="pending"||o.status==="countered") ? `<button class="btn btn-ghost" style="width:calc(100% - 40px);margin:6px 20px 0" data-cancel-id="${esc(o.id)}">Quitar oferta</button>` : "";
     // te devolvieron la oferta con otros términos: la puedes firmar tal cual desde aquí
-    const acceptCounterBtn = o.status==="countered" ? `<button class="btn btn-primary" style="width:calc(100% - 40px);margin:14px 20px 0" data-accept-counter="${esc(o.id)}">✍️ Firmar contraoferta</button>` : "";
+    const acceptCounterBtn = o.status==="countered" ? `<button class="btn btn-primary" style="width:calc(100% - 40px);margin:14px 20px 0" data-accept-counter="${esc(o.id)}">Firmar contraoferta</button>` : "";
     const body=$("#sheet-body");
     body.innerHTML = `<div class="picker-head"><h3>Tu oferta a ${esc(o.toTeam)}</h3></div>
       <p style="padding:0 20px;color:var(--muted);font-size:12px;text-transform:uppercase;letter-spacing:.04em">Pides</p>
@@ -5148,7 +5153,7 @@
   }
   async function fantasyOpenMail(){
     const body=$("#sheet-body");
-    body.innerHTML = `<div class="picker-head"><h3>✉️ Correo de DT</h3></div>
+    body.innerHTML = `<div class="picker-head"><h3>Correo de DT</h3></div>
       <p class="fantasy-hint" style="padding:0 20px">Ofertas que te mandaron por tus jugadores.</p>
       <div id="fantasy-mail-list" style="padding:0 20px"><p style="color:var(--muted);font-size:13px">Cargando…</p></div>`;
     showSheet();
@@ -5166,7 +5171,7 @@
       const cmp = fantasyMediaCmpHTML(baseOfferedSlug, o.playerSlug);
       const counterNote = o.status==="countered" ? `<div style="font-size:11.5px;color:#c3a6ff;margin-top:2px">Tu contraoferta: ${[fantasyOfferedList(o.offeredSlug).length?esc(fantasyOfferedNames(o.offeredSlug)):null, o.amount?esc(fantasyFmtMoney(o.amount)):null].filter(Boolean).join(" + ")||"—"}</div>` : "";
       const actions = o.status==="pending" ? `<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">
-          <button class="btn btn-primary" style="font-size:12px;padding:6px 14px" data-accept-id="${esc(o.id)}">✍️ Firmar</button>
+          <button class="btn btn-primary" style="font-size:12px;padding:6px 14px" data-accept-id="${esc(o.id)}">Firmar</button>
           <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px" data-counter-id="${esc(o.id)}">Modificar oferta</button>
           <button class="btn btn-ghost" style="font-size:12px;padding:6px 14px;color:#ff6b6b;border-color:rgba(255,107,107,.35)" data-reject-id="${esc(o.id)}">✕ Rechazar</button>
         </div>` : "";
@@ -5264,7 +5269,7 @@
           const susp=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug];
           const suspTag = (susp&&susp.gamesLeft>0) ? ` · <span style="color:#ff6b6b">Suspendido (${susp.gamesLeft})</span>` : "";
           const isListed = listedSlugs.has(p.slug);
-          const mineBtn = `<button class="btn ${isListed?"btn-ghost":"btn-primary"}" style="padding:8px 12px;font-size:11.5px;white-space:nowrap" data-toggle-listing="${esc(p.slug)}">${isListed?"Quitar de lista":"📋 Listar"}</button>`;
+          const mineBtn = `<button class="btn ${isListed?"btn-ghost":"btn-primary"}" style="padding:8px 12px;font-size:11.5px;white-space:nowrap" data-toggle-listing="${esc(p.slug)}">${isListed?"Quitar de lista":"Listar"}</button>`;
           return `<div class="ft-roster-row" data-stat-slug="${esc(p.slug)}" style="cursor:pointer">
           <div class="ft-roster-photo"><img src="${esc(p.foto)}" onerror="this.style.opacity=0"></div>
           <span class="ft-roster-name">${esc(p.nombre)}</span>
@@ -5352,11 +5357,21 @@
       fantasyHideAll(); $("#fantasy-join").hidden=false;
       $("#fantasy-join-title").textContent="Inicia sesión para jugar DT";
       $("#fantasy-join-sub").textContent="Los equipos no se repiten entre jugadores: necesitamos saber quién eres.";
-      $("#fantasy-join-btn").textContent="Iniciar sesión";
+      $("#fantasy-join-btn").textContent="Iniciar sesión"; $("#fantasy-join-btn").hidden=false;
       return;
     }
     try{
       const season = await window.DunkFire.fantasyGetSeason();
+      // DT cerrado por el comisionado (locked): nadie entra ni ve equipos hasta que se abra -- ni el propio comisionado
+      if(season && season.locked){
+        fantasyMyTeam = null; fantasySeasonData = null;
+        fantasyHideAll(); $("#fantasy-join").hidden=false;
+        $("#fantasy-join-title").textContent="DT — Próximamente";
+        $("#fantasy-join-sub").textContent="La próxima temporada abre pronto. Te avisaremos cuando puedas unirte.";
+        $("#fantasy-join-btn").hidden=true;
+        return;
+      }
+      $("#fantasy-join-btn").hidden=false;
       if(season && season.started===undefined) season.started = !!season.startedAt;   // compat: temporadas creadas antes del control de inicio
       const mine = season && season.teams ? Object.keys(season.teams).find(t=>season.teams[t]===currentUid) : null;
       if(mine && season.started && Date.now() < season.endsAt){
@@ -5368,11 +5383,8 @@
         $("#fantasy-pending-team").textContent = mine;
         const joined = Object.keys(season.teams).filter(t=>season.teams[t]);
         $("#fantasy-pending-list").textContent = `Equipos ya reclamados (${joined.length}/${Object.keys(season.teams).length}): ${joined.join(", ")}`;
-        const startBtn = $("#fantasy-start-btn");
-        startBtn.hidden = !fantasyIsCommissioner();
-        $("#fantasy-pending-sub").textContent = fantasyIsCommissioner()
-          ? "Tú decides cuándo arranca. Cuando estén listos, dale a iniciar."
-          : "Esperando que el comisionado inicie la temporada.";
+        // iniciar temporada: SOLO por chat (Claude ejecuta fantasyStartSeason cuando el comisionado lo pide)
+        $("#fantasy-pending-sub").textContent = "Esperando que el comisionado inicie la temporada.";
       } else {
         fantasyHideAll(); $("#fantasy-join").hidden=false;
         $("#fantasy-join-title").textContent="DT";
@@ -5389,14 +5401,6 @@
       toast(`¡Te tocó <b>${esc(res.team)}</b>!`);
       await renderFantasy();
     }catch(e){ toast(e.message||"No se pudo unir a DT"); }
-  }
-  async function fantasyStartSeasonAction(){
-    try{
-      const season = await window.DunkFire.fantasyStartSeason();
-      fantasySeasonData = season;
-      toast("¡Temporada iniciada! El reloj ya corre para todos.");
-      await renderFantasy();
-    }catch(e){ toast(e.message||"No se pudo iniciar la temporada"); }
   }
   // reiniciar temporada: SOLO por chat (Claude ejecuta window.DunkFire.fantasyResetSeason cuando el
   // comisionado lo pide) — sin botón en la app, a propósito.
@@ -5456,12 +5460,12 @@
     let extraLine = "";
     const copaGroup = fantasySchedule.games.filter(g=>g.copaGroup);
     const copaGroupDone = copaGroup.length>=FANTASY_COPA_GROUP_GAMES && copaGroup.every(g=>g.status==="final");
-    if(copaFinal) extraLine += `<div class="fantasy-stat"><b>${copaFinal.status==="final"?(copaFinal.won?"🏆 Campeón":"Final perdida"):"Clasificado"}</b><span>Copa NBA</span></div>`;
+    if(copaFinal) extraLine += `<div class="fantasy-stat"><b>${copaFinal.status==="final"?(copaFinal.won?"Campeón":"Final perdida"):"Clasificado"}</b><span>Copa NBA</span></div>`;
     else if(copaGroupDone) extraLine += `<div class="fantasy-stat"><b>Eliminado</b><span>Copa NBA · grupos</span></div>`;
     if(playoffGames.length){
       const pw=playoffGames.filter(g=>g.status==="final"&&g.won).length, pl=playoffGames.filter(g=>g.status==="final"&&!g.won).length;
       const champ = playoffGames.filter(g=>g.type==="playoff-final").filter(g=>g.status==="final"&&g.won).length>=2;
-      extraLine += `<div class="fantasy-stat"><b>${champ?"🏆 Campeón":pw+"-"+pl}</b><span>Playoffs</span></div>`;
+      extraLine += `<div class="fantasy-stat"><b>${champ?"Campeón":pw+"-"+pl}</b><span>Playoffs</span></div>`;
     }
     const logo = t.id ? `<img src="${logoURL(fantasyMyTeam)}" style="width:66px;height:66px;object-fit:contain" onerror="this.remove()">` : "";
     const viewEl=$("#view-fantasy"); if(viewEl){ viewEl.style.setProperty("--fantasy-accent", t.c1); viewEl.style.setProperty("--fantasy-accent2", t.c2); }
@@ -5476,11 +5480,11 @@
         <div class="fantasy-stat"><b>${esc(fantasyFmtMoney(fantasyMyBudget()))}</b><span>Presupuesto</span></div>
         ${extraLine}
       </div>
-      <button class="fantasy-mail-btn" id="fantasy-mail-btn" title="Correo de DT">✉️<span class="fantasy-mail-badge" id="fantasy-mail-badge" hidden>0</span></button>`;
+      <button class="fantasy-mail-btn" id="fantasy-mail-btn" title="Correo de DT" aria-label="Correo de DT"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="fantasy-mail-badge" id="fantasy-mail-badge" hidden>0</span></button>`;
     $("#fantasy-mail-btn")?.addEventListener("click", fantasyOpenMail);
     fantasyRefreshMailBadge();
   }
-  const FANTASY_TYPE_LABEL = { "copa-final":"🏆 Final Copa NBA", "playoff-qf":"Cuartos de Playoffs", "playoff-sf":"Semifinal de Playoffs", "playoff-final":"Final de Playoffs" };
+  const FANTASY_TYPE_LABEL = { "copa-final":"Final Copa NBA", "playoff-qf":"Cuartos de Playoffs", "playoff-sf":"Semifinal de Playoffs", "playoff-final":"Final de Playoffs" };
   const fantasyFmtKick = ts => new Date(ts).toLocaleString("es-MX", {timeZone:"America/Mexico_City", day:"numeric", month:"short", hour:"numeric", minute:"2-digit"});
   function fantasyGameRowHTML(g, day){
     const now=Date.now();
@@ -5490,13 +5494,13 @@
     // "en curso": ya arrancó pero todavía no cumple los ~9 min de partido — al abrirlo cae en el minuto que va
     const running = !locked && g.status!=="final" && g.scheduledAt && (now - g.scheduledAt) < FANTASY_TOTAL_REAL*1000;
     const tag = g.status==="final" ? `<span class="fantasy-game-result ${g.won?"win":"loss"}">${g.won?"GANASTE":"PERDISTE"} ${myScore!=null?esc(String(myScore))+"-"+esc(String(oppScore)):""}</span>`
-      : locked ? `<span class="fantasy-game-tag">🔒 ${g.scheduledAt?esc(fantasyFmtKick(g.scheduledAt)):"día "+day}</span>`
-      : running ? `<span class="fantasy-game-tag fantasy-game-tag-live">🔴 En curso</span>`
+      : locked ? `<span class="fantasy-game-tag">${g.scheduledAt?esc(fantasyFmtKick(g.scheduledAt)):"día "+day}</span>`
+      : running ? `<span class="fantasy-game-tag fantasy-game-tag-live">En curso</span>`
       : `<span class="fantasy-game-tag">Disponible</span>`;
     const isFinalStage = !!g.type;
     const stageBadge = isFinalStage
-      ? `<span class="fantasy-final-badge">🏆 ${esc(FANTASY_TYPE_LABEL[g.type]||"Final")}</span>`
-      : g.copaGroup ? `<span class="fantasy-copa-badge">🏀 Copa NBA</span>` : "";
+      ? `<span class="fantasy-final-badge">${esc(FANTASY_TYPE_LABEL[g.type]||"Final")}</span>`
+      : g.copaGroup ? `<span class="fantasy-copa-badge">Copa NBA</span>` : "";
     return `<button class="fantasy-game-row ${locked?"locked":""} ${isFinalStage?"fantasy-final-row":""}" ${locked?"disabled":""} data-game="${esc(g.id)}" data-opponent="${esc(g.opponent)}" data-role="${esc(g.role||"home")}" data-day="${day}">
       <span class="fantasy-vs">vs ${esc(g.opponent)}${stageBadge}${g.scheduledAt&&!locked&&g.status!=="final"?` · ${esc(fantasyFmtKick(g.scheduledAt))}`:""}</span>${tag}</button>`;
   }
@@ -5633,7 +5637,7 @@
     const hs=last?last.scoreH:0, as=last?last.scoreA:0;
     const shortH=g.home.split(" ").pop(), shortA=g.away.split(" ").pop();
     b.hidden=false;
-    b.innerHTML = `🏀 <span class="fb-full">${esc(shortH)}</span> <b>${hs}-${as}</b> <span class="fb-full">${esc(shortA)}</span> · ${st.onBreak?esc(st.onBreak):esc(fantasyClockLabel(st.gameSec))}`;
+    b.innerHTML = `<span class="fb-full">${esc(shortH)}</span> <b>${hs}-${as}</b> <span class="fb-full">${esc(shortA)}</span> · ${st.onBreak?esc(st.onBreak):esc(fantasyClockLabel(st.gameSec))}`;
   }
   function fantasyRequestTimeout(){
     if(!fantasyLiveGame || fantasyLiveGame.status==="final" || fantasyTimeoutActive || fantasyTimeoutsLeft<=0) return;
@@ -5644,7 +5648,7 @@
     stopFantasyLiveTick();
     const banner=$("#fantasy-timeout-banner");
     banner.hidden=false;
-    banner.innerHTML = `⏱ Tiempo muerto — ${esc(fantasyMyTeam)}<br><button class="btn btn-ghost" id="fantasy-timeout-team-btn" style="margin-top:10px">Ver / cambiar mi equipo</button>`;
+    banner.innerHTML = `Tiempo muerto — ${esc(fantasyMyTeam)}<br><button class="btn btn-ghost" id="fantasy-timeout-team-btn" style="margin-top:10px">Ver / cambiar mi equipo</button>`;
     ensureFantasyMissions();
     state.fantasy.missions.stats.timeouts=(state.fantasy.missions.stats.timeouts||0)+1;
     state.fantasy.missions.daily.timeouts=(state.fantasy.missions.daily.timeouts||0)+1;
@@ -5738,7 +5742,7 @@
     const isAway = g.role==="away";
     const home = isAway ? g.opponent : fantasyMyTeam;
     const away = isAway ? fantasyMyTeam : g.opponent;
-    toast(`🔴 Empieza tu partido vs <b>${esc(g.opponent)}</b> — narrando en vivo`);
+    toast(`Empieza tu partido vs <b>${esc(g.opponent)}</b> — narrando en vivo`);
     openFantasyGame(g.id, home, away, g.day);
   }
   async function fantasyCatchUpGames(){
@@ -5785,7 +5789,7 @@
     save();
     const moneyLbl = e && e.type ? `${esc(fantasyFmtMoney(money))} (taquilla/streaming + ${esc(FANTASY_TYPE_LABEL[e.type])})` : `${esc(fantasyFmtMoney(money))} (taquilla/streaming)`;
     const myScore = isHome?g.finalHome:g.finalAway, oppScore = isHome?g.finalAway:g.finalHome;
-    toast(`Partido terminado: <b>${myScore}-${oppScore}</b>. ${won?"¡Ganaste!":"Perdiste."} +${reward} 🏀 DT + ${moneyLbl}`);
+    toast(`Partido terminado: <b>${myScore}-${oppScore}</b>. ${won?"¡Ganaste!":"Perdiste."} +${reward} DT + ${moneyLbl}`);
     if(fantasySchedule){
       try{ await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, fantasySchedule.games); }catch(err){}
       await fantasyCheckCopa();
@@ -5809,7 +5813,6 @@
 
     // fantasy
     $("#fantasy-join-btn")?.addEventListener("click", fantasyJoinSeason);
-    $("#fantasy-start-btn")?.addEventListener("click", fantasyStartSeasonAction);
     const fantasyGameRowClick = e=>{
       const b=e.target.closest(".fantasy-game-row"); if(!b || b.disabled) return;
       const isAway = b.dataset.role==="away";
@@ -6579,6 +6582,7 @@ window.MiniGame = (function(){
         const ref=doc(db,"fantasySeason","current");
         const snap=await tx.get(ref);
         let data = snap.exists() ? snap.data() : null;
+        if(data && data.locked) throw new Error("DT está cerrado por ahora");
         // compat: temporadas creadas antes del control de inicio no tienen "started" — no lo escribimos aquí
         // (eso lo haría chocar con la regla de Firestore), solo lo usamos para decidir si expiró.
         const wasStarted = data && (data.started || data.startedAt);
