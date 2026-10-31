@@ -6297,8 +6297,21 @@ window.MiniGame = (function(){
     drawBackground();
     drawHoop(); drawAim(); drawBall(); drawParticles();
   }
+  // fondo de temporada del minijuego (Halloween); si no ha cargado se dibuja el gimnasio de siempre
+  const GAME_BG_SRC = "game-bg/halloween.jpg";
   function drawBackground(){
     const gy=GROUND();
+    const bgImg=getTex(GAME_BG_SRC);
+    if(bgImg.complete && bgImg.naturalWidth){
+      // "cover": llena todo el lienzo sin deformar, recortando lo que sobre
+      const k=Math.max(W/bgImg.naturalWidth, H/bgImg.naturalHeight);
+      const iw=bgImg.naturalWidth*k, ih=bgImg.naturalHeight*k;
+      ctx.drawImage(bgImg, (W-iw)/2, (H-ih)/2, iw, ih);
+      // línea del piso: marca dónde rebota el balón
+      ctx.strokeStyle='rgba(255,255,255,.35)'; ctx.lineWidth=2.6*S;
+      ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
+      return;
+    }
     // base oscura (fondo de gimnasio, buen contraste con el balón naranja)
     let bg=ctx.createLinearGradient(0,0,0,gy); bg.addColorStop(0,'#1b1c26'); bg.addColorStop(1,'#101119');
     ctx.fillStyle=bg; ctx.fillRect(0,0,W,gy);
