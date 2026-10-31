@@ -340,18 +340,56 @@
   .fantasy-join-card p{color:var(--muted); font-size:14px; margin-bottom:22px; line-height:1.5;}
   .fantasy-body{background:linear-gradient(160deg, color-mix(in srgb, var(--fantasy-accent, var(--accent)) 16%, transparent), transparent 40%);
     border-radius:22px; padding:2px 2px 0;}
-  .fantasy-head{background:linear-gradient(120deg, color-mix(in srgb, var(--fantasy-accent, var(--accent)) 45%, var(--surface-2)), color-mix(in srgb, var(--fantasy-accent2, var(--accent)) 22%, var(--surface-2)) 100%);
-    border:1px solid color-mix(in srgb, var(--fantasy-accent, var(--accent)) 55%, var(--line)); border-radius:18px; padding:20px 22px; margin-bottom:22px; display:flex; align-items:center; gap:18px; flex-wrap:wrap;}
-  .fantasy-head-logo{width:96px; height:96px; border-radius:50%; display:grid; place-items:center; font-weight:800; font-family:var(--display); font-size:18px; flex:0 0 auto;}
-  .fantasy-mail-btn{position:relative; background:var(--surface-2); border:1px solid var(--line); border-radius:50%; width:40px; height:40px; display:grid; place-items:center; cursor:pointer; font-size:17px; flex:0 0 auto; color:var(--text);}
-  .fantasy-mail-badge{position:absolute; top:-4px; right:-4px; background:var(--bad,#ff4d4d); color:#fff; font-size:10px; font-weight:800; border-radius:99px; padding:1px 5px; min-width:16px; text-align:center; line-height:1.4;}
-  .fantasy-head-id{display:flex; flex-direction:column; gap:2px;}
-  .fantasy-head-team{font-family:var(--display); font-size:20px; text-transform:uppercase; letter-spacing:.02em;}
-  .fantasy-head-meta{color:var(--muted); font-size:13px;}
-  .fantasy-head-stats{margin-left:auto; display:flex; gap:22px;}
-  .fantasy-stat{text-align:center;}
-  .fantasy-stat b{font-family:var(--display); font-size:24px; display:block; line-height:1;}
-  .fantasy-stat span{font-size:11px; color:var(--muted); text-transform:uppercase; letter-spacing:.06em;}
+  /* ---- DT con acomodo tipo menú de FC: barra de pestañas de texto + equipo a la derecha;
+     en Partidos, próximo partido grande + resumen en lista a la izquierda y siguientes a la derecha ---- */
+  .fantasy-topbar{display:flex; align-items:center; gap:18px; margin-bottom:26px; padding:4px 0 14px; border-bottom:1px solid var(--line);}
+  .fantasy-topbar-team{margin-left:auto; display:flex; align-items:center; gap:12px; flex:0 0 auto; min-width:0;}
+  .fantasy-topbar-team .fantasy-head-logo{width:44px; height:44px; border-radius:50%; display:grid; place-items:center; flex:0 0 auto;
+    box-shadow:0 0 0 2px color-mix(in srgb, var(--fantasy-accent, var(--accent)) 60%, transparent);}
+  .fantasy-topbar-team .fantasy-head-logo img{width:32px; height:32px; object-fit:contain;}
+  .fantasy-head-id{display:flex; flex-direction:column; gap:1px; min-width:0;}
+  .fantasy-head-team{font-family:var(--display); font-size:15px; text-transform:uppercase; letter-spacing:.02em; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+  .fantasy-head-meta{color:var(--muted); font-size:12px;}
+  #fantasy-subnav{margin-bottom:0; gap:4px 22px; flex-wrap:wrap;}
+  #fantasy-subnav .fantasy-subtab{background:none; border:0; border-radius:0; padding:6px 0; font-size:14px; letter-spacing:.02em; color:var(--muted); position:relative;}
+  #fantasy-subnav .fantasy-subtab:hover{color:var(--text);}
+  #fantasy-subnav .fantasy-subtab.active{background:none; color:var(--text);}
+  #fantasy-subnav .fantasy-subtab.active::after{content:""; position:absolute; left:0; right:0; bottom:-2px; height:2px; background:var(--fantasy-accent, var(--accent)); border-radius:2px;}
+  .fantasy-central{display:grid; grid-template-columns:minmax(0,1.15fr) minmax(0,1fr); gap:28px; align-items:start;}
+  .fantasy-central-side{background:linear-gradient(170deg, color-mix(in srgb, var(--fantasy-accent, var(--accent)) 14%, var(--surface-2)), var(--surface-2));
+    border:1px solid var(--line); border-radius:18px; padding:18px 18px 10px;}
+  .fantasy-central-side:empty, .fantasy-central-side:has(> .fantasy-sched:empty){display:none;}
+  .fantasy-game-row.fantasy-next{flex-direction:column; align-items:flex-start; gap:6px; padding:0 0 18px; background:none; border:0; border-bottom:1px solid var(--line); border-radius:0; margin-bottom:6px;}
+  .fantasy-game-row.fantasy-next:hover{border-color:var(--line);}
+  .fantasy-game-row.fantasy-next.locked{opacity:1; cursor:default;}
+  .fantasy-next .fn-date{font-family:var(--display); font-weight:800; font-size:32px; line-height:1.05; text-transform:uppercase; letter-spacing:.01em;}
+  .fantasy-next .fn-comp{color:var(--muted); font-size:13px; padding-bottom:10px; margin-bottom:6px; border-bottom:1px solid var(--line); width:100%;}
+  .fantasy-next .fn-comp b{color:var(--text); font-weight:700;}
+  .fantasy-next .fn-comp .fn-live{color:#ff6b6b;}
+  .fn-match{display:flex; align-items:center; gap:18px; margin-top:6px;}
+  .fn-crests{display:flex; align-items:center; gap:12px;}
+  .fn-crest{width:64px; height:64px; border-radius:50%; display:grid; place-items:center; flex:0 0 auto; box-shadow:0 0 0 2px rgba(255,255,255,.12);}
+  .fn-crest img{width:46px; height:46px; object-fit:contain;}
+  .fn-sep{width:1px; height:44px; background:var(--line);}
+  .fn-names{display:flex; flex-direction:column; gap:2px; font-family:var(--display); font-weight:800; font-size:20px; text-transform:uppercase; letter-spacing:.01em; line-height:1.15;}
+  .fantasy-head{display:flex; flex-direction:column;}
+  .fantasy-stat{display:flex; align-items:center; gap:14px; padding:13px 6px; border-bottom:1px solid var(--line); text-align:left; color:var(--text); font:inherit;}
+  .fantasy-stat .fs-ico{width:22px; display:grid; place-items:center; color:var(--muted); flex:0 0 auto;}
+  .fantasy-stat .fs-lbl{font-size:14px; color:var(--muted);}
+  .fantasy-stat b{margin-left:auto; font-family:var(--display); font-size:16px; font-weight:700;}
+  .fantasy-mail-btn{background:none; border:0; border-bottom:1px solid var(--line); width:100%; cursor:pointer; position:relative;}
+  .fantasy-mail-btn:hover .fs-lbl{color:var(--text);}
+  .fantasy-mail-badge{margin-left:auto; background:var(--bad,#ff4d4d); color:#fff; font-size:11px; font-weight:800; border-radius:99px; padding:1px 7px; min-width:18px; text-align:center; line-height:1.5;}
+  @media(max-width:760px){
+    .fantasy-topbar{flex-direction:column-reverse; align-items:stretch; gap:14px;}
+    .fantasy-topbar-team{margin-left:0;}
+    #fantasy-subnav{flex-wrap:nowrap; overflow-x:auto; scrollbar-width:none; gap:20px;}
+    #fantasy-subnav .fantasy-subtab{white-space:nowrap;}
+    .fantasy-central{grid-template-columns:1fr; gap:22px;}
+    .fantasy-next .fn-date{font-size:26px;}
+    .fn-crest{width:52px; height:52px;} .fn-crest img{width:38px; height:38px;}
+    .fn-names{font-size:16px;}
+  }
   .fantasy-day{margin-bottom:18px;}
   .fantasy-day-lbl{font-family:var(--display); font-weight:700; text-transform:uppercase; font-size:13px; color:var(--muted); margin-bottom:8px; letter-spacing:.05em;}
   .fantasy-game-row{display:flex; align-items:center; gap:12px; padding:12px 16px; background:var(--surface-2);
@@ -1634,8 +1672,7 @@
 
       <!-- estado: ya tengo equipo -->
       <div id="fantasy-body" class="fantasy-body" hidden>
-        <div class="fantasy-head" id="fantasy-head"></div>
-
+        <div class="fantasy-topbar">
         <div class="fantasy-subnav" id="fantasy-subnav" role="tablist">
           <button class="fantasy-subtab active" data-sub="partidos" role="tab" aria-selected="true">Partidos</button>
           <button class="fantasy-subtab" data-sub="copa" role="tab" aria-selected="false">NBA Cup</button>
@@ -1645,9 +1682,20 @@
           <button class="fantasy-subtab" data-sub="stats" role="tab" aria-selected="false">Clasificación</button>
           <button class="fantasy-subtab" data-sub="news" role="tab" aria-selected="false">Noticias</button>
         </div>
+          <div class="fantasy-topbar-team" id="fantasy-topbar-team"></div>
+        </div>
 
+        <!-- Partidos: acomodo tipo "Central" — próximo partido + resumen a la izquierda, siguientes a la derecha -->
         <div class="fantasy-subview" id="fantasy-sub-partidos">
-          <div class="fantasy-sched" id="fantasy-sched"></div>
+          <div class="fantasy-central">
+            <div class="fantasy-central-main">
+              <div class="fantasy-sched" id="fantasy-sched"></div>
+              <div class="fantasy-head" id="fantasy-head"></div>
+            </div>
+            <aside class="fantasy-central-side">
+              <div class="fantasy-sched" id="fantasy-sched-more"></div>
+            </aside>
+          </div>
         </div>
 
         <div class="fantasy-subview" id="fantasy-sub-copa" hidden>
@@ -5460,27 +5508,29 @@
     let extraLine = "";
     const copaGroup = fantasySchedule.games.filter(g=>g.copaGroup);
     const copaGroupDone = copaGroup.length>=FANTASY_COPA_GROUP_GAMES && copaGroup.every(g=>g.status==="final");
-    if(copaFinal) extraLine += `<div class="fantasy-stat"><b>${copaFinal.status==="final"?(copaFinal.won?"Campeón":"Final perdida"):"Clasificado"}</b><span>Copa NBA</span></div>`;
-    else if(copaGroupDone) extraLine += `<div class="fantasy-stat"><b>Eliminado</b><span>Copa NBA · grupos</span></div>`;
+    // filas tipo lista (ícono + texto), como el resumen bajo el próximo partido en el menú de FC
+    const row = (ico, label, value) => `<div class="fantasy-stat"><span class="fs-ico" aria-hidden="true">${ico}</span><span class="fs-lbl">${label}</span><b>${value}</b></div>`;
+    const icoTrophy = `<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4v2a3 3 0 0 0 3 3M17 6h3v2a3 3 0 0 1-3 3"/></svg>`;
+    if(copaFinal) extraLine += row(icoTrophy, "Copa NBA", copaFinal.status==="final"?(copaFinal.won?"Campeón":"Final perdida"):"Clasificado");
+    else if(copaGroupDone) extraLine += row(icoTrophy, "Copa NBA · grupos", "Eliminado");
     if(playoffGames.length){
       const pw=playoffGames.filter(g=>g.status==="final"&&g.won).length, pl=playoffGames.filter(g=>g.status==="final"&&!g.won).length;
       const champ = playoffGames.filter(g=>g.type==="playoff-final").filter(g=>g.status==="final"&&g.won).length>=2;
-      extraLine += `<div class="fantasy-stat"><b>${champ?"Campeón":pw+"-"+pl}</b><span>Playoffs</span></div>`;
+      extraLine += row(icoTrophy, "Playoffs", champ?"Campeón":pw+"-"+pl);
     }
-    const logo = t.id ? `<img src="${logoURL(fantasyMyTeam)}" style="width:66px;height:66px;object-fit:contain" onerror="this.remove()">` : "";
+    const logo = t.id ? `<img src="${logoURL(fantasyMyTeam)}" alt="" onerror="this.remove()">` : "";
     const viewEl=$("#view-fantasy"); if(viewEl){ viewEl.style.setProperty("--fantasy-accent", t.c1); viewEl.style.setProperty("--fantasy-accent2", t.c2); }
-    $("#fantasy-head").innerHTML = `
+    $("#fantasy-topbar-team").innerHTML = `
       <div class="fantasy-head-logo" style="background:linear-gradient(135deg,${t.c1},${t.c2})">${logo}</div>
       <div class="fantasy-head-id">
         <div class="fantasy-head-team">${esc(fantasyMyTeam)}</div>
         <div class="fantasy-head-meta">${daysLeft>0?`termina en ${daysLeft} día${daysLeft>1?"s":""}`:"terminada"}</div>
-      </div>
-      <div class="fantasy-head-stats">
-        <div class="fantasy-stat"><b>${wins}-${losses}</b><span>Récord</span></div>
-        <div class="fantasy-stat"><b>${esc(fantasyFmtMoney(fantasyMyBudget()))}</b><span>Presupuesto</span></div>
-        ${extraLine}
-      </div>
-      <button class="fantasy-mail-btn" id="fantasy-mail-btn" title="Correo de DT" aria-label="Correo de DT"><svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><span class="fantasy-mail-badge" id="fantasy-mail-badge" hidden>0</span></button>`;
+      </div>`;
+    $("#fantasy-head").innerHTML = `
+      ${row(`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18M7 15l4-4 3 3 5-6"/></svg>`, "Récord", `${wins}-${losses}`)}
+      ${row(`<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="6" width="20" height="12" rx="2"/><circle cx="12" cy="12" r="2.5"/></svg>`, "Presupuesto", esc(fantasyFmtMoney(fantasyMyBudget())))}
+      ${extraLine}
+      <button class="fantasy-stat fantasy-mail-btn" id="fantasy-mail-btn" type="button"><span class="fs-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg></span><span class="fs-lbl">Correo de DT</span><span class="fantasy-mail-badge" id="fantasy-mail-badge" hidden>0</span></button>`;
     $("#fantasy-mail-btn")?.addEventListener("click", fantasyOpenMail);
     fantasyRefreshMailBadge();
   }
@@ -5504,18 +5554,40 @@
     return `<button class="fantasy-game-row ${locked?"locked":""} ${isFinalStage?"fantasy-final-row":""}" ${locked?"disabled":""} data-game="${esc(g.id)}" data-opponent="${esc(g.opponent)}" data-role="${esc(g.role||"home")}" data-day="${day}">
       <span class="fantasy-vs">vs ${esc(g.opponent)}${stageBadge}${g.scheduledAt&&!locked&&g.status!=="final"?` · ${esc(fantasyFmtKick(g.scheduledAt))}`:""}</span>${tag}</button>`;
   }
-  // Copa NBA vive fuera del calendario regular: se pinta aparte en renderFantasyCopa().
-  function fantasyIsCopaGame(g){ return !!(g.copaGroup || g.type==="copa-final"); }
+  // etiqueta de competición/jornada de un partido (la misma que ya usaba cada fila)
+  const fantasyGameStage = g => g.type ? (FANTASY_TYPE_LABEL[g.type]||"Final") : g.copaGroup ? "Copa NBA" : `Día ${g.day}`;
+  const FANTASY_UPCOMING_SHOWN = 4;
+  // próximo partido en grande, estilo "Next Fixture": fecha, competición/hora, escudos y nombres
+  function fantasyNextGameHTML(g){
+    const now=Date.now();
+    const locked = !(g.type ? true : now >= (g.scheduledAt||0));
+    const running = !locked && g.scheduledAt && (now - g.scheduledAt) < FANTASY_TOTAL_REAL*1000;
+    const when = g.scheduledAt ? new Date(g.scheduledAt) : null;
+    const dateLbl = when ? when.toLocaleDateString("es-MX",{timeZone:"America/Mexico_City", weekday:"long", day:"numeric", month:"short"}) : `Día ${g.day}`;
+    const timeLbl = when ? when.toLocaleTimeString("es-MX",{timeZone:"America/Mexico_City", hour:"numeric", minute:"2-digit"}) : "";
+    const status = running ? "En curso" : locked ? "" : "Disponible";
+    const home = g.role==="away" ? g.opponent : fantasyMyTeam, away = g.role==="away" ? fantasyMyTeam : g.opponent;
+    const crest = n => { const t=teamOf(n); return `<span class="fn-crest" style="background:linear-gradient(135deg,${t.c1},${t.c2})">${t.id?`<img src="${logoURL(n)}" alt="" onerror="this.remove()">`:""}</span>`; };
+    return `<button class="fantasy-game-row fantasy-next ${locked?"locked":""}" ${locked?"disabled":""} data-game="${esc(g.id)}" data-opponent="${esc(g.opponent)}" data-role="${esc(g.role||"home")}" data-day="${g.day}">
+      <span class="fn-date">${esc(dateLbl)}</span>
+      <span class="fn-comp">${esc(fantasyGameStage(g))}${timeLbl?` · ${esc(timeLbl)}`:""}${status?` · <b class="${running?"fn-live":""}">${status}</b>`:""}</span>
+      <span class="fn-match">
+        <span class="fn-crests">${crest(home)}<span class="fn-sep"></span>${crest(away)}</span>
+        <span class="fn-names"><span>${esc(home)}</span><span>${esc(away)}</span></span>
+      </span>
+    </button>`;
+  }
   function renderFantasySchedule(){
-    const wrap=$("#fantasy-sched"); wrap.innerHTML="";
-    const maxDay = Math.max(FANTASY_SEASON_DAYS, ...fantasySchedule.games.map(g=>g.day));
-    for(let day=1; day<=maxDay; day++){
-      const dayGames=fantasySchedule.games.filter(g=>g.day===day && !fantasyIsCopaGame(g));
-      if(!dayGames.length) continue;
-      const box=document.createElement("div"); box.className="fantasy-day";
-      const lbl = day<=FANTASY_SEASON_DAYS ? `Día ${day}` : (FANTASY_TYPE_LABEL[dayGames[0].type] || `Día ${day}`);
-      box.innerHTML = `<div class="fantasy-day-lbl">${esc(lbl)}</div>` + dayGames.map(g=>fantasyGameRowHTML(g, day)).join("");
-      wrap.appendChild(box);
+    const wrap=$("#fantasy-sched"), more=$("#fantasy-sched-more");
+    wrap.innerHTML=""; if(more) more.innerHTML="";
+    // solo los siguientes partidos pendientes (temporada, Copa y postemporada), en orden de hora
+    const upcoming = fantasySchedule.games.filter(g=>g.status!=="final")
+      .sort((a,b)=>(a.scheduledAt||Infinity)-(b.scheduledAt||Infinity))
+      .slice(0, FANTASY_UPCOMING_SHOWN);
+    if(!upcoming.length){ wrap.innerHTML=`<p class="fantasy-hint">No hay partidos pendientes.</p>`; return; }
+    wrap.innerHTML = fantasyNextGameHTML(upcoming[0]);
+    if(more && upcoming.length>1){
+      more.innerHTML = `<div class="fantasy-day-lbl">Siguientes partidos</div>` + upcoming.slice(1).map(g=>fantasyGameRowHTML(g, g.day)).join("");
     }
   }
   function renderFantasyCopa(){
@@ -5821,6 +5893,7 @@
       openFantasyGame(b.dataset.game, home, away, +b.dataset.day);
     };
     $("#fantasy-sched")?.addEventListener("click", fantasyGameRowClick);
+    $("#fantasy-sched-more")?.addEventListener("click", fantasyGameRowClick);
     $("#fantasy-copa-sched")?.addEventListener("click", fantasyGameRowClick);
     $("#fantasy-live-back")?.addEventListener("click", fantasyLiveBack);
     $("#fantasy-timeout-btn")?.addEventListener("click", fantasyRequestTimeout);
