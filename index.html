@@ -2196,11 +2196,8 @@
   ];
   const PROMO_BY = Object.fromEntries(PROMO.map(c=>[c.id,c]));
   // PAQUETES de la tienda (cada uno con su precio y código propio)
-  const OFFERS = [
-    { id:"brunson-anim", tagline:"Edición especial", title:"Brunson Animado",
-      sub:"La carta animada exclusiva de Jalen Brunson. Única en su tipo.",
-      price:10000, cards:["brunson-anim"] },
-  ];
+  // (Brunson Animado ya no se vende; quien la tiene la conserva y el código BRUNSON sigue sirviendo)
+  const OFFERS = [];
   const OFFER_BY = Object.fromEntries(OFFERS.map(o=>[o.id,o]));
   // ===== SKINS DE BALÓN (cosméticas para el minijuego) =====
   // g = [luz, medio, sombra] del balón; seam = color de costuras
@@ -2209,7 +2206,7 @@
     { id:"glacial", nombre:"Glacial",  price:3000,  desc:"Hielo azul brillante.",            g:["#dff4ff","#5fb6f0","#2f7fd0"], seam:"#0c3a5e", fire:false, type:"basket", tex:"ball-tex/glacial.png" },
     { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false, type:"basket", tex:"ball-tex/oro.png" },
     { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true,  type:"basket", tex:"ball-tex/inferno.png" },
-    { id:"verano",  nombre:"Verano", price:7500, desc:"Balón especial de verano: playa con sillas y sombrilla.", g:["#fff3b0","#ffd24d","#1fb6c9"], seam:"#0c5563", fire:false, type:"basket", tex:"ball-tex/verano.png" },
+    { id:"verano",  nombre:"Verano", price:7500, desc:"Balón especial de verano: playa con sillas y sombrilla.", g:["#fff3b0","#ffd24d","#1fb6c9"], seam:"#0c5563", fire:false, type:"basket", tex:"ball-tex/verano.png", retired:true },   // retirado: ya no se vende, quien lo tiene lo conserva
     // Balones del SOBRE (no se compran sueltos; salen al azar del sobre de 700)
     // Diseños exactos vía emoji real; golf no tiene emoji → dibujo de hoyuelos.
     { id:"futbol",  nombre:"Fútbol",   pack:true, emoji:"⚽", desc:"El clásico blanquinegro.", g:["#ffffff","#ededed","#bcbcbc"] },
@@ -2294,7 +2291,7 @@
   };
   // El "objeto" de la oferta = todas estas cartas. Códigos para otorgar a usuarios:
   const REDEEM_CODES = {
-    "BRUNSON": OFFER_BY["brunson-anim"].cards,
+    "BRUNSON": ["brunson-anim"],
   };
   const ownsPromo = id => ((state.promo && state.promo[id])||0) > 0;
   // ---- Temporada 1.3 · RETRO: misma colección, otro estilo de carta ----
@@ -3983,7 +3980,7 @@
       ${packBtn}
     </div>`;
     // --- tarjetas de balones: fijos siempre; los del sobre solo si ya los tienes ---
-    const cards = BALL_SKINS.filter(s=> (!s.pack && !s.pass) || ownsSkin(s.id)).map(s=>{
+    const cards = BALL_SKINS.filter(s=> (!s.pack && !s.pass && !s.retired) || ownsSkin(s.id)).map(s=>{
       const owned=ownsSkin(s.id), isEq=s.id===eq;
       let btn;
       if(isEq) btn = (s.id==="clasico")
@@ -4018,7 +4015,7 @@
       let btn;
       if(isEq) btn=`<button class="btn btn-primary" data-net-equip="">Quitar</button>`;
       else if(owned) btn=`<button class="btn btn-primary" data-net-equip="${id}">Equipar</button>`;
-      else btn=`<button class="btn btn-ghost" disabled>Pase de Batalla (bloqueado)</button>`;
+      else btn=`<button class="btn btn-ghost" disabled>Bloqueado</button>`;
       out.push(`<div class="skin-card ${isEq?'on':''}">
         ${bpNetSVG(c.color)}
         <div class="skin-name">${esc(c.name)}</div>
