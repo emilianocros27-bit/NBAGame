@@ -2206,7 +2206,7 @@
     { id:"glacial", nombre:"Glacial",  price:3000,  desc:"Hielo azul brillante.",            g:["#dff4ff","#5fb6f0","#2f7fd0"], seam:"#0c3a5e", fire:false, type:"basket", tex:"ball-tex/glacial.png" },
     { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false, type:"basket", tex:"ball-tex/oro.png" },
     { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true,  type:"basket", tex:"ball-tex/inferno.png" },
-    { id:"verano",  nombre:"Verano", price:7500, desc:"Balón especial de verano: playa con sillas y sombrilla.", g:["#fff3b0","#ffd24d","#1fb6c9"], seam:"#0c5563", fire:false, type:"basket", tex:"ball-tex/verano.png", retired:true },   // retirado: ya no se vende, quien lo tiene lo conserva
+    { id:"verano",  nombre:"Verano", price:7500, desc:"Balón especial de verano: playa con sillas y sombrilla.", g:["#fff3b0","#ffd24d","#1fb6c9"], seam:"#0c5563", fire:false, type:"basket", tex:"ball-tex/verano.png", retired:true },   // retirado: ya no sale en la tienda para nadie
     // Balones del SOBRE (no se compran sueltos; salen al azar del sobre de 700)
     // Diseños exactos vía emoji real; golf no tiene emoji → dibujo de hoyuelos.
     { id:"futbol",  nombre:"Fútbol",   pack:true, emoji:"⚽", desc:"El clásico blanquinegro.", g:["#ffffff","#ededed","#bcbcbc"] },
@@ -3980,7 +3980,7 @@
       ${packBtn}
     </div>`;
     // --- tarjetas de balones: fijos siempre; los del sobre solo si ya los tienes ---
-    const cards = BALL_SKINS.filter(s=> (!s.pack && !s.pass && !s.retired) || ownsSkin(s.id)).map(s=>{
+    const cards = BALL_SKINS.filter(s=> !s.retired && ((!s.pack && !s.pass) || ownsSkin(s.id))).map(s=>{
       const owned=ownsSkin(s.id), isEq=s.id===eq;
       let btn;
       if(isEq) btn = (s.id==="clasico")
