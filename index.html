@@ -1988,7 +1988,7 @@
   const RETRO_BOX_PACKS = 5;    // la caja trae 5 sobres
   const RETRO_PER_PACK  = 3;    // cada sobre retro trae 3 cartas
   const COINS_PER_POINT = 10;           // (legado) balones por punto — ya no se usa para la recompensa
-  const COINS_PER_BASKET = 20;          // balones por CANASTA encestada (no por puntaje)
+  const COINS_PER_BASKET = 10;          // balones por CANASTA encestada (no por puntaje)
   function renderCoins(){
     const els = document.querySelectorAll(".coin-amount");
     els.forEach(e=> e.textContent = (state.coins||0).toLocaleString("es"));
@@ -6209,7 +6209,7 @@ window.MiniGame = (function(){
     document.getElementById('mg-final').textContent=fmtN(score);
     document.getElementById('mg-best').textContent='Mejor: '+fmtN(best);
     // recompensa en monedas
-    const rate=(window.DunkEconomy && window.DunkEconomy.perBasket) || 20;
+    const rate=(window.DunkEconomy && window.DunkEconomy.perBasket) || 10;
     let earned=baskets*rate; if(newBest && score>0) earned+=100;   // balones por CANASTA (no por puntaje); bonus por récord
     const rw=document.getElementById('mg-reward');
     if(earned>0 && window.DunkEconomy){ window.DunkEconomy.add(earned);
