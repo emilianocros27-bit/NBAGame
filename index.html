@@ -646,7 +646,8 @@
   .ver{position:relative; width:clamp(140px,44%,180px); cursor:pointer; border-radius:16px; padding:8px 8px 30px; border:2px solid var(--line); background:rgba(255,255,255,.02); transition:.18s;}
   .ver .card{pointer-events:none; width:100%;}
   /* retro y promo traen ancho propio: dentro del selector se ajustan a su casilla */
-  .ver .rcard, .ver .pcard{pointer-events:none; width:100%; max-width:100%;}  .ver .pcard .pc-name{overflow-wrap:anywhere;}
+  .ver .rcard, .ver .pcard{pointer-events:none; width:100%; max-width:100%;}
+  .ver .pcard .pc-name{overflow-wrap:anywhere;}
   .ver .rball{width:26%; height:auto; aspect-ratio:1;}
   .ver .ver-name{position:absolute; bottom:8px; left:0; right:0; text-align:center; font-size:12px; font-weight:700;
     text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
@@ -962,6 +963,9 @@
   .detail-card{padding:24px; display:grid; place-items:center; background:radial-gradient(80% 60% at 50% 0%, rgba(255,255,255,.05), transparent);}
   .detail-card .card{width:min(70vw,250px)}
   .detail-card .pcard{width:min(70vw,250px)}
+  .detail-card .rcard{width:min(70vw,250px)}
+  /* la retro mide 192px fijos (para su tira); en cuadrículas toma el ancho de su celda */
+  .grid .rcard, .t-cardwrap .rcard{width:100%; min-width:0;}
   .detail-info{padding:24px 26px 28px;}
   .detail-info .eyebrow{font-family:var(--display); font-size:11px; letter-spacing:.2em; text-transform:uppercase; color:var(--accent)}
   .detail-info h2{font-size:32px; text-transform:uppercase; margin:8px 0 2px}
@@ -5978,6 +5982,7 @@
       const pc=e.target.closest(".pcard[data-promo]");
       if(pc){ const c=PROMO_BY[pc.dataset.promo]; if(c) openDetail(c.slug); return; }
       const slab=e.target.closest(".psa[data-slug]"); if(slab){ openDetail(slab.dataset.slug); return; }
+      const rc=e.target.closest(".rcard[data-slug]"); if(rc){ openDetail(rc.dataset.slug); return; }
       const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
     });
     bindTilt($("#album-grid"));
@@ -5989,6 +5994,7 @@
     // álbum de leyendas 90s: abrir detalle (para graduar leyendas)
     $("#album-90s")?.addEventListener("click", e=>{
       const slab=e.target.closest(".psa[data-slug]"); if(slab){ openDetail(slab.dataset.slug); return; }
+      const rc=e.target.closest(".rcard[data-slug]"); if(rc){ openDetail(rc.dataset.slug); return; }
       const card=e.target.closest(".card:not(.locked)[data-slug]"); if(card) openDetail(card.dataset.slug);
     });
     // sobres
