@@ -2162,6 +2162,7 @@
     { id:"towns-jynx",        slug:"karl-anthony-towns", nombre:"Towns · Jynx",         equipo:"New York Knicks", media:96, foto:"tienda-cards/02-New-York-Knicks/towns-jynx.jpg" },
     { id:"brunson-meditite",  slug:"jalen-brunson",      nombre:"Brunson · Meditite",   equipo:"New York Knicks", media:97, foto:"tienda-cards/02-New-York-Knicks/brunson-meditite.jpg" },
     { id:"wembi",             slug:"victor-wembanyama",  nombre:"Wemby",                equipo:"San Antonio Spurs", media:97, foto:"tienda-cards/12-San-Antonio-Spurs/wemby-2tallanimation.gif", fit:"contain" },
+    { id:"wemby-halloween",   slug:"victor-wembanyama",  nombre:"Wemby · Halloween",    equipo:"San Antonio Spurs", media:97, foto:"tienda-cards/12-San-Antonio-Spurs/wemby-halloween.jpg" },
     { id:"brunson-anim",      slug:"jalen-brunson",      nombre:"Brunson Animado",      equipo:"New York Knicks", media:97, foto:"promo-cards/brunson-anim.gif", fit:"contain" },
     // Cartas de PODIO (premios de torneo) — el número muestra el puesto, no la media
     { id:"coach-1st", slug:"coach-thibodeau", nombre:"Thibodeau · 1er Lugar",     equipo:"New York Knicks",  media:99, rankLabel:"1st", rank:"gold",   foto:"promo-cards/coach-knicks.jpg", trade:true },
@@ -2197,7 +2198,11 @@
   const PROMO_BY = Object.fromEntries(PROMO.map(c=>[c.id,c]));
   // PAQUETES de la tienda (cada uno con su precio y código propio)
   // (Brunson Animado ya no se vende; quien la tiene la conserva y el código BRUNSON sigue sirviendo)
-  const OFFERS = [];
+  const OFFERS = [
+    { id:"wemby-halloween", tagline:"Edición Halloween", title:"Wemby · Halloween",
+      sub:"Victor Wembanyama disfrazado para Halloween. Carta promo de edición limitada.",
+      price:9000, cards:["wemby-halloween"] },
+  ];
   const OFFER_BY = Object.fromEntries(OFFERS.map(o=>[o.id,o]));
   // ===== SKINS DE BALÓN (cosméticas para el minijuego) =====
   // g = [luz, medio, sombra] del balón; seam = color de costuras
