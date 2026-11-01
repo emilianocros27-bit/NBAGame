@@ -645,6 +645,9 @@
   .ver-row{display:flex; gap:14px; flex-wrap:wrap;}
   .ver{position:relative; width:clamp(140px,44%,180px); cursor:pointer; border-radius:16px; padding:8px 8px 30px; border:2px solid var(--line); background:rgba(255,255,255,.02); transition:.18s;}
   .ver .card{pointer-events:none; width:100%;}
+  /* retro y promo traen ancho propio: dentro del selector se ajustan a su casilla */
+  .ver .rcard, .ver .pcard{pointer-events:none; width:100%; max-width:100%;}  .ver .pcard .pc-name{overflow-wrap:anywhere;}
+  .ver .rball{width:26%; height:auto; aspect-ratio:1;}
   .ver .ver-name{position:absolute; bottom:8px; left:0; right:0; text-align:center; font-size:12px; font-weight:700;
     text-transform:uppercase; letter-spacing:.05em; color:var(--muted);}
   .ver:hover{border-color:var(--line-strong)}
