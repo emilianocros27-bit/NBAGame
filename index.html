@@ -2207,6 +2207,7 @@
     { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false, type:"basket", tex:"ball-tex/oro.png" },
     { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true,  type:"basket", tex:"ball-tex/inferno.png" },
     { id:"verano",  nombre:"Verano", price:7500, desc:"Balón especial de verano: playa con sillas y sombrilla.", g:["#fff3b0","#ffd24d","#1fb6c9"], seam:"#0c5563", fire:false, type:"basket", tex:"ball-tex/verano.png", retired:true },   // retirado: ya no sale en la tienda para nadie
+    { id:"calabaza", nombre:"Calabaza", price:5000, desc:"Balón de Halloween: calabaza con cara.", g:["#ffd08a","#f28f2f","#c85912"], seam:"#4a230c", fire:false, type:"pumpkin", tex:"ball-tex/calabaza.svg" },
     // Balones del SOBRE (no se compran sueltos; salen al azar del sobre de 700)
     // Diseños exactos vía emoji real; golf no tiene emoji → dibujo de hoyuelos.
     { id:"futbol",  nombre:"Fútbol",   pack:true, emoji:"⚽", desc:"El clásico blanquinegro.", g:["#ffffff","#ededed","#bcbcbc"] },
@@ -3930,7 +3931,7 @@
           <radialGradient id="sh_${s.id}" cx="36%" cy="32%" r="72%"><stop offset="0" stop-color="rgba(255,255,255,.5)"/><stop offset="55%" stop-color="rgba(255,255,255,0)"/><stop offset="100%" stop-color="rgba(0,0,0,.45)"/></radialGradient></defs>
         <image href="${s.tex}" x="2" y="2" width="44" height="44" preserveAspectRatio="xMidYMid slice" clip-path="url(#${cid})"/>
         <circle cx="24" cy="24" r="22" fill="url(#sh_${s.id})"/>
-        <g fill="none" stroke="${s.seam}" stroke-width="1.5" stroke-linecap="round" opacity=".45" clip-path="url(#${cid})"><path d="M24 2V46"/><path d="M2 24H46"/><path d="M8.4 8.4C18 16 18 32 8.4 39.6"/><path d="M39.6 8.4C30 16 30 32 39.6 39.6"/></g>
+        ${(s.type||"basket")==="basket" ? `<g fill="none" stroke="${s.seam}" stroke-width="1.5" stroke-linecap="round" opacity=".45" clip-path="url(#${cid})"><path d="M24 2V46"/><path d="M2 24H46"/><path d="M8.4 8.4C18 16 18 32 8.4 39.6"/><path d="M39.6 8.4C30 16 30 32 39.6 39.6"/></g>` : ""}
       </svg>`; }
     const gid="bg_"+s.id, t=s.type||"basket", k=s.seam;
     const grad=`<defs><radialGradient id="${gid}" cx="34%" cy="30%" r="78%"><stop offset="0" stop-color="${s.g[0]}"/><stop offset="58%" stop-color="${s.g[1]}"/><stop offset="100%" stop-color="${s.g[2]}"/></radialGradient></defs>`;

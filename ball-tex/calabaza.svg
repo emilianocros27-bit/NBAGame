@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="400" height="400">
+  <rect width="200" height="200" fill="#e8742a"/>
+  <!-- gajos de calabaza -->
+  <ellipse cx="22" cy="100" rx="52" ry="112" fill="#ec7e2b"/>
+  <ellipse cx="178" cy="100" rx="52" ry="112" fill="#ec7e2b"/>
+  <ellipse cx="55" cy="100" rx="50" ry="110" fill="#f28f2f"/>
+  <ellipse cx="145" cy="100" rx="50" ry="110" fill="#f28f2f"/>
+  <ellipse cx="100" cy="100" rx="44" ry="108" fill="#f9aa33"/>
+  <!-- tallo -->
+  <path d="M94 0 L106 0 L108 14 Q100 19 92 14 Z" fill="#7a9a2c"/>
+  <!-- cara -->
+  <g fill="#4a230c">
+    <path d="M52 86 L68 62 L84 86 Z"/>
+    <path d="M116 86 L132 62 L148 86 Z"/>
+    <path d="M100 92 L109 106 L91 106 Z"/>
+    <path d="M44 116 Q100 132 156 116 Q150 166 100 168 Q50 166 44 116 Z"/>
+  </g>
+  <!-- dientes -->
+  <g fill="#f9aa33">
+    <rect x="80" y="121" width="13" height="13" rx="1"/>
+    <rect x="108" y="121" width="13" height="13" rx="1"/>
+    <rect x="93" y="153" width="14" height="16" rx="1"/>
+  </g>
+</svg>
