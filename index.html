@@ -470,7 +470,7 @@
   .ff-formation-lbl{position:absolute; top:8px; left:50%; transform:translateX(-50%); font-family:var(--display); font-weight:800;
     text-transform:uppercase; letter-spacing:.04em; font-size:12px; color:#fff; text-shadow:0 2px 8px rgba(0,0,0,.6); z-index:2;}
   /* la posición de cada hueco la pone la formación elegida (inline), no una clase fija */
-  .ff-slot{position:absolute; width:19%; max-width:110px; transform:translate(-50%,-50%); text-align:center; z-index:1; transition:left .25s ease, top .25s ease;}
+  .ff-slot{position:absolute; top:calc(var(--t)*1%); width:19%; max-width:110px; transform:translate(-50%,-50%); text-align:center; z-index:1; transition:left .25s ease, top .25s ease;}
   /* chip de posición bajo cada carta: toca y cambia de sigla a nombre completo */
   .ff-poschip{display:block; margin:5px auto 0; background:rgba(0,0,0,.55); border:1px solid rgba(255,255,255,.22);
     color:#fff; font-family:var(--display); font-weight:700; font-size:10px; letter-spacing:.06em; text-transform:uppercase;
@@ -520,6 +520,32 @@
   .ff-picker-photo img{width:100%; height:100%; object-fit:cover;}
   .ff-picker-name{flex:1 1 auto; font-weight:600;}
   .ff-picker-meta{color:var(--muted); font-size:12px;}
+  /* selector de sustituto: recomendados para la posición del que sale */
+  .ff-picker-sec{font-family:var(--display); font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
+    color:var(--muted); margin:14px 0 8px;}
+  .ff-picker-sec b{color:var(--accent);}
+  .ff-picker-row.ff-rec{border-color:rgba(242,85,44,.55); background:linear-gradient(90deg, rgba(242,85,44,.12), var(--surface-2) 70%);}
+  .ff-fit{flex:0 0 auto; font-family:var(--display); font-weight:700; font-size:10px; letter-spacing:.05em; text-transform:uppercase;
+    padding:3px 7px; border-radius:999px; background:rgba(255,255,255,.08); color:var(--muted);}
+  .ff-fit.ideal{background:var(--accent); color:#fff;}
+  .ff-fit.ok{background:rgba(124,252,155,.16); color:var(--good);}
+  /* celular: cancha vertical, fichas más grandes y sin encimarse */
+  @media(max-width:560px){
+    .ff-court{aspect-ratio:3/4; border-radius:16px;}
+    .ff-court::before{inset:10px;}
+    .ff-court::after{top:10px; bottom:10px;}
+    .ff-slot{width:27%; top:calc(12% + var(--t)*.74%);}
+    .ff-formation-lbl{top:12px; font-size:11px; white-space:nowrap;}
+    .ff-chem{top:auto; bottom:12px; right:12px; padding:4px 8px;}
+    .ff-chem b{font-size:14px;}
+    .ff-card{padding:6px 4px 7px;}
+    .ff-photo{width:46px; height:46px;}
+    .ff-name{font-size:10.5px;}
+    .ff-poschip{margin-top:4px;}
+    .ff-formations{gap:6px;}
+    .ff-form-btn{padding:7px 12px; font-size:12px;}
+    .ff-hint2{font-size:11.5px; padding:0 8px;}
+  }
   .fantasy-transfer-row.clickable{cursor:pointer; transition:.15s;}
   .fantasy-transfer-row.clickable:hover{border-color:var(--fantasy-accent, var(--accent));}
   .ft-roster-row{display:flex; align-items:center; gap:12px; padding:10px 14px; background:var(--surface-2); border:1px solid var(--line);
@@ -4939,7 +4965,7 @@
       const p=slots[key];
       // chip de posición: muestra la sigla y al tocarlo la cambia por el nombre completo
       const posChip = p && p.posicion ? `<button class="ff-poschip" type="button" data-poschip data-abbr="${esc(p.posicion)}" data-full="${esc(FANTASY_POS_FULL[p.posicion]||p.posicion)}">${esc(p.posicion)}</button>` : "";
-      return `<div class="ff-slot ${editable?"editable":""}${sel}" style="left:${l}%;top:${t}%" data-ff-key="${key}">${fantasyCardHTML(p,editable)}${posChip}</div>`;
+      return `<div class="ff-slot ${editable?"editable":""}${sel}" style="left:${l}%;--t:${t}" data-ff-key="${key}">${fantasyCardHTML(p,editable)}${posChip}</div>`;
     };
     const picker = editable ? `<div class="ff-formations">
         ${Object.keys(FANTASY_FORMATIONS).map(k=>`<button class="ff-form-btn ${k===fKey?"active":""}" data-formation="${esc(k)}" type="button">${esc(FANTASY_FORMATIONS[k].lbl)}</button>`).join("")}
@@ -5005,6 +5031,9 @@
     const roster=fantasyRoster(fantasyMyTeam);
     const slots=fantasyAssignSlots(roster, fantasyEditStarters, fantasyEditFormation, fantasyEditSlotOrder);
     const outgoing=slots[key];
+    // posición a cubrir: la del que sale; si el hueco está vacío, la que falte entre los titulares
+    const covered=new Set(Object.values(slots).filter(Boolean).map(p=>p.posicion));
+    const targetPos = outgoing ? outgoing.posicion : (FANTASY_POS_ORDER.find(x=>!covered.has(x))||null);
     openFantasySubPicker(incomingSlug=>{
       const order=fantasyCurrentSlotOrder();
       if(outgoing) fantasyEditStarters=fantasyEditStarters.filter(s=>s!==outgoing.slug);
@@ -5013,7 +5042,7 @@
       const i=FANTASY_SLOT_KEYS.indexOf(key);
       if(i>=0){ order[i]=incomingSlug; fantasyEditSlotOrder=order; }
       fantasyRerenderEditor();
-    });
+    }, targetPos, outgoing);
   }
   // tocar un jugador en la cancha: si hay alguien, primero sus estadísticas (con botón Sustituir); si el slot está vacío, va directo al selector
   function fantasySlotOrStats(slot){
@@ -5032,19 +5061,43 @@
     if(fantasySlotClickTimer){ clearTimeout(fantasySlotClickTimer); fantasySlotClickTimer=null; fantasySlotDblClick(slot); return; }
     fantasySlotClickTimer=setTimeout(()=>{ fantasySlotClickTimer=null; fantasySlotOrStats(slot); }, 240);
   }
-  function openFantasySubPicker(onPick){
+  // qué tan bien juega alguien en una posición: 0 = la suya, 1 = vecina (PG-SG, SF-PF…), 2+ = lejos
+  const FANTASY_POS_ORDER = ["PG","SG","SF","PF","C"];
+  function fantasyPosDist(a, b){
+    const i=FANTASY_POS_ORDER.indexOf(a), j=FANTASY_POS_ORDER.indexOf(b);
+    return (i<0||j<0) ? 2 : Math.abs(i-j);
+  }
+  function openFantasySubPicker(onPick, targetPos, outgoing){
     const roster=fantasyRoster(fantasyMyTeam);
-    const bench=roster.filter(p=>!fantasyEditStarters.includes(p.slug));
-    const body=$("#sheet-body");
-    body.innerHTML = `<div class="picker-head"><h3>Elegir jugador</h3></div>` +
-      (bench.length ? bench.map(p=>{
-          const susp=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug];
-          const isSusp = susp && susp.gamesLeft>0;
-          return `<div class="ff-picker-row ${isSusp?"ff-picker-disabled":""}" ${isSusp?"":`data-slug="${esc(p.slug)}"`}>
+    const isSusp = p=>{ const s=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug]; return !!(s&&s.gamesLeft>0); };
+    // puntaje de encaje: la media, castigada por cada paso de distancia a la posición que se cubre
+    const fit = p => targetPos ? p.media - 6*fantasyPosDist(p.posicion, targetPos) : p.media;
+    const bench=roster.filter(p=>!fantasyEditStarters.includes(p.slug))
+      .sort((a,b)=> (isSusp(a)-isSusp(b)) || (fit(b)-fit(a)) || (b.media-a.media));
+    const recs = targetPos ? bench.filter(p=>!isSusp(p)).slice(0,3) : [];
+    const recSet = new Set(recs.map(p=>p.slug));
+    const rest = bench.filter(p=>!recSet.has(p.slug));
+    const fitTag = p=>{
+      if(!targetPos) return "";
+      const d=fantasyPosDist(p.posicion, targetPos);
+      return d===0 ? `<span class="ff-fit ideal">Ideal</span>` : d===1 ? `<span class="ff-fit ok">Encaja</span>` : "";
+    };
+    const row = p=>{
+      const susp=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug];
+      const off=isSusp(p);
+      return `<div class="ff-picker-row ${off?"ff-picker-disabled":""} ${recSet.has(p.slug)?"ff-rec":""}" ${off?"":`data-slug="${esc(p.slug)}"`}>
           <div class="ff-picker-photo"><img src="${esc(p.foto)}" onerror="this.style.opacity=0"></div>
           <span class="ff-picker-name">${esc(p.nombre)}</span>
-          <span class="ff-picker-meta">${isSusp?`<span style="color:#ff6b6b">Suspendido (${susp.gamesLeft})</span>`:`${esc(p.posicion||"")} · ${p.media}`}</span>
-        </div>`;}).join("")
+          ${off?"":fitTag(p)}
+          <span class="ff-picker-meta">${off?`<span style="color:#ff6b6b">Suspendido (${susp.gamesLeft})</span>`:`${esc(p.posicion||"")} · ${p.media}`}</span>
+        </div>`;
+    };
+    const body=$("#sheet-body");
+    const posName = targetPos ? (FANTASY_POS_FULL[targetPos]||targetPos) : "";
+    body.innerHTML = `<div class="picker-head"><h3>${outgoing?`Sustituir a ${esc(outgoing.nombre.split(" ").pop())}`:"Elegir jugador"}</h3></div>` +
+      (bench.length ? (
+          (recs.length ? `<div class="ff-picker-sec">Recomendados para <b>${esc(posName)}</b></div>${recs.map(row).join("")}<div class="ff-picker-sec">Resto de la banca</div>` : "")
+          + rest.map(row).join(""))
         : `<p style="padding:0 20px;color:var(--muted);font-size:13px">No tienes banca todavía. Cuando se agreguen más jugadores a tu roster vas a poder sustituir aquí.</p>`);
     body.querySelectorAll("[data-slug]").forEach(row=>row.addEventListener("click", ()=>onPick(row.dataset.slug)));
     showSheet();
