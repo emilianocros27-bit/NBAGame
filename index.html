@@ -518,8 +518,8 @@
   .ff-picker-row.ff-picker-disabled .ff-picker-photo{filter:grayscale(1);}
   .ff-picker-photo{width:36px; height:36px; border-radius:50%; overflow:hidden; flex:0 0 auto; background:var(--surface);}
   .ff-picker-photo img{width:100%; height:100%; object-fit:cover;}
-  .ff-picker-name{flex:1 1 auto; font-weight:600;}
-  .ff-picker-meta{color:var(--muted); font-size:12px;}
+  .ff-picker-name{flex:1 1 auto; min-width:0; font-weight:600; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .ff-picker-meta{flex:0 0 auto; color:var(--muted); font-size:12px; white-space:nowrap;}
   /* selector de sustituto: recomendados para la posición del que sale */
   .ff-picker-sec{font-family:var(--display); font-weight:700; font-size:11.5px; text-transform:uppercase; letter-spacing:.06em;
     color:var(--muted); margin:14px 0 8px;}
