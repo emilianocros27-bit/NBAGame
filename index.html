@@ -531,17 +531,17 @@
   .ff-fit.ok{background:rgba(124,252,155,.16); color:var(--good);}
   /* celular: cancha vertical, fichas más grandes y sin encimarse */
   @media(max-width:560px){
-    .ff-court{aspect-ratio:3/4; border-radius:16px;}
+    .ff-court{aspect-ratio:3/4.1; border-radius:16px;}
     .ff-court::before{inset:10px;}
     .ff-court::after{top:10px; bottom:10px;}
-    .ff-slot{width:27%; top:calc(12% + var(--t)*.74%);}
+    .ff-slot{width:27%; top:calc(5% + var(--t)*.92%);}
     .ff-formation-lbl{top:12px; font-size:11px; white-space:nowrap;}
-    .ff-chem{top:auto; bottom:12px; right:12px; padding:4px 8px;}
+    .ff-chem{top:10px; bottom:auto; right:10px; padding:3px 7px;}
     .ff-chem b{font-size:14px;}
     .ff-card{padding:6px 4px 7px;}
     .ff-photo{width:46px; height:46px;}
     .ff-name{font-size:10.5px;}
-    .ff-poschip{margin-top:4px;}
+    .ff-poschip{display:none;}   /* la ficha ya trae la posición; el chip extra amontona */
     .ff-formations{gap:6px;}
     .ff-form-btn{padding:7px 12px; font-size:12px;}
     .ff-hint2{font-size:11.5px; padding:0 8px;}
@@ -5074,7 +5074,8 @@
     const fit = p => targetPos ? p.media - 6*fantasyPosDist(p.posicion, targetPos) : p.media;
     const bench=roster.filter(p=>!fantasyEditStarters.includes(p.slug))
       .sort((a,b)=> (isSusp(a)-isSusp(b)) || (fit(b)-fit(a)) || (b.media-a.media));
-    const recs = targetPos ? bench.filter(p=>!isSusp(p)).slice(0,3) : [];
+    // recomendados: solo quien juega esa posición o una vecina (nunca un alero de pívot)
+    const recs = targetPos ? bench.filter(p=>!isSusp(p) && fantasyPosDist(p.posicion, targetPos)<=1).slice(0,3) : [];
     const recSet = new Set(recs.map(p=>p.slug));
     const rest = bench.filter(p=>!recSet.has(p.slug));
     const fitTag = p=>{
