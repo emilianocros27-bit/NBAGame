@@ -4234,7 +4234,8 @@
     const moved = fantasySeasonData && fantasySeasonData.playerMoves && fantasySeasonData.playerMoves[p.slug];
     return moved || p.equipo;
   }
-  const fantasyRoster = team => PLAYERS.filter(p=>fantasyEffectiveTeam(p)===team);
+  // fueraNBA: ya no está en ningún roster real — se queda como carta pero no juega en DT
+  const fantasyRoster = team => PLAYERS.filter(p=>!p.fueraNBA && fantasyEffectiveTeam(p)===team);
   // precio de fichaje en millones de $ — mismo para todos, siempre, fijo según su media (nada de azar)
   function fantasyPlayerPrice(p){
     const m=p.media||75;
@@ -4855,7 +4856,7 @@
     const pct = FANTASY_PCT_CATS.has(fantasyStatCat);
     const unit = FANTASY_STAT_CATS[fantasyStatCat];
     const gp = fantasyGamesElapsed();
-    const ranked = PLAYERS.map(p=>{
+    const ranked = PLAYERS.filter(p=>!p.fueraNBA).map(p=>{
       const raw=parseFloat(fantasySeasonStats(p)[fantasyStatCat]);
       return {p, v: pct?raw:Math.round(raw*gp)};
     }).sort((a,b)=>b.v-a.v).slice(0,15);
