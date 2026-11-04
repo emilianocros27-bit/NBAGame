@@ -1996,8 +1996,9 @@
   const PACK_COST = { std:150, elite:600, finals:1200, reward:0, noventas:1100, retro:800, retrobox:3500 };
   const RETRO_BOX_PACKS = 5;    // la caja trae 5 sobres
   const RETRO_PER_PACK  = 3;    // cada sobre retro trae 3 cartas
-  const COINS_PER_POINT = 10;           // (legado) balones por punto — ya no se usa para la recompensa
-  const COINS_PER_BASKET = 10;          // balones por CANASTA encestada (no por puntaje)
+  const COINS_PER_POINT = 5;            // balones por PUNTO de cada canasta normal
+  const COINS_PER_SWISH_POINT = 10;     // balones por PUNTO de una canasta swish (sin tocar aro)
+  const COINS_PER_BASKET = 10;          // (legado) ya no se usa para la recompensa
   function renderCoins(){
     const els = document.querySelectorAll(".coin-amount");
     els.forEach(e=> e.textContent = (state.coins||0).toLocaleString("es"));
@@ -2019,7 +2020,7 @@
     <path d="M20 14h8" stroke="#b79bff" stroke-width="1.2" opacity=".6"/>
   </svg>`;
   // puente para el minijuego "Encestes" (vive en otro script)
-  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT, perBasket:COINS_PER_BASKET,
+  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT, perSwishPoint:COINS_PER_SWISH_POINT, perBasket:COINS_PER_BASKET,
     // récord robusto: máx(nube, respaldo local), monotónico (nunca baja) → no se reinicia ni se farmea
     getBest:()=>{ let ls=0; try{ ls=+(localStorage.getItem('basket_best')||0); }catch(e){} return Math.max(state.bestScore||0, ls||0); },
     setBest:(v)=>{ v=Math.max(state.bestScore||0, v||0); state.bestScore=v; try{ localStorage.setItem('basket_best',v); }catch(e){} save(); } };
@@ -6099,7 +6100,7 @@
 window.MiniGame = (function(){
   let cv, ctx, stage, W, H, S, lastAvailW=0;
   let ball, hoop, dragging, dragStart, dragNow;
-  let score, streak, timeLeft, running, best, timerId, msgTimeout, baskets;
+  let score, streak, timeLeft, running, best, timerId, msgTimeout, baskets, coinsRun;
   let bMod={hoopSpeed:1,hoopR:1,time:60,golden:true};
   function fmtN(n){ n=Math.round(n); return n<100000 ? ''+n : n.toExponential(2); }   // grandes → 1.23e+7
   let particles = [], rings = [], rafId = null, active = false, inited = false;
@@ -6206,7 +6207,7 @@ window.MiniGame = (function(){
   }
   function startGame(){
     bMod = {hoopSpeed:1,hoopR:1,time:60,golden:true};
-    score=0; streak=0; baskets=0; timeLeft=bMod.time||60; running=true;
+    score=0; streak=0; baskets=0; coinsRun=0; timeLeft=bMod.time||60; running=true;
     if(window.DunkMissions) window.DunkMissions.game();   // misión diaria: jugar partida
     document.getElementById('mg-over').style.display='none';
     document.getElementById('mg-hint').style.opacity='1';
@@ -6226,8 +6227,7 @@ window.MiniGame = (function(){
     document.getElementById('mg-final').textContent=fmtN(score);
     document.getElementById('mg-best').textContent='Mejor: '+fmtN(best);
     // recompensa en monedas
-    const rate=(window.DunkEconomy && window.DunkEconomy.perBasket) || 10;
-    let earned=baskets*rate; if(newBest && score>0) earned+=100;   // balones por CANASTA (no por puntaje); bonus por récord
+    let earned=coinsRun||0; if(newBest && score>0) earned+=100;   // balones por PUNTO (x2 en swish); bonus por récord
     const rw=document.getElementById('mg-reward');
     if(earned>0 && window.DunkEconomy){ window.DunkEconomy.add(earned);
       rw.innerHTML='<span class="coin-ico"></span> +'+earned+' balones'+(newBest?' · ¡Récord!':''); }
@@ -6292,6 +6292,9 @@ window.MiniGame = (function(){
     if(hoop.golden){ addTime = 3; }
     if(hoop.golden && swish){ addTime = 10; }   // dorado + swish: +10 segundos
     score += pts; updateHUD();
+    // balones: 5 por punto, 10 por punto si fue swish
+    const E=window.DunkEconomy||{};
+    coinsRun += pts * (swish ? (E.perSwishPoint||10) : (E.perPoint||5));
     if(window.DunkMissions){ window.DunkMissions.basket(hoop.golden, swish); window.DunkMissions.streak(streak); }
     const col = hoop.golden ? '#ffd24d' : swish ? '#7CFC9B' : streak>=3 ? '#ff7a3d' : '#ffd24d';
     burst(hoop.x,hoop.rimY, col);
