@@ -4248,9 +4248,10 @@
   // presupuesto balanceado: el payroll influye pero no aplasta — un equipo apilado nunca queda sin nada,
   // uno barato nunca se vuelve absurdamente rico. Todos quedan jugables entre $15M y $65M.
   const FANTASY_BUDGET_MID = 45, FANTASY_BUDGET_MIN = 15, FANTASY_BUDGET_MAX = 65;
-  const FANTASY_PAYROLL_REF = 320, FANTASY_BUDGET_SLOPE = 0.12;
+  const FANTASY_PAYROLL_REF = 320, FANTASY_BUDGET_SLOPE = 0.12, FANTASY_PAYROLL_TOP = 12;
   function fantasyTeamBudget(team){
-    const payroll = fantasyRoster(team).reduce((s,p)=>s+fantasyPlayerPrice(p), 0);
+    // nómina = los 12 más caros (plantillas reales de 15-18 no deben hundir el presupuesto)
+    const payroll = fantasyRoster(team).map(fantasyPlayerPrice).sort((a,b)=>b-a).slice(0,FANTASY_PAYROLL_TOP).reduce((s,v)=>s+v, 0);
     const raw = FANTASY_BUDGET_MID - (payroll-FANTASY_PAYROLL_REF)*FANTASY_BUDGET_SLOPE;
     const base = Math.max(FANTASY_BUDGET_MIN, Math.min(FANTASY_BUDGET_MAX, Math.round(raw*10)/10));
     // bono real por Copa/Playoffs y ajustes de trades con dinero — compartido, visible para todos

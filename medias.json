@@ -3810,5 +3810,1645 @@
     "foto": "fotos-nba/29-Brooklyn-Nets/trevon-scott.jpg",
     "banca": true,
     "fueraNBA": true
+  },
+  {
+    "nombre": "Jimmy Butler III",
+    "slug": "jimmy-butler-iii",
+    "equipo": "Golden State Warriors",
+    "equipo_carpeta": "19-Golden-State-Warriors",
+    "media": 84,
+    "posicion": "SF",
+    "foto": "fotos-nba/19-Golden-State-Warriors/jimmy-butler-iii.png",
+    "banca": true
+  },
+  {
+    "nombre": "DeMar DeRozan",
+    "slug": "demar-derozan",
+    "equipo": "Denver Nuggets",
+    "equipo_carpeta": "05-Denver-Nuggets",
+    "media": 80,
+    "posicion": "SG",
+    "foto": "fotos-nba/05-Denver-Nuggets/demar-derozan.png",
+    "banca": true
+  },
+  {
+    "nombre": "Grayson Allen",
+    "slug": "grayson-allen",
+    "equipo": "Charlotte Hornets",
+    "equipo_carpeta": "25-Charlotte-Hornets",
+    "media": 77,
+    "posicion": "SG",
+    "foto": "fotos-nba/25-Charlotte-Hornets/grayson-allen.png",
+    "banca": true
+  },
+  {
+    "nombre": "Isaiah Stewart",
+    "slug": "isaiah-stewart",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 78,
+    "posicion": "C",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/isaiah-stewart.png",
+    "banca": true
+  },
+  {
+    "nombre": "Josh Green",
+    "slug": "josh-green",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 74,
+    "posicion": "SG",
+    "foto": "fotos-nba/15-Utah-Jazz/josh-green.png",
+    "banca": true
+  },
+  {
+    "nombre": "Dorian Finney-Smith",
+    "slug": "dorian-finney-smith",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 75,
+    "posicion": "SF",
+    "foto": "fotos-nba/07-Atlanta-Hawks/dorian-finney-smith.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jalen Smith",
+    "slug": "jalen-smith",
+    "equipo": "Chicago Bulls",
+    "equipo_carpeta": "26-Chicago-Bulls",
+    "media": 75,
+    "posicion": "SF",
+    "foto": "fotos-nba/26-Chicago-Bulls/jalen-smith.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jaylin Williams",
+    "slug": "jaylin-williams",
+    "equipo": "Oklahoma City Thunder",
+    "equipo_carpeta": "02-Oklahoma-City-Thunder",
+    "media": 75,
+    "posicion": "SF",
+    "foto": "fotos-nba/02-Oklahoma-City-Thunder/jaylin-williams.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kenrich Williams",
+    "slug": "kenrich-williams",
+    "equipo": "Oklahoma City Thunder",
+    "equipo_carpeta": "02-Oklahoma-City-Thunder",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/02-Oklahoma-City-Thunder/kenrich-williams.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ziaire Williams",
+    "slug": "ziaire-williams",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/ziaire-williams.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jaden Hardy",
+    "slug": "jaden-hardy",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/jaden-hardy.png",
+    "banca": true
+  },
+  {
+    "nombre": "Bradley Beal",
+    "slug": "bradley-beal",
+    "equipo": "Los Angeles Clippers",
+    "equipo_carpeta": "24-Los-Angeles-Clippers",
+    "media": 78,
+    "posicion": "SG",
+    "foto": "fotos-nba/24-Los-Angeles-Clippers/bradley-beal.png",
+    "banca": true
+  },
+  {
+    "nombre": "Cam Whitmore",
+    "slug": "cam-whitmore",
+    "equipo": "Denver Nuggets",
+    "equipo_carpeta": "05-Denver-Nuggets",
+    "media": 75,
+    "posicion": "SF",
+    "foto": "fotos-nba/05-Denver-Nuggets/cam-whitmore.png",
+    "banca": true
+  },
+  {
+    "nombre": "Devin Carter",
+    "slug": "devin-carter",
+    "equipo": "Boston Celtics",
+    "equipo_carpeta": "11-Boston-Celtics",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/11-Boston-Celtics/devin-carter.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jose Alvarado",
+    "slug": "jose-alvarado",
+    "equipo": "New York Knicks",
+    "equipo_carpeta": "03-New-York-Knicks",
+    "media": 75,
+    "posicion": "SG",
+    "foto": "fotos-nba/03-New-York-Knicks/jose-alvarado.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jared McCain",
+    "slug": "jared-mccain",
+    "equipo": "Oklahoma City Thunder",
+    "equipo_carpeta": "02-Oklahoma-City-Thunder",
+    "media": 78,
+    "posicion": "SG",
+    "foto": "fotos-nba/02-Oklahoma-City-Thunder/jared-mccain.png",
+    "banca": true
+  },
+  {
+    "nombre": "Svi Mykhailiuk",
+    "slug": "svi-mykhailiuk",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/15-Utah-Jazz/svi-mykhailiuk.png",
+    "banca": true
+  },
+  {
+    "nombre": "Taurean Prince",
+    "slug": "taurean-prince",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/13-Detroit-Pistons/taurean-prince.png",
+    "banca": true
+  },
+  {
+    "nombre": "Asa Newell",
+    "slug": "asa-newell",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/07-Atlanta-Hawks/asa-newell.png",
+    "banca": true
+  },
+  {
+    "nombre": "AJ Johnson",
+    "slug": "aj-johnson",
+    "equipo": "New Orleans Pelicans",
+    "equipo_carpeta": "21-New-Orleans-Pelicans",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/21-New-Orleans-Pelicans/aj-johnson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Liam McNeeley",
+    "slug": "liam-mcneeley",
+    "equipo": "Charlotte Hornets",
+    "equipo_carpeta": "25-Charlotte-Hornets",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/25-Charlotte-Hornets/liam-mcneeley.png",
+    "banca": true
+  },
+  {
+    "nombre": "Micah Potter",
+    "slug": "micah-potter",
+    "equipo": "Portland Trail Blazers",
+    "equipo_carpeta": "17-Portland-Trail-Blazers",
+    "media": 71,
+    "posicion": "C",
+    "foto": "fotos-nba/17-Portland-Trail-Blazers/micah-potter.png",
+    "banca": true
+  },
+  {
+    "nombre": "Trendon Watford",
+    "slug": "trendon-watford",
+    "equipo": "New Orleans Pelicans",
+    "equipo_carpeta": "21-New-Orleans-Pelicans",
+    "media": 73,
+    "posicion": "SF",
+    "foto": "fotos-nba/21-New-Orleans-Pelicans/trendon-watford.png",
+    "banca": true
+  },
+  {
+    "nombre": "Justin Champagnie",
+    "slug": "justin-champagnie",
+    "equipo": "Washington Wizards",
+    "equipo_carpeta": "22-Washington-Wizards",
+    "media": 73,
+    "posicion": "SF",
+    "foto": "fotos-nba/22-Washington-Wizards/justin-champagnie.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jabari Walker",
+    "slug": "jabari-walker",
+    "equipo": "Philadelphia 76ers",
+    "equipo_carpeta": "01-Philadelphia-76ers",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/01-Philadelphia-76ers/jabari-walker.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jamaree Bouyea",
+    "slug": "jamaree-bouyea",
+    "equipo": "Phoenix Suns",
+    "equipo_carpeta": "20-Phoenix-Suns",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/20-Phoenix-Suns/jamaree-bouyea.png",
+    "banca": true
+  },
+  {
+    "nombre": "Bryce McGowens",
+    "slug": "bryce-mcgowens",
+    "equipo": "New Orleans Pelicans",
+    "equipo_carpeta": "21-New-Orleans-Pelicans",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/21-New-Orleans-Pelicans/bryce-mcgowens.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kobe Bufkin",
+    "slug": "kobe-bufkin",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/15-Utah-Jazz/kobe-bufkin.png",
+    "banca": true
+  },
+  {
+    "nombre": "Scotty Pippen Jr.",
+    "slug": "scotty-pippen-jr",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 75,
+    "posicion": "SG",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/scotty-pippen-jr.png",
+    "banca": true
+  },
+  {
+    "nombre": "Olivier-Maxence Prosper",
+    "slug": "olivier-maxence-prosper",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/olivier-maxence-prosper.png",
+    "banca": true
+  },
+  {
+    "nombre": "Sidy Cissoko",
+    "slug": "sidy-cissoko",
+    "equipo": "Portland Trail Blazers",
+    "equipo_carpeta": "17-Portland-Trail-Blazers",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/17-Portland-Trail-Blazers/sidy-cissoko.png",
+    "banca": true
+  },
+  {
+    "nombre": "Mouhamed Gueye",
+    "slug": "mouhamed-gueye",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/07-Atlanta-Hawks/mouhamed-gueye.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jalen Pickett",
+    "slug": "jalen-pickett",
+    "equipo": "Los Angeles Clippers",
+    "equipo_carpeta": "24-Los-Angeles-Clippers",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/24-Los-Angeles-Clippers/jalen-pickett.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tolu Smith",
+    "slug": "tolu-smith",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/13-Detroit-Pistons/tolu-smith.png",
+    "banca": true
+  },
+  {
+    "nombre": "GG Jackson",
+    "slug": "gg-jackson",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/gg-jackson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Cam Spencer",
+    "slug": "cam-spencer",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/cam-spencer.png",
+    "banca": true
+  },
+  {
+    "nombre": "Johnny Furphy",
+    "slug": "johnny-furphy",
+    "equipo": "Indiana Pacers",
+    "equipo_carpeta": "04-Indiana-Pacers",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/04-Indiana-Pacers/johnny-furphy.png",
+    "banca": true
+  },
+  {
+    "nombre": "Bronny James",
+    "slug": "bronny-james",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/bronny-james.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jonathan Mogbo",
+    "slug": "jonathan-mogbo",
+    "equipo": "Sacramento Kings",
+    "equipo_carpeta": "28-Sacramento-Kings",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/28-Sacramento-Kings/jonathan-mogbo.png",
+    "banca": true
+  },
+  {
+    "nombre": "Rasheer Fleming",
+    "slug": "rasheer-fleming",
+    "equipo": "Phoenix Suns",
+    "equipo_carpeta": "20-Phoenix-Suns",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/20-Phoenix-Suns/rasheer-fleming.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kobe Sanders",
+    "slug": "kobe-sanders",
+    "equipo": "Los Angeles Clippers",
+    "equipo_carpeta": "24-Los-Angeles-Clippers",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/24-Los-Angeles-Clippers/kobe-sanders.png",
+    "banca": true
+  },
+  {
+    "nombre": "Adou Thiero",
+    "slug": "adou-thiero",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/adou-thiero.png",
+    "banca": true
+  },
+  {
+    "nombre": "Chaz Lanier",
+    "slug": "chaz-lanier",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/13-Detroit-Pistons/chaz-lanier.png",
+    "banca": true
+  },
+  {
+    "nombre": "Myron Gardner",
+    "slug": "myron-gardner",
+    "equipo": "Miami Heat",
+    "equipo_carpeta": "14-Miami-Heat",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/14-Miami-Heat/myron-gardner.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kam Jones",
+    "slug": "kam-jones",
+    "equipo": "Milwaukee Bucks",
+    "equipo_carpeta": "30-Milwaukee-Bucks",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/30-Milwaukee-Bucks/kam-jones.png",
+    "banca": true
+  },
+  {
+    "nombre": "Noah Penda",
+    "slug": "noah-penda",
+    "equipo": "Orlando Magic",
+    "equipo_carpeta": "18-Orlando-Magic",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/18-Orlando-Magic/noah-penda.png",
+    "banca": true
+  },
+  {
+    "nombre": "Dylan Cardwell",
+    "slug": "dylan-cardwell",
+    "equipo": "Sacramento Kings",
+    "equipo_carpeta": "28-Sacramento-Kings",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/28-Sacramento-Kings/dylan-cardwell.png",
+    "banca": true
+  },
+  {
+    "nombre": "RayJ Dennis",
+    "slug": "rayj-dennis",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/07-Atlanta-Hawks/rayj-dennis.png",
+    "banca": true
+  },
+  {
+    "nombre": "Zuby Ejiofor",
+    "slug": "zuby-ejiofor",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/07-Atlanta-Hawks/zuby-ejiofor.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kingston Flemings",
+    "slug": "kingston-flemings",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 76,
+    "posicion": "SG",
+    "foto": "fotos-nba/07-Atlanta-Hawks/kingston-flemings.png",
+    "banca": true
+  },
+  {
+    "nombre": "Keshon Gilbert",
+    "slug": "keshon-gilbert",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/07-Atlanta-Hawks/keshon-gilbert.png",
+    "banca": true
+  },
+  {
+    "nombre": "Henri Veesaar",
+    "slug": "henri-veesaar",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 72,
+    "posicion": "C",
+    "foto": "fotos-nba/07-Atlanta-Hawks/henri-veesaar.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jalen Wilson",
+    "slug": "jalen-wilson",
+    "equipo": "Atlanta Hawks",
+    "equipo_carpeta": "07-Atlanta-Hawks",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/07-Atlanta-Hawks/jalen-wilson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tacko Fall",
+    "slug": "tacko-fall",
+    "equipo": "Philadelphia 76ers",
+    "equipo_carpeta": "01-Philadelphia-76ers",
+    "media": 68,
+    "posicion": "C",
+    "foto": "fotos-nba/01-Philadelphia-76ers/tacko-fall.png",
+    "banca": true
+  },
+  {
+    "nombre": "Dean Wade",
+    "slug": "dean-wade",
+    "equipo": "Philadelphia 76ers",
+    "equipo_carpeta": "01-Philadelphia-76ers",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/01-Philadelphia-76ers/dean-wade.png",
+    "banca": true
+  },
+  {
+    "nombre": "Enrique Freeman",
+    "slug": "enrique-freeman",
+    "equipo": "Minnesota Timberwolves",
+    "equipo_carpeta": "12-Minnesota-Timberwolves",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/12-Minnesota-Timberwolves/enrique-freeman.png",
+    "banca": true
+  },
+  {
+    "nombre": "Zyon Pullin",
+    "slug": "zyon-pullin",
+    "equipo": "Minnesota Timberwolves",
+    "equipo_carpeta": "12-Minnesota-Timberwolves",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/12-Minnesota-Timberwolves/zyon-pullin.png",
+    "banca": true
+  },
+  {
+    "nombre": "Rocco Zikarsky",
+    "slug": "rocco-zikarsky",
+    "equipo": "Minnesota Timberwolves",
+    "equipo_carpeta": "12-Minnesota-Timberwolves",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/12-Minnesota-Timberwolves/rocco-zikarsky.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tyler Bilodeau",
+    "slug": "tyler-bilodeau",
+    "equipo": "Brooklyn Nets",
+    "equipo_carpeta": "29-Brooklyn-Nets",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/29-Brooklyn-Nets/tyler-bilodeau.png",
+    "banca": true
+  },
+  {
+    "nombre": "Keon Ellis",
+    "slug": "keon-ellis",
+    "equipo": "Brooklyn Nets",
+    "equipo_carpeta": "29-Brooklyn-Nets",
+    "media": 75,
+    "posicion": "SG",
+    "foto": "fotos-nba/29-Brooklyn-Nets/keon-ellis.png",
+    "banca": true
+  },
+  {
+    "nombre": "Joshua Jefferson",
+    "slug": "joshua-jefferson",
+    "equipo": "Brooklyn Nets",
+    "equipo_carpeta": "29-Brooklyn-Nets",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/29-Brooklyn-Nets/joshua-jefferson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Chaney Johnson",
+    "slug": "chaney-johnson",
+    "equipo": "Brooklyn Nets",
+    "equipo_carpeta": "29-Brooklyn-Nets",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/29-Brooklyn-Nets/chaney-johnson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Grant Nelson",
+    "slug": "grant-nelson",
+    "equipo": "Brooklyn Nets",
+    "equipo_carpeta": "29-Brooklyn-Nets",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/29-Brooklyn-Nets/grant-nelson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jordan Goodwin",
+    "slug": "jordan-goodwin",
+    "equipo": "Phoenix Suns",
+    "equipo_carpeta": "20-Phoenix-Suns",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/20-Phoenix-Suns/jordan-goodwin.png",
+    "banca": true
+  },
+  {
+    "nombre": "Duop Reath",
+    "slug": "duop-reath",
+    "equipo": "Phoenix Suns",
+    "equipo_carpeta": "20-Phoenix-Suns",
+    "media": 71,
+    "posicion": "C",
+    "foto": "fotos-nba/20-Phoenix-Suns/duop-reath.png",
+    "banca": true
+  },
+  {
+    "nombre": "Pat Spencer",
+    "slug": "pat-spencer",
+    "equipo": "Phoenix Suns",
+    "equipo_carpeta": "20-Phoenix-Suns",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/20-Phoenix-Suns/pat-spencer.png",
+    "banca": true
+  },
+  {
+    "nombre": "Drew Timme",
+    "slug": "drew-timme",
+    "equipo": "Phoenix Suns",
+    "equipo_carpeta": "20-Phoenix-Suns",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/20-Phoenix-Suns/drew-timme.png",
+    "banca": true
+  },
+  {
+    "nombre": "Isaiah Crawford",
+    "slug": "isaiah-crawford",
+    "equipo": "Houston Rockets",
+    "equipo_carpeta": "09-Houston-Rockets",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/09-Houston-Rockets/isaiah-crawford.png",
+    "banca": true
+  },
+  {
+    "nombre": "Julian Phillips",
+    "slug": "julian-phillips",
+    "equipo": "Houston Rockets",
+    "equipo_carpeta": "09-Houston-Rockets",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/09-Houston-Rockets/julian-phillips.png",
+    "banca": true
+  },
+  {
+    "nombre": "Oscar Tshiebwe",
+    "slug": "oscar-tshiebwe",
+    "equipo": "Houston Rockets",
+    "equipo_carpeta": "09-Houston-Rockets",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/09-Houston-Rockets/oscar-tshiebwe.png",
+    "banca": true
+  },
+  {
+    "nombre": "Trevon Brazile",
+    "slug": "trevon-brazile",
+    "equipo": "Denver Nuggets",
+    "equipo_carpeta": "05-Denver-Nuggets",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/05-Denver-Nuggets/trevon-brazile.png",
+    "banca": true
+  },
+  {
+    "nombre": "Alpha Diallo",
+    "slug": "alpha-diallo",
+    "equipo": "Denver Nuggets",
+    "equipo_carpeta": "05-Denver-Nuggets",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/05-Denver-Nuggets/alpha-diallo.png",
+    "banca": true
+  },
+  {
+    "nombre": "Bryce Hopkins",
+    "slug": "bryce-hopkins",
+    "equipo": "Denver Nuggets",
+    "equipo_carpeta": "05-Denver-Nuggets",
+    "media": 69,
+    "posicion": "SF",
+    "foto": "fotos-nba/05-Denver-Nuggets/bryce-hopkins.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ryan Nembhard",
+    "slug": "ryan-nembhard",
+    "equipo": "Denver Nuggets",
+    "equipo_carpeta": "05-Denver-Nuggets",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/05-Denver-Nuggets/ryan-nembhard.png",
+    "banca": true
+  },
+  {
+    "nombre": "Christian Anderson",
+    "slug": "christian-anderson",
+    "equipo": "Charlotte Hornets",
+    "equipo_carpeta": "25-Charlotte-Hornets",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/25-Charlotte-Hornets/christian-anderson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kylan Boswell",
+    "slug": "kylan-boswell",
+    "equipo": "Charlotte Hornets",
+    "equipo_carpeta": "25-Charlotte-Hornets",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/25-Charlotte-Hornets/kylan-boswell.png",
+    "banca": true
+  },
+  {
+    "nombre": "PJ Hall",
+    "slug": "pj-hall",
+    "equipo": "Charlotte Hornets",
+    "equipo_carpeta": "25-Charlotte-Hornets",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/25-Charlotte-Hornets/pj-hall.png",
+    "banca": true
+  },
+  {
+    "nombre": "Hannes Steinbach",
+    "slug": "hannes-steinbach",
+    "equipo": "Charlotte Hornets",
+    "equipo_carpeta": "25-Charlotte-Hornets",
+    "media": 73,
+    "posicion": "SF",
+    "foto": "fotos-nba/25-Charlotte-Hornets/hannes-steinbach.png",
+    "banca": true
+  },
+  {
+    "nombre": "Trey Alexander",
+    "slug": "trey-alexander",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/15-Utah-Jazz/trey-alexander.png",
+    "banca": true
+  },
+  {
+    "nombre": "Mo Bamba",
+    "slug": "mo-bamba",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 71,
+    "posicion": "C",
+    "foto": "fotos-nba/15-Utah-Jazz/mo-bamba.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tony Bradley",
+    "slug": "tony-bradley",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/15-Utah-Jazz/tony-bradley.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jaxson Hayes",
+    "slug": "jaxson-hayes",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 74,
+    "posicion": "C",
+    "foto": "fotos-nba/15-Utah-Jazz/jaxson-hayes.png",
+    "banca": true
+  },
+  {
+    "nombre": "Harrison Ingram",
+    "slug": "harrison-ingram",
+    "equipo": "Utah Jazz",
+    "equipo_carpeta": "15-Utah-Jazz",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/15-Utah-Jazz/harrison-ingram.png",
+    "banca": true
+  },
+  {
+    "nombre": "Reece Beekman",
+    "slug": "reece-beekman",
+    "equipo": "Washington Wizards",
+    "equipo_carpeta": "22-Washington-Wizards",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/22-Washington-Wizards/reece-beekman.png",
+    "banca": true
+  },
+  {
+    "nombre": "Anthony Gill",
+    "slug": "anthony-gill",
+    "equipo": "Washington Wizards",
+    "equipo_carpeta": "22-Washington-Wizards",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/22-Washington-Wizards/anthony-gill.png",
+    "banca": true
+  },
+  {
+    "nombre": "Felix Okpara",
+    "slug": "felix-okpara",
+    "equipo": "Washington Wizards",
+    "equipo_carpeta": "22-Washington-Wizards",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/22-Washington-Wizards/felix-okpara.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tarik Biberovic",
+    "slug": "tarik-biberovic",
+    "equipo": "Dallas Mavericks",
+    "equipo_carpeta": "23-Dallas-Mavericks",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/23-Dallas-Mavericks/tarik-biberovic.png",
+    "banca": true
+  },
+  {
+    "nombre": "Moussa Cisse",
+    "slug": "moussa-cisse",
+    "equipo": "Dallas Mavericks",
+    "equipo_carpeta": "23-Dallas-Mavericks",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/23-Dallas-Mavericks/moussa-cisse.png",
+    "banca": true
+  },
+  {
+    "nombre": "Sergio de Larrea",
+    "slug": "sergio-de-larrea",
+    "equipo": "Dallas Mavericks",
+    "equipo_carpeta": "23-Dallas-Mavericks",
+    "media": 72,
+    "posicion": "SF",
+    "foto": "fotos-nba/23-Dallas-Mavericks/sergio-de-larrea.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jett Howard",
+    "slug": "jett-howard",
+    "equipo": "Dallas Mavericks",
+    "equipo_carpeta": "23-Dallas-Mavericks",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/23-Dallas-Mavericks/jett-howard.png",
+    "banca": true
+  },
+  {
+    "nombre": "Morez Johnson Jr.",
+    "slug": "morez-johnson-jr",
+    "equipo": "Dallas Mavericks",
+    "equipo_carpeta": "23-Dallas-Mavericks",
+    "media": 73,
+    "posicion": "SF",
+    "foto": "fotos-nba/23-Dallas-Mavericks/morez-johnson-jr.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tobi Lawal",
+    "slug": "tobi-lawal",
+    "equipo": "Dallas Mavericks",
+    "equipo_carpeta": "23-Dallas-Mavericks",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/23-Dallas-Mavericks/tobi-lawal.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kobe Brown",
+    "slug": "kobe-brown",
+    "equipo": "Indiana Pacers",
+    "equipo_carpeta": "04-Indiana-Pacers",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/04-Indiana-Pacers/kobe-brown.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jalen Slawson",
+    "slug": "jalen-slawson",
+    "equipo": "Indiana Pacers",
+    "equipo_carpeta": "04-Indiana-Pacers",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/04-Indiana-Pacers/jalen-slawson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Braden Smith",
+    "slug": "braden-smith",
+    "equipo": "Indiana Pacers",
+    "equipo_carpeta": "04-Indiana-Pacers",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/04-Indiana-Pacers/braden-smith.png",
+    "banca": true
+  },
+  {
+    "nombre": "Kyle Anderson",
+    "slug": "kyle-anderson",
+    "equipo": "Toronto Raptors",
+    "equipo_carpeta": "10-Toronto-Raptors",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/10-Toronto-Raptors/kyle-anderson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Malachi Smith",
+    "slug": "malachi-smith",
+    "equipo": "Toronto Raptors",
+    "equipo_carpeta": "10-Toronto-Raptors",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/10-Toronto-Raptors/malachi-smith.png",
+    "banca": true
+  },
+  {
+    "nombre": "Charles Bassey",
+    "slug": "charles-bassey",
+    "equipo": "Golden State Warriors",
+    "equipo_carpeta": "19-Golden-State-Warriors",
+    "media": 71,
+    "posicion": "C",
+    "foto": "fotos-nba/19-Golden-State-Warriors/charles-bassey.png",
+    "banca": true
+  },
+  {
+    "nombre": "LJ Cryer",
+    "slug": "lj-cryer",
+    "equipo": "Golden State Warriors",
+    "equipo_carpeta": "19-Golden-State-Warriors",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/19-Golden-State-Warriors/lj-cryer.png",
+    "banca": true
+  },
+  {
+    "nombre": "Graham Ike",
+    "slug": "graham-ike",
+    "equipo": "Golden State Warriors",
+    "equipo_carpeta": "19-Golden-State-Warriors",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/19-Golden-State-Warriors/graham-ike.png",
+    "banca": true
+  },
+  {
+    "nombre": "Malevy Leons",
+    "slug": "malevy-leons",
+    "equipo": "Golden State Warriors",
+    "equipo_carpeta": "19-Golden-State-Warriors",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/19-Golden-State-Warriors/malevy-leons.png",
+    "banca": true
+  },
+  {
+    "nombre": "Georges Niang",
+    "slug": "georges-niang",
+    "equipo": "Golden State Warriors",
+    "equipo_carpeta": "19-Golden-State-Warriors",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/19-Golden-State-Warriors/georges-niang.png",
+    "banca": true
+  },
+  {
+    "nombre": "Brandon Williams",
+    "slug": "brandon-williams",
+    "equipo": "Golden State Warriors",
+    "equipo_carpeta": "19-Golden-State-Warriors",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/19-Golden-State-Warriors/brandon-williams.png",
+    "banca": true
+  },
+  {
+    "nombre": "Nick Martinelli",
+    "slug": "nick-martinelli",
+    "equipo": "Los Angeles Clippers",
+    "equipo_carpeta": "24-Los-Angeles-Clippers",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/24-Los-Angeles-Clippers/nick-martinelli.png",
+    "banca": true
+  },
+  {
+    "nombre": "Baba Miller",
+    "slug": "baba-miller",
+    "equipo": "Los Angeles Clippers",
+    "equipo_carpeta": "24-Los-Angeles-Clippers",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/24-Los-Angeles-Clippers/baba-miller.png",
+    "banca": true
+  },
+  {
+    "nombre": "Keaton Wagler",
+    "slug": "keaton-wagler",
+    "equipo": "Los Angeles Clippers",
+    "equipo_carpeta": "24-Los-Angeles-Clippers",
+    "media": 74,
+    "posicion": "SG",
+    "foto": "fotos-nba/24-Los-Angeles-Clippers/keaton-wagler.png",
+    "banca": true
+  },
+  {
+    "nombre": "Blake Wesley",
+    "slug": "blake-wesley",
+    "equipo": "Los Angeles Clippers",
+    "equipo_carpeta": "24-Los-Angeles-Clippers",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/24-Los-Angeles-Clippers/blake-wesley.png",
+    "banca": true
+  },
+  {
+    "nombre": "Maliq Brown",
+    "slug": "maliq-brown",
+    "equipo": "San Antonio Spurs",
+    "equipo_carpeta": "06-San-Antonio-Spurs",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/06-San-Antonio-Spurs/maliq-brown.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jordan McLaughlin",
+    "slug": "jordan-mclaughlin",
+    "equipo": "San Antonio Spurs",
+    "equipo_carpeta": "06-San-Antonio-Spurs",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/06-San-Antonio-Spurs/jordan-mclaughlin.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jayden Quaintance",
+    "slug": "jayden-quaintance",
+    "equipo": "San Antonio Spurs",
+    "equipo_carpeta": "06-San-Antonio-Spurs",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/06-San-Antonio-Spurs/jayden-quaintance.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tarris Reed Jr.",
+    "slug": "tarris-reed-jr",
+    "equipo": "San Antonio Spurs",
+    "equipo_carpeta": "06-San-Antonio-Spurs",
+    "media": 72,
+    "posicion": "C",
+    "foto": "fotos-nba/06-San-Antonio-Spurs/tarris-reed-jr.png",
+    "banca": true
+  },
+  {
+    "nombre": "Thomas Bryant",
+    "slug": "thomas-bryant",
+    "equipo": "Cleveland Cavaliers",
+    "equipo_carpeta": "08-Cleveland-Cavaliers",
+    "media": 72,
+    "posicion": "C",
+    "foto": "fotos-nba/08-Cleveland-Cavaliers/thomas-bryant.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tristan Enaruna",
+    "slug": "tristan-enaruna",
+    "equipo": "Cleveland Cavaliers",
+    "equipo_carpeta": "08-Cleveland-Cavaliers",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/08-Cleveland-Cavaliers/tristan-enaruna.png",
+    "banca": true
+  },
+  {
+    "nombre": "Riley Minix",
+    "slug": "riley-minix",
+    "equipo": "Cleveland Cavaliers",
+    "equipo_carpeta": "08-Cleveland-Cavaliers",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/08-Cleveland-Cavaliers/riley-minix.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tobe Awaka",
+    "slug": "tobe-awaka",
+    "equipo": "Chicago Bulls",
+    "equipo_carpeta": "26-Chicago-Bulls",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/26-Chicago-Bulls/tobe-awaka.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jaylin Sellers",
+    "slug": "jaylin-sellers",
+    "equipo": "Chicago Bulls",
+    "equipo_carpeta": "26-Chicago-Bulls",
+    "media": 69,
+    "posicion": "SG",
+    "foto": "fotos-nba/26-Chicago-Bulls/jaylin-sellers.png",
+    "banca": true
+  },
+  {
+    "nombre": "Dailyn Swain",
+    "slug": "dailyn-swain",
+    "equipo": "Chicago Bulls",
+    "equipo_carpeta": "26-Chicago-Bulls",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/26-Chicago-Bulls/dailyn-swain.png",
+    "banca": true
+  },
+  {
+    "nombre": "Josh Dix",
+    "slug": "josh-dix",
+    "equipo": "Oklahoma City Thunder",
+    "equipo_carpeta": "02-Oklahoma-City-Thunder",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/02-Oklahoma-City-Thunder/josh-dix.png",
+    "banca": true
+  },
+  {
+    "nombre": "Bennett Stirtz",
+    "slug": "bennett-stirtz",
+    "equipo": "Oklahoma City Thunder",
+    "equipo_carpeta": "02-Oklahoma-City-Thunder",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/02-Oklahoma-City-Thunder/bennett-stirtz.png",
+    "banca": true
+  },
+  {
+    "nombre": "Cameron Carr",
+    "slug": "cameron-carr",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 71,
+    "posicion": "SG",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/cameron-carr.png",
+    "banca": true
+  },
+  {
+    "nombre": "Arthur Kaluma",
+    "slug": "arthur-kaluma",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/arthur-kaluma.png",
+    "banca": true
+  },
+  {
+    "nombre": "Lawson Lovering",
+    "slug": "lawson-lovering",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 69,
+    "posicion": "C",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/lawson-lovering.png",
+    "banca": true
+  },
+  {
+    "nombre": "Chris Manon",
+    "slug": "chris-manon",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/chris-manon.png",
+    "banca": true
+  },
+  {
+    "nombre": "AK Okereke",
+    "slug": "ak-okereke",
+    "equipo": "Los Angeles Lakers",
+    "equipo_carpeta": "16-Los-Angeles-Lakers",
+    "media": 69,
+    "posicion": "SF",
+    "foto": "fotos-nba/16-Los-Angeles-Lakers/ak-okereke.png",
+    "banca": true
+  },
+  {
+    "nombre": "Javonte Green",
+    "slug": "javonte-green",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/13-Detroit-Pistons/javonte-green.png",
+    "banca": true
+  },
+  {
+    "nombre": "Elijah Harkless",
+    "slug": "elijah-harkless",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/13-Detroit-Pistons/elijah-harkless.png",
+    "banca": true
+  },
+  {
+    "nombre": "Isaac Jones",
+    "slug": "isaac-jones",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 71,
+    "posicion": "C",
+    "foto": "fotos-nba/13-Detroit-Pistons/isaac-jones.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ebuka Okorie",
+    "slug": "ebuka-okorie",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 72,
+    "posicion": "SG",
+    "foto": "fotos-nba/13-Detroit-Pistons/ebuka-okorie.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ugonna Onyenso",
+    "slug": "ugonna-onyenso",
+    "equipo": "Detroit Pistons",
+    "equipo_carpeta": "13-Detroit-Pistons",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/13-Detroit-Pistons/ugonna-onyenso.png",
+    "banca": true
+  },
+  {
+    "nombre": "Carson Cooper",
+    "slug": "carson-cooper",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 69,
+    "posicion": "C",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/carson-cooper.png",
+    "banca": true
+  },
+  {
+    "nombre": "Karim Lopez",
+    "slug": "karim-lopez",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 74,
+    "posicion": "SF",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/karim-lopez.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jahmai Mashack",
+    "slug": "jahmai-mashack",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/jahmai-mashack.png",
+    "banca": true
+  },
+  {
+    "nombre": "Quinten Post",
+    "slug": "quinten-post",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 73,
+    "posicion": "C",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/quinten-post.png",
+    "banca": true
+  },
+  {
+    "nombre": "Javon Small",
+    "slug": "javon-small",
+    "equipo": "Memphis Grizzlies",
+    "equipo_carpeta": "27-Memphis-Grizzlies",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/27-Memphis-Grizzlies/javon-small.png",
+    "banca": true
+  },
+  {
+    "nombre": "Branden Carlson",
+    "slug": "branden-carlson",
+    "equipo": "Portland Trail Blazers",
+    "equipo_carpeta": "17-Portland-Trail-Blazers",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/17-Portland-Trail-Blazers/branden-carlson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jayson Kent",
+    "slug": "jayson-kent",
+    "equipo": "Portland Trail Blazers",
+    "equipo_carpeta": "17-Portland-Trail-Blazers",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/17-Portland-Trail-Blazers/jayson-kent.png",
+    "banca": true
+  },
+  {
+    "nombre": "John Tonje",
+    "slug": "john-tonje",
+    "equipo": "Portland Trail Blazers",
+    "equipo_carpeta": "17-Portland-Trail-Blazers",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/17-Portland-Trail-Blazers/john-tonje.png",
+    "banca": true
+  },
+  {
+    "nombre": "Chris Youngblood",
+    "slug": "chris-youngblood",
+    "equipo": "Portland Trail Blazers",
+    "equipo_carpeta": "17-Portland-Trail-Blazers",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/17-Portland-Trail-Blazers/chris-youngblood.png",
+    "banca": true
+  },
+  {
+    "nombre": "Malik Dia",
+    "slug": "malik-dia",
+    "equipo": "New Orleans Pelicans",
+    "equipo_carpeta": "21-New-Orleans-Pelicans",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/21-New-Orleans-Pelicans/malik-dia.png",
+    "banca": true
+  },
+  {
+    "nombre": "DeAndre Jordan",
+    "slug": "deandre-jordan",
+    "equipo": "New Orleans Pelicans",
+    "equipo_carpeta": "21-New-Orleans-Pelicans",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/21-New-Orleans-Pelicans/deandre-jordan.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jaron Pierre Jr.",
+    "slug": "jaron-pierre-jr",
+    "equipo": "New Orleans Pelicans",
+    "equipo_carpeta": "21-New-Orleans-Pelicans",
+    "media": 69,
+    "posicion": "SG",
+    "foto": "fotos-nba/21-New-Orleans-Pelicans/jaron-pierre-jr.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jaden Akins",
+    "slug": "jaden-akins",
+    "equipo": "New York Knicks",
+    "equipo_carpeta": "03-New-York-Knicks",
+    "media": 69,
+    "posicion": "SG",
+    "foto": "fotos-nba/03-New-York-Knicks/jaden-akins.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tyler Nickel",
+    "slug": "tyler-nickel",
+    "equipo": "New York Knicks",
+    "equipo_carpeta": "03-New-York-Knicks",
+    "media": 69,
+    "posicion": "SF",
+    "foto": "fotos-nba/03-New-York-Knicks/tyler-nickel.png",
+    "banca": true
+  },
+  {
+    "nombre": "James Wiseman",
+    "slug": "james-wiseman",
+    "equipo": "New York Knicks",
+    "equipo_carpeta": "03-New-York-Knicks",
+    "media": 70,
+    "posicion": "C",
+    "foto": "fotos-nba/03-New-York-Knicks/james-wiseman.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ryan Conwell",
+    "slug": "ryan-conwell",
+    "equipo": "Miami Heat",
+    "equipo_carpeta": "14-Miami-Heat",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/14-Miami-Heat/ryan-conwell.png",
+    "banca": true
+  },
+  {
+    "nombre": "Tre Donaldson",
+    "slug": "tre-donaldson",
+    "equipo": "Miami Heat",
+    "equipo_carpeta": "14-Miami-Heat",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/14-Miami-Heat/tre-donaldson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Keshad Johnson",
+    "slug": "keshad-johnson",
+    "equipo": "Miami Heat",
+    "equipo_carpeta": "14-Miami-Heat",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/14-Miami-Heat/keshad-johnson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Nick Richards",
+    "slug": "nick-richards",
+    "equipo": "Miami Heat",
+    "equipo_carpeta": "14-Miami-Heat",
+    "media": 73,
+    "posicion": "C",
+    "foto": "fotos-nba/14-Miami-Heat/nick-richards.png",
+    "banca": true
+  },
+  {
+    "nombre": "Nate Ament",
+    "slug": "nate-ament",
+    "equipo": "Milwaukee Bucks",
+    "equipo_carpeta": "30-Milwaukee-Bucks",
+    "media": 76,
+    "posicion": "SF",
+    "foto": "fotos-nba/30-Milwaukee-Bucks/nate-ament.png",
+    "banca": true
+  },
+  {
+    "nombre": "Brayden Burries",
+    "slug": "brayden-burries",
+    "equipo": "Milwaukee Bucks",
+    "equipo_carpeta": "30-Milwaukee-Bucks",
+    "media": 76,
+    "posicion": "SG",
+    "foto": "fotos-nba/30-Milwaukee-Bucks/brayden-burries.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ousmane Dieng",
+    "slug": "ousmane-dieng",
+    "equipo": "Milwaukee Bucks",
+    "equipo_carpeta": "30-Milwaukee-Bucks",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/30-Milwaukee-Bucks/ousmane-dieng.png",
+    "banca": true
+  },
+  {
+    "nombre": "Bogoljub Markovic",
+    "slug": "bogoljub-markovic",
+    "equipo": "Milwaukee Bucks",
+    "equipo_carpeta": "30-Milwaukee-Bucks",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/30-Milwaukee-Bucks/bogoljub-markovic.png",
+    "banca": true
+  },
+  {
+    "nombre": "Cormac Ryan",
+    "slug": "cormac-ryan",
+    "equipo": "Milwaukee Bucks",
+    "equipo_carpeta": "30-Milwaukee-Bucks",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/30-Milwaukee-Bucks/cormac-ryan.png",
+    "banca": true
+  },
+  {
+    "nombre": "Jamal Cain",
+    "slug": "jamal-cain",
+    "equipo": "Orlando Magic",
+    "equipo_carpeta": "18-Orlando-Magic",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/18-Orlando-Magic/jamal-cain.png",
+    "banca": true
+  },
+  {
+    "nombre": "Alex Morales",
+    "slug": "alex-morales",
+    "equipo": "Orlando Magic",
+    "equipo_carpeta": "18-Orlando-Magic",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/18-Orlando-Magic/alex-morales.png",
+    "banca": true
+  },
+  {
+    "nombre": "Izaiyah Nelson",
+    "slug": "izaiyah-nelson",
+    "equipo": "Orlando Magic",
+    "equipo_carpeta": "18-Orlando-Magic",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/18-Orlando-Magic/izaiyah-nelson.png",
+    "banca": true
+  },
+  {
+    "nombre": "Chris Cenac Jr.",
+    "slug": "chris-cenac-jr",
+    "equipo": "Boston Celtics",
+    "equipo_carpeta": "11-Boston-Celtics",
+    "media": 73,
+    "posicion": "SF",
+    "foto": "fotos-nba/11-Boston-Celtics/chris-cenac-jr.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ron Harper Jr.",
+    "slug": "ron-harper-jr",
+    "equipo": "Boston Celtics",
+    "equipo_carpeta": "11-Boston-Celtics",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/11-Boston-Celtics/ron-harper-jr.png",
+    "banca": true
+  },
+  {
+    "nombre": "Dillon Mitchell",
+    "slug": "dillon-mitchell",
+    "equipo": "Boston Celtics",
+    "equipo_carpeta": "11-Boston-Celtics",
+    "media": 71,
+    "posicion": "SF",
+    "foto": "fotos-nba/11-Boston-Celtics/dillon-mitchell.png",
+    "banca": true
+  },
+  {
+    "nombre": "Amari Williams",
+    "slug": "amari-williams",
+    "equipo": "Boston Celtics",
+    "equipo_carpeta": "11-Boston-Celtics",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/11-Boston-Celtics/amari-williams.png",
+    "banca": true
+  },
+  {
+    "nombre": "Leaky Black",
+    "slug": "leaky-black",
+    "equipo": "Sacramento Kings",
+    "equipo_carpeta": "28-Sacramento-Kings",
+    "media": 70,
+    "posicion": "SF",
+    "foto": "fotos-nba/28-Sacramento-Kings/leaky-black.png",
+    "banca": true
+  },
+  {
+    "nombre": "Sean Pedulla",
+    "slug": "sean-pedulla",
+    "equipo": "Sacramento Kings",
+    "equipo_carpeta": "28-Sacramento-Kings",
+    "media": 70,
+    "posicion": "SG",
+    "foto": "fotos-nba/28-Sacramento-Kings/sean-pedulla.png",
+    "banca": true
+  },
+  {
+    "nombre": "Emanuel Sharp",
+    "slug": "emanuel-sharp",
+    "equipo": "Sacramento Kings",
+    "equipo_carpeta": "28-Sacramento-Kings",
+    "media": 69,
+    "posicion": "SG",
+    "foto": "fotos-nba/28-Sacramento-Kings/emanuel-sharp.png",
+    "banca": true
+  },
+  {
+    "nombre": "Ben Simmons",
+    "slug": "ben-simmons",
+    "equipo": "Sacramento Kings",
+    "equipo_carpeta": "28-Sacramento-Kings",
+    "media": 73,
+    "posicion": "SG",
+    "foto": "fotos-nba/28-Sacramento-Kings/ben-simmons.png",
+    "banca": true
   }
 ]
