@@ -1351,6 +1351,10 @@
     box-shadow:0 4px 14px rgba(224,48,58,.5), inset 0 0 0 2px rgba(255,255,255,.5);}
   .pf-medal.pf-medal-red .pf-medal-ico svg{color:#3a0508;}
   .pf-medal.pf-medal-red .pf-medal-txt b{color:#ffcccc;}
+  .pf-medal.pf-medal-silver{background:linear-gradient(135deg, rgba(210,220,235,.16), rgba(20,22,30,.5) 60%);}
+  .pf-medal.pf-medal-silver .pf-medal-ico{background:radial-gradient(circle at 35% 30%, #ffffff, #b8c2d0 45%, #5d6675 100%);}
+  .pf-medal.pf-medal-silver .pf-medal-ico svg{color:#2a2f38;}
+  .pf-medal.pf-medal-silver .pf-medal-txt b{color:#eef2f8;}
   .pf-section{margin-bottom:26px;}
   .pf-sec-head{display:flex; align-items:center; justify-content:space-between; margin-bottom:14px;}
   .pf-sec-head h3{font-size:18px; text-transform:uppercase; letter-spacing:.02em;}
@@ -2568,6 +2572,12 @@
         medalsHtml.push(`<div class="pf-medal">
           <div class="pf-medal-ico">${trophyIco}</div>
           <div class="pf-medal-txt"><b>Álbum Temporada 2025-26 completo</b><span>Las 150 cartas coleccionadas antes del cambio de temporada</span></div>
+        </div>`);
+      }
+      if(isMe && state.albumRank===2){
+        medalsHtml.push(`<div class="pf-medal pf-medal-silver">
+          <div class="pf-medal-ico">${trophyIco}</div>
+          <div class="pf-medal-txt"><b>2º en completar el primer álbum</b><span>Segundo jugador de DUNK en llenar el Álbum 2025-26</span></div>
         </div>`);
       }
       if(isMe && state.badge90s){
@@ -4174,6 +4184,20 @@
     "LEYENDA90": { coins:2000, pack90s:true },
     "BALON-2500-T7X9": { coins:2500 },            // 2500 balones (1 uso por cuenta)
   };
+  // código de regalo (nube, 1 solo uso): balones + cartas promo + medallas de perfil
+  // payload: { gift:true, coins, promo:[ids], medals:{legacyAlbum2025_26, badge90s, albumRank} }
+  function applyGiftCode(g){
+    const parts=[];
+    if(g.coins){ addCoins(g.coins); parts.push(`+<b>${g.coins}</b> balones`); }
+    if(g.promo && g.promo.length){ const n=grantPromo(g.promo.filter(id=>!ownsPromo(id))); if(n) parts.push(`<b>${n}</b> carta${n>1?'s':''} promo`); }
+    const m=g.medals||{}; let nm=0;
+    if(m.legacyAlbum2025_26 && !state.legacyAlbum2025_26){ state.legacyAlbum2025_26=true; nm++; }
+    if(m.badge90s && !state.badge90s){ state.badge90s=true; nm++; }
+    if(m.albumRank && state.albumRank!==m.albumRank){ state.albumRank=m.albumRank; nm++; }
+    if(nm) parts.push(`<b>${nm}</b> medalla${nm>1?'s':''}`);
+    save(); try{ renderAll(); }catch(e){}
+    toast(`¡Código canjeado! ${parts.join(" + ")||'✓'}`);
+  }
   async function redeemCode(raw){
     const code = String(raw||"").trim().toUpperCase();
     if(!code) return;
@@ -4208,6 +4232,7 @@
     catch(e){ toast(/permission|insufficient/i.test(String(e&&e.message)) ? "Faltan permisos en Firestore (publica las reglas)" : "No se pudo reclamar, intenta de nuevo"); return; }
     if(!res || !res.ok){ toast(res && res.reason==="used" ? "Ese código ya fue usado" : "Código no válido"); return; }
     if(res.cards && res.cards.reward){ claimRewardCode(res.cards); toast("¡Código canjeado!"); return; }
+    if(res.cards && res.cards.gift){ applyGiftCode(res.cards); return; }
     const n=grantBundle(res.cards||[]);
     toast(n ? `¡Reclamado! Recibiste <b>${n}</b> carta${n>1?'s':''}` : "Código válido, pero ya tenías esas cartas");
   }
