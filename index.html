@@ -582,6 +582,29 @@
   .fantasy-conf-lbl{font-family:var(--display); font-weight:700; font-size:12.5px; text-transform:uppercase; letter-spacing:.06em;
     color:var(--muted); margin:16px 0 8px;}
   .fantasy-conf-lbl:first-child{margin-top:0;}
+  /* ---- pestaña Tabla: posiciones de toda la liga + buscador de jugadores con stats reales ---- */
+  .tb-table{width:100%; border-collapse:collapse; font-size:13px;}
+  .tb-table th{font-family:var(--display); font-size:11px; letter-spacing:.05em; text-transform:uppercase; color:var(--muted); text-align:right; padding:6px 6px; font-weight:700;}
+  .tb-table th:nth-child(2), .tb-table td:nth-child(2){text-align:left;}
+  .tb-table td{padding:9px 6px; border-top:1px solid var(--line); text-align:right; font-variant-numeric:tabular-nums;}
+  .tb-table tr[data-tb-team]{cursor:pointer;}
+  .tb-table tr[data-tb-team]:hover td{background:var(--surface-2);}
+  .tb-table tr.mine td{color:var(--fantasy-accent, var(--accent)); font-weight:700;}
+  .tb-team{display:flex; align-items:center; gap:8px; min-width:0;}
+  .tb-team span{overflow:hidden; text-overflow:ellipsis; white-space:nowrap;}
+  .tb-dot{width:10px; height:10px; border-radius:50%; flex:0 0 auto;}
+  .tb-owner{font-size:10px; color:var(--muted); font-weight:600;}
+  .tb-pos{color:var(--good,#3ecf8e);} .tb-neg{color:#ff6b6b;}
+  .tb-search{width:100%; box-sizing:border-box; padding:12px 14px; border-radius:12px; border:1px solid var(--line); background:var(--surface-2); color:var(--text); font:inherit; font-size:15px; margin-bottom:10px;}
+  .tb-player{display:flex; align-items:center; gap:10px; padding:10px 12px; background:var(--surface-2); border:1px solid var(--line); border-radius:12px; margin-bottom:6px; cursor:pointer;}
+  .tb-player-name{flex:1 1 auto; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-weight:600;}
+  .tb-player-name small{display:block; color:var(--muted); font-weight:500; font-size:11.5px;}
+  .tb-player-stat{font-family:var(--display); font-weight:700; text-align:right; white-space:nowrap;}
+  .tb-player-stat small{display:block; color:var(--muted); font-size:10px; font-weight:600;}
+  .tb-log{margin:10px 20px 0;}
+  .tb-log-row{display:flex; justify-content:space-between; gap:10px; padding:8px 0; border-top:1px solid var(--line); font-size:13px;}
+  .tb-log-row b{font-family:var(--display);}
+  @media(max-width:560px){ .tb-hide-sm{display:none;} .tb-table td, .tb-table th{padding:8px 4px;} }
   .fs-grid{display:grid; grid-template-columns:repeat(5,1fr); gap:8px; padding:4px 20px 4px;}
   .fs-grid-3{grid-template-columns:repeat(3,1fr);}
   .fs-stat{background:var(--surface-2); border:1px solid var(--line); border-radius:12px; padding:10px 6px; text-align:center;}
@@ -1715,6 +1738,7 @@
           <button class="fantasy-subtab" data-sub="transfer" role="tab" aria-selected="false">Transferencias</button>
           <button class="fantasy-subtab" data-sub="misiones" role="tab" aria-selected="false">Misiones</button>
           <button class="fantasy-subtab" data-sub="stats" role="tab" aria-selected="false">Clasificación</button>
+          <button class="fantasy-subtab" data-sub="tabla" role="tab" aria-selected="false">Tabla</button>
           <button class="fantasy-subtab" data-sub="news" role="tab" aria-selected="false">Noticias</button>
         </div>
           <div class="fantasy-topbar-team" id="fantasy-topbar-team"></div>
@@ -1775,6 +1799,15 @@
             <button class="fantasy-subtab" data-cat="ft">Tiro libre</button>
           </div>
           <div id="fantasy-stat-leaders"></div>
+        </div>
+
+        <div class="fantasy-subview" id="fantasy-sub-tabla" hidden>
+          <div class="pf-sec-head"><h3>Tabla de la liga</h3></div>
+          <p class="fantasy-hint" style="margin-top:-10px">Todos los equipos, con los partidos ya terminados de esta temporada. Toca un equipo para ver a sus jugadores.</p>
+          <div id="fantasy-tabla-teams"></div>
+          <div class="pf-sec-head" style="margin-top:24px"><h3>Jugadores</h3></div>
+          <input class="tb-search" id="fantasy-tabla-search" type="search" placeholder="Buscar jugador o equipo…" autocomplete="off">
+          <div id="fantasy-tabla-players"></div>
         </div>
 
         <div class="fantasy-subview" id="fantasy-sub-news" hidden>
@@ -4692,10 +4725,10 @@
   async function switchFantasySub(tab){
     fantasySubTab=tab;
     $$("#fantasy-subnav .fantasy-subtab").forEach(t=>{ const on=t.dataset.sub===tab; t.classList.toggle("active",on); t.setAttribute("aria-selected",String(on)); });
-    ["partidos","copa","equipo","transfer","misiones","stats","news"].forEach(k=>{ const el=$("#fantasy-sub-"+k); if(el) el.hidden = k!==tab; });
+    ["partidos","copa","equipo","transfer","misiones","stats","tabla","news"].forEach(k=>{ const el=$("#fantasy-sub-"+k); if(el) el.hidden = k!==tab; });
     // trades/suspensiones/dinero los puede cambiar el comisionado desde fuera — refresca antes de pintar
     // cualquier pestaña que dependa de fantasySeasonData, para no mostrar plantillas/presupuestos viejos.
-    if(tab==="equipo" || tab==="transfer" || tab==="stats"){
+    if(tab==="equipo" || tab==="transfer" || tab==="stats" || tab==="tabla"){
       try{ const fresh = await window.DunkFire.fantasyGetSeason(); if(fresh) fantasySeasonData = fresh; }catch(e){}
     }
     if(tab==="copa") renderFantasyCopa();
@@ -4704,6 +4737,131 @@
     if(tab==="misiones") renderFantasyMissions();
     if(tab==="stats"){ renderFantasyStandings(); renderFantasyStatLeaders(); }
     if(tab==="news") renderFantasyNews();
+    if(tab==="tabla") renderFantasyTabla();
+  }
+  // ---- TABLA: stats REALES sacadas de las jugadas de los partidos ya terminados de la temporada ----
+  let fantasyTablaCache=null;   // {at, season, teams:{team:{w,l,pf,pa,games:[]}}, players:{slug:{gp,pts,fgm,fga,tpm,ftm,max,log:[]}}}
+  async function fantasyTablaData(){
+    const sn=fantasySeasonData&&fantasySeasonData.seasonNumber;
+    if(fantasyTablaCache && fantasyTablaCache.season===sn && Date.now()-fantasyTablaCache.at<60000) return fantasyTablaCache;
+    let games=[]; try{ games=await window.DunkFire.fantasyListSeasonGames(sn); }catch(e){}
+    const now=Date.now(), teams={}, players={};
+    const T=t=>teams[t]||(teams[t]={w:0,l:0,pf:0,pa:0,games:[]});
+    for(const g of games){
+      // solo cuentan los que ya acabaron (arrancados y pasada la duración real del partido)
+      if(!g.liveStartedAt || now-g.liveStartedAt < FANTASY_TOTAL_REAL*1000) continue;
+      const hWon=g.finalHome>g.finalAway;
+      const h=T(g.home), a=T(g.away);
+      h.pf+=g.finalHome; h.pa+=g.finalAway; a.pf+=g.finalAway; a.pa+=g.finalHome;
+      if(hWon){ h.w++; a.l++; } else { a.w++; h.l++; }
+      h.games.push({at:g.liveStartedAt, opp:g.away, home:true, my:g.finalHome, their:g.finalAway});
+      a.games.push({at:g.liveStartedAt, opp:g.home, home:false, my:g.finalAway, their:g.finalHome});
+      const per={};
+      for(const p of (g.plays||[])){
+        if(!p.slug) continue;
+        const r=per[p.slug]||(per[p.slug]={team:p.team,pts:0,fgm:0,fga:0,tpm:0,ftm:0});
+        r.pts+=p.pts;
+        if(p.pts===3){ r.tpm++; r.fgm++; r.fga++; } else if(p.pts===2){ r.fgm++; r.fga++; } else if(p.pts===1){ r.ftm++; } else { r.fga++; }
+      }
+      for(const slug in per){
+        const r=per[slug], P=players[slug]||(players[slug]={gp:0,pts:0,fgm:0,fga:0,tpm:0,ftm:0,max:0,log:[]});
+        P.gp++; P.pts+=r.pts; P.fgm+=r.fgm; P.fga+=r.fga; P.tpm+=r.tpm; P.ftm+=r.ftm; P.max=Math.max(P.max,r.pts);
+        const opp = r.team===g.home ? g.away : g.home;
+        P.log.push({at:g.liveStartedAt, opp, pts:r.pts, team:r.team, won: r.team===g.home ? hWon : !hWon});
+      }
+    }
+    fantasyTablaCache={at:now, season:sn, teams, players};
+    return fantasyTablaCache;
+  }
+  async function renderFantasyTabla(){
+    const wrap=$("#fantasy-tabla-teams"); if(!wrap) return;
+    wrap.innerHTML=`<p style="color:var(--muted);font-size:13px">Cargando…</p>`;
+    const data=await fantasyTablaData();
+    const owners=(fantasySeasonData&&fantasySeasonData.teams)||{};
+    const rows=FANTASY_ALL_TEAMS.map(t=>{ const r=data.teams[t]||{w:0,l:0,pf:0,pa:0,games:[]}; return Object.assign({team:t, owned:!!owners[t]}, r); })
+      .sort((a,b)=>{ const pa=a.w+a.l?a.w/(a.w+a.l):0, pb=b.w+b.l?b.w/(b.w+b.l):0; return pb-pa || b.w-a.w || (b.pf-b.pa)-(a.pf-a.pa); });
+    const streak=r=>{ const g=r.games.slice().sort((x,y)=>y.at-x.at); if(!g.length) return "—"; const w=g[0].my>g[0].their; let n=0; for(const x of g){ if((x.my>x.their)===w) n++; else break; } return (w?"G":"P")+n; };
+    wrap.innerHTML=`<table class="tb-table"><thead><tr><th>#</th><th>Equipo</th><th>G</th><th>P</th><th>%</th><th class="tb-hide-sm">PF</th><th class="tb-hide-sm">PC</th><th>DIF</th><th class="tb-hide-sm">Racha</th></tr></thead><tbody>
+      ${rows.map((r,i)=>{ const gp=r.w+r.l, pct=gp?(r.w/gp).toFixed(3).replace(/^0/,""):".000", dif=gp?Math.round((r.pf-r.pa)/gp*10)/10:0;
+        return `<tr data-tb-team="${esc(r.team)}" class="${r.team===fantasyMyTeam?"mine":""}">
+          <td>${i+1}</td>
+          <td><div class="tb-team"><i class="tb-dot" style="background:${teamOf(r.team).c1}"></i><span>${esc(r.team)}</span>${r.owned?`<span class="tb-owner">DT</span>`:""}</div></td>
+          <td>${r.w}</td><td>${r.l}</td><td>${pct}</td>
+          <td class="tb-hide-sm">${gp?Math.round(r.pf/gp):"-"}</td><td class="tb-hide-sm">${gp?Math.round(r.pa/gp):"-"}</td>
+          <td class="${dif>0?"tb-pos":dif<0?"tb-neg":""}">${dif>0?"+":""}${dif}</td>
+          <td class="tb-hide-sm">${streak(r)}</td></tr>`; }).join("")}
+    </tbody></table>
+    <p class="fantasy-hint" style="margin-top:8px">PF/PC = puntos a favor/en contra por partido · DIF = diferencia por partido · DT = equipo con dueño</p>`;
+    renderFantasyTablaPlayers();
+  }
+  function fantasyTablaPlayerRow(p, st){
+    const ppg = st&&st.gp ? (st.pts/st.gp).toFixed(1) : "0.0";
+    return `<div class="tb-player" data-tb-player="${esc(p.slug)}">
+      <img class="fs-leader-photo" src="${esc(p.foto)}" onerror="this.style.opacity=0">
+      <div class="tb-player-name">${esc(p.nombre)}<small>${esc(fantasyEffectiveTeam(p))} · ${esc(p.posicion||"")} · ${p.media}</small></div>
+      <div class="tb-player-stat">${ppg}<small>PPG</small></div>
+      <div class="tb-player-stat">${st?st.gp:0}<small>PJ</small></div>
+    </div>`;
+  }
+  async function renderFantasyTablaPlayers(){
+    const box=$("#fantasy-tabla-players"); if(!box) return;
+    const data=await fantasyTablaData();
+    const q=($("#fantasy-tabla-search")?.value||"").trim().toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    const norm=x=>String(x||"").toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"");
+    let list=PLAYERS.filter(p=>!p.fueraNBA);
+    if(q) list=list.filter(p=>norm(p.nombre).includes(q) || norm(fantasyEffectiveTeam(p)).includes(q));
+    const ppg=p=>{ const s=data.players[p.slug]; return s&&s.gp ? s.pts/s.gp : -1; };
+    list.sort((a,b)=>ppg(b)-ppg(a) || b.media-a.media);
+    const shown=list.slice(0, q?60:20);
+    box.innerHTML = (q?"":`<p class="fantasy-hint" style="margin-top:0">Top 20 anotadores por partido. Escribe para buscar a cualquier jugador.</p>`) +
+      (shown.length ? shown.map(p=>fantasyTablaPlayerRow(p, data.players[p.slug])).join("") : `<p style="color:var(--muted);font-size:13px">Sin resultados.</p>`);
+  }
+  async function fantasyOpenTablaPlayer(slug){
+    const p=BY[slug]; if(!p) return;
+    const data=await fantasyTablaData();
+    const st=data.players[slug]||{gp:0,pts:0,fgm:0,fga:0,tpm:0,ftm:0,max:0,log:[]};
+    const susp=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[slug];
+    const fgPct = st.fga ? Math.round(st.fgm/st.fga*100) : 0;
+    const log=st.log.slice().sort((a,b)=>b.at-a.at).slice(0,10);
+    $("#sheet-body").innerHTML=`<div class="picker-head"><h3>${esc(p.nombre)}</h3></div>
+      <p style="padding:0 20px;color:var(--muted);font-size:12.5px">${esc(p.posicion||"")} · ${esc(fantasyEffectiveTeam(p))} · Media ${p.media}</p>
+      ${(susp&&susp.gamesLeft>0)?`<p style="padding:0 20px;color:#ff6b6b;font-size:12.5px;font-weight:700">${fantasyOutLabel(susp)}${susp.injury?` (${esc(susp.injury)})`:""} — fuera ${susp.gamesLeft} partido${susp.gamesLeft>1?"s":""}</p>`:""}
+      <div class="fs-grid" style="margin-top:14px">
+        <div class="fs-stat"><b>${st.gp?(st.pts/st.gp).toFixed(1):"0.0"}</b><span>PPG</span></div>
+        <div class="fs-stat"><b>${st.pts}</b><span>PTS total</span></div>
+        <div class="fs-stat"><b>${st.gp}</b><span>Partidos</span></div>
+        <div class="fs-stat"><b>${st.max}</b><span>Máximo</span></div>
+        <div class="fs-stat"><b>${st.tpm}</b><span>Triples</span></div>
+      </div>
+      <div class="fs-grid fs-grid-3">
+        <div class="fs-stat"><b>${fgPct}%</b><span>Tiro de campo</span></div>
+        <div class="fs-stat"><b>${st.fgm}/${st.fga}</b><span>Canastas</span></div>
+        <div class="fs-stat"><b>${st.ftm}</b><span>Tiros libres</span></div>
+      </div>
+      <div class="tb-log">
+        <div class="fantasy-conf-lbl">Últimos partidos</div>
+        ${log.length ? log.map(g=>`<div class="tb-log-row"><span>${g.won?"✅":"❌"} vs ${esc(g.opp)}</span><b>${g.pts} pts</b></div>`).join("") : `<p style="color:var(--muted);font-size:13px">Aún no juega partidos esta temporada.</p>`}
+      </div>
+      <p style="padding:10px 20px 0;color:var(--muted);font-size:11px;text-align:center">Estadísticas reales de los partidos de DT de esta temporada</p>`;
+    showSheet();
+  }
+  async function fantasyOpenTablaTeam(team){
+    const data=await fantasyTablaData();
+    const r=data.teams[team]||{w:0,l:0,pf:0,pa:0,games:[]};
+    const roster=fantasyRoster(team).slice();
+    const ppg=p=>{ const s=data.players[p.slug]; return s&&s.gp ? s.pts/s.gp : -1; };
+    roster.sort((a,b)=>ppg(b)-ppg(a) || b.media-a.media);
+    const games=r.games.slice().sort((a,b)=>b.at-a.at).slice(0,8);
+    const owners=(fantasySeasonData&&fantasySeasonData.teams)||{};
+    $("#sheet-body").innerHTML=`<div class="picker-head"><h3>${esc(team)}</h3></div>
+      <p style="padding:0 20px;color:var(--muted);font-size:12.5px">${r.w}-${r.l} · ${owners[team]?"Equipo con dueño (DT)":"Sin dueño"} · ${r.w+r.l?Math.round(r.pf/(r.w+r.l)):0} PF / ${r.w+r.l?Math.round(r.pa/(r.w+r.l)):0} PC por partido</p>
+      <div class="tb-log">
+        <div class="fantasy-conf-lbl">Últimos resultados</div>
+        ${games.length ? games.map(g=>`<div class="tb-log-row"><span>${g.my>g.their?"✅":"❌"} ${g.home?"vs":"@"} ${esc(g.opp)}</span><b>${g.my}-${g.their}</b></div>`).join("") : `<p style="color:var(--muted);font-size:13px">Sin partidos terminados todavía.</p>`}
+        <div class="fantasy-conf-lbl" style="margin-top:16px">Jugadores</div>
+      </div>
+      <div style="padding:0 20px">${roster.map(p=>fantasyTablaPlayerRow(p, data.players[p.slug])).join("")}</div>`;
+    showSheet();
   }
   async function renderFantasyNews(){
     const wrap=$("#fantasy-news-list"); if(!wrap) return;
@@ -5989,11 +6147,15 @@
       $$("#fantasy-stat-tabs [data-cat]").forEach(x=>x.classList.toggle("active", x===b));
       renderFantasyStatLeaders();
     });
+    $("#fantasy-tabla-search")?.addEventListener("input", ()=>renderFantasyTablaPlayers());
+    $("#fantasy-tabla-teams")?.addEventListener("click", e=>{ const tr=e.target.closest("[data-tb-team]"); if(tr) fantasyOpenTablaTeam(tr.dataset.tbTeam); });
+    $("#fantasy-tabla-players")?.addEventListener("click", e=>{ const r=e.target.closest("[data-tb-player]"); if(r) fantasyOpenTablaPlayer(r.dataset.tbPlayer); });
     $("#fantasy-stat-leaders")?.addEventListener("click", e=>{
       const row=e.target.closest("[data-stat-slug]"); if(!row) return;
       fantasyOpenPlayerStats(row.dataset.statSlug, {});
     });
     $("#sheet")?.addEventListener("click", e=>{
+      const tbRow=e.target.closest("[data-tb-player]"); if(tbRow){ fantasyOpenTablaPlayer(tbRow.dataset.tbPlayer); return; }
       const statRow=e.target.closest("[data-stat-slug]"); if(statRow && !e.target.closest("[data-offer-slug]") && !e.target.closest("[data-toggle-listing]")){ fantasyOpenPlayerStats(statRow.dataset.statSlug, {}); return; }
       if(fantasyEditMode!=="sheet") return;
       const fb=e.target.closest("[data-formation]"); if(fb){ fantasyEditFormation=fb.dataset.formation; fantasyRerenderEditor(); return; }
@@ -6645,7 +6807,7 @@ window.MiniGame = (function(){
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
-  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, runTransaction, onSnapshot, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { getFirestore, doc, getDoc, setDoc, deleteDoc, updateDoc, collection, query, where, getDocs, runTransaction, onSnapshot, orderBy, limit, documentId } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
 
   const firebaseConfig = {
     apiKey: "AIzaSyCahATuEFQDCtRhttn4GqkurK-CVBsp0O8",
@@ -6891,6 +7053,12 @@ window.MiniGame = (function(){
         tx.set(ref, out);
         return out;
       });
+    },
+    // todos los partidos de la temporada N (ids "s{N}-…"), para la pestaña Tabla
+    fantasyListSeasonGames: async (seasonNumber)=>{
+      const pre=`s${seasonNumber}-`;
+      const qs=await getDocs(query(collection(db,"fantasyGames"), where(documentId(),">=",pre), where(documentId(),"<",pre+"\uf8ff")));
+      return qs.docs.map(d=>d.data());
     },
     fantasyGetGame: async (id)=>{ const s=await getDoc(doc(db,"fantasyGames",id)); return s.exists()?s.data():null; },
     fantasyCreateGame: (id, data)=> setDoc(doc(db,"fantasyGames",id), data),
