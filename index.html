@@ -6948,8 +6948,13 @@ window.MiniGame = (function(){
     // ---- NOTICIAS (las publica el comisionado; publishAt permite programarlas a futuro) ----
     fantasyGetNews: async ()=>{
       const qs=await getDocs(query(collection(db,"fantasyNews"), orderBy("createdAt","desc"), limit(30)));
-      const now=Date.now();
-      return qs.docs.map(d=>d.data()).filter(n=>(n.publishAt||n.createdAt||0)<=now);
+      const now=Date.now(), NEWS_TTL=3*24*3600*1000;   // las noticias caducan a los 3 días de publicadas
+      const all=qs.docs.map(d=>d.data());
+      // el comisionado va borrando las caducadas al abrir noticias (la regla solo le deja borrar a él)
+      if(auth.currentUser && auth.currentUser.email==="emilianocros27@gmail.com"){
+        all.filter(n=>now-(n.publishAt||n.createdAt||0)>NEWS_TTL).forEach(n=>{ deleteDoc(doc(db,"fantasyNews",n.id)).catch(()=>{}); });
+      }
+      return all.filter(n=>{ const t=n.publishAt||n.createdAt||0; return t<=now && now-t<=NEWS_TTL; });
     },
     fantasyPostNews: async (title, text, publishAt, image)=>{
       const id=`n${Date.now()}_${Math.random().toString(36).slice(2,7)}`;
