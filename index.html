@@ -4306,6 +4306,8 @@
   const FANTASY_MISS_DESC = ["falla un triple","falla de dos","pierde el balón","falla un tiro libre","no logra su mate","le bloquean el tiro","pierde el rebote"];
   const fantasyPlayText = (nombre, pts) => { const o=FANTASY_DESC[pts]||FANTASY_DESC[2]; return `${nombre} ${o[Math.floor(Math.random()*o.length)]}`; };
   const fantasyMissText = nombre => `${nombre} ${FANTASY_MISS_DESC[Math.floor(Math.random()*FANTASY_MISS_DESC.length)]}`;
+  // baja por suspensión o por lesión (suspensions[slug].injury = nombre de la lesión)
+  const fantasyOutLabel = s => s && s.injury ? "Lesionado" : "Suspendido";
   function fantasyIsSuspended(slug){
     const s = fantasySeasonData && fantasySeasonData.suspensions && fantasySeasonData.suspensions[slug];
     return !!(s && s.gamesLeft>0);
@@ -4351,6 +4353,7 @@
     let total=0; const ws=new Array(roster.length);
     for(let i=0;i<roster.length;i++){
       const p=roster[i];
+      if(fantasyIsSuspended(p.slug)){ ws[i]=0; continue; }   // baja (suspendido/lesionado): no anota
       const isStarter = !starters || starters.includes(p.slug);
       const fatigue = fantasyFatigueMult(fantasyMinutesOnCourt(events, p.slug, sec));
       const w = Math.max(0.001, fantasyScoreWeight(p) * (isStarter?3:0.5) * fatigue);
@@ -4776,7 +4779,7 @@
     const body=$("#sheet-body");
     const render=()=>{
       const susp=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug];
-      const suspBanner = (susp&&susp.gamesLeft>0) ? `<p style="padding:0 20px;color:#ff6b6b;font-size:12.5px;font-weight:700">Suspendido — no juega los próximos ${susp.gamesLeft} partido${susp.gamesLeft>1?"s":""}</p>` : "";
+      const suspBanner = (susp&&susp.gamesLeft>0) ? `<p style="padding:0 20px;color:#ff6b6b;font-size:12.5px;font-weight:700">${fantasyOutLabel(susp)}${susp.injury?` (${esc(susp.injury)})`:""} — no juega los próximos ${susp.gamesLeft} partido${susp.gamesLeft>1?"s":""}</p>` : "";
       body.innerHTML = `<div class="picker-head"><h3>${esc(p.nombre)}</h3></div>
         <p style="padding:0 20px;color:var(--muted);font-size:12.5px">${esc(p.posicion||"")} · ${esc(p.equipo)} · Media ${p.media}</p>
         ${suspBanner}
@@ -4972,10 +4975,10 @@
       </div>` : "";
     const suspended = roster.filter(p=>{ const s=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug]; return s&&s.gamesLeft>0; });
     const suspendedHTML = suspended.length ? `<div class="ff-suspended">
-        <div class="ff-suspended-lbl">Suspendidos (no disponibles)</div>
+        <div class="ff-suspended-lbl">Bajas (no disponibles)</div>
         ${suspended.map(p=>{ const s=fantasySeasonData.suspensions[p.slug]; return `<div class="ff-suspended-row">
           <img src="${esc(p.foto)}" onerror="this.style.opacity=0">
-          <span>${esc(p.nombre)}</span>
+          <span>${esc(p.nombre)} <small style="color:#ff6b6b">${fantasyOutLabel(s)}</small></span>
           <b>${s.gamesLeft} partido${s.gamesLeft>1?"s":""}</b>
         </div>`;}).join("")}
       </div>` : "";
@@ -5090,7 +5093,7 @@
           <div class="ff-picker-photo"><img src="${esc(p.foto)}" onerror="this.style.opacity=0"></div>
           <span class="ff-picker-name">${esc(p.nombre)}</span>
           ${off?"":fitTag(p)}
-          <span class="ff-picker-meta">${off?`<span style="color:#ff6b6b">Suspendido (${susp.gamesLeft})</span>`:`${esc(p.posicion||"")} · ${p.media}`}</span>
+          <span class="ff-picker-meta">${off?`<span style="color:#ff6b6b">${fantasyOutLabel(susp)} (${susp.gamesLeft})</span>`:`${esc(p.posicion||"")} · ${p.media}`}</span>
         </div>`;
     };
     const body=$("#sheet-body");
@@ -5384,7 +5387,7 @@
       (isMine ? `<p style="padding:0 20px 4px;color:var(--muted);font-size:11.5px">Toca "Listar" para pedir salir — el jugador aparece en la Lista de transferencias para que otros equipos oferten.</p>` : "") +
       (roster.length ? roster.map(p=>{
           const susp=fantasySeasonData&&fantasySeasonData.suspensions&&fantasySeasonData.suspensions[p.slug];
-          const suspTag = (susp&&susp.gamesLeft>0) ? ` · <span style="color:#ff6b6b">Suspendido (${susp.gamesLeft})</span>` : "";
+          const suspTag = (susp&&susp.gamesLeft>0) ? ` · <span style="color:#ff6b6b">${fantasyOutLabel(susp)} (${susp.gamesLeft})</span>` : "";
           const isListed = listedSlugs.has(p.slug);
           const mineBtn = `<button class="btn ${isListed?"btn-ghost":"btn-primary"}" style="padding:8px 12px;font-size:11.5px;white-space:nowrap" data-toggle-listing="${esc(p.slug)}">${isListed?"Quitar de lista":"Listar"}</button>`;
           return `<div class="ft-roster-row" data-stat-slug="${esc(p.slug)}" style="cursor:pointer">
@@ -5831,7 +5834,7 @@
     for(const slug of misSlugs){
       if(susp[slug] && susp[slug].gamesLeft>0){
         const left = susp[slug].gamesLeft-nGames;
-        if(left<=0) delete susp[slug]; else susp[slug]={gamesLeft:left};
+        if(left<=0) delete susp[slug]; else susp[slug]=Object.assign({}, susp[slug], {gamesLeft:left});
         changed=true;
       }
     }
