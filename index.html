@@ -5552,7 +5552,8 @@
   }
   async function fantasySubmitCounter(tradeId){
     const slugs = $$("#sheet-body .ft-offer-check input:checked").map(el=>el.value);
-    const amt = +($("#ft-counter-amount")?.value||0);
+    let amt = Math.round((+($("#ft-counter-amount")?.value||0))*10)/10;
+    if(!isFinite(amt) || amt<0) amt=0;
     if(!slugs.length && (!amt||amt<=0)){ toast("Pide un jugador, dinero, o los dos"); return; }
     try{
       const offeredVal = slugs.length===1 ? slugs[0] : (slugs.length ? slugs : null);
@@ -5622,8 +5623,10 @@
   }
   async function fantasySubmitOffer(toTeam, playerSlug){
     const offeredSlugs = $$("#sheet-body .ft-offer-check input:checked").map(el=>el.value);
-    const amt = +($("#ft-offer-amount")?.value||0);
-    if(!offeredSlugs.length && (!amt || amt<=0)){ toast("Ofrece un jugador, dinero, o los dos"); return; }
+    // dinero en pasos de 0.1M: montos tipo 1e-99 se redondean a 0 (no cuentan como oferta)
+    let amt = Math.round((+($("#ft-offer-amount")?.value||0))*10)/10;
+    if(!isFinite(amt) || amt<0) amt=0;
+    if(!offeredSlugs.length && amt<=0){ toast("Ofrece un jugador, dinero, o los dos"); return; }
     // el dinero ya comprometido en ofertas tuyas aún pendientes no se puede volver a ofrecer
     let committed=0;
     try{
