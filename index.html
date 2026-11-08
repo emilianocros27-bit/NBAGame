@@ -4374,7 +4374,8 @@
   // limpia una lista de titulares propuesta quitando suspendidos, y rellena hasta 5 con la mejor banca disponible
   function fantasyEligibleStarters(roster, starters){
     const bySlug=Object.fromEntries(roster.map(p=>[p.slug,p]));
-    let five=(starters||[]).filter(s=>bySlug[s] && !fantasyIsSuspended(s));
+    // sin repetidos: un mismo jugador nunca ocupa dos lugares
+    let five=[...new Set(starters||[])].filter(s=>bySlug[s] && !fantasyIsSuspended(s));
     const already=new Set(five);
     if(five.length<5){
       const fill=roster.slice().sort((a,b)=>b.media-a.media).filter(p=>!already.has(p.slug) && !fantasyIsSuspended(p.slug));
@@ -5102,7 +5103,8 @@
     // antes se descartaba el acomodo entero y por eso los cambios "se regresaban" solos.
     if(slotOrder && slotOrder.length===FANTASY_SLOT_KEYS.length){
       const set=new Set(eligible);
-      const placed=slotOrder.map(s=>(s && set.has(s)) ? s : null);
+      const seen=new Set();
+      const placed=slotOrder.map(s=>{ if(!s || !set.has(s) || seen.has(s)) return null; seen.add(s); return s; });
       if(placed.some(Boolean)){
         const sobran=eligible.filter(s=>!placed.includes(s));
         const out={};
@@ -5221,7 +5223,10 @@
     // posición a cubrir: la del que sale; si el hueco está vacío, la que falte entre los titulares
     const covered=new Set(Object.values(slots).filter(Boolean).map(p=>p.posicion));
     const targetPos = outgoing ? outgoing.posicion : (FANTASY_POS_ORDER.find(x=>!covered.has(x))||null);
+    // los titulares reales son los que se ven en cancha (incluye a quien rellenó un hueco de un suspendido)
+    fantasyEditStarters = FANTASY_SLOT_KEYS.map(k=>slots[k] && slots[k].slug).filter(Boolean);
     openFantasySubPicker(incomingSlug=>{
+      if(fantasyEditStarters.includes(incomingSlug)) { fantasyRerenderEditor(); return; }   // ya está en cancha (doble toque)
       const order=fantasyCurrentSlotOrder();
       if(outgoing) fantasyEditStarters=fantasyEditStarters.filter(s=>s!==outgoing.slug);
       fantasyEditStarters.push(incomingSlug);
@@ -5291,6 +5296,7 @@
     showSheet();
   }
   async function fantasySaveLineupNow(){
+    fantasyEditStarters=[...new Set(fantasyEditStarters)];
     try{ await window.DunkFire.fantasySaveLineup(fantasyMyTeam, {starters: fantasyEditStarters, formation: fantasyEditFormation, slotOrder: fantasyCurrentSlotOrder()}); }
     catch(e){ toast("No se pudo guardar la plantilla"); return; }
     const liveGameOfMine = fantasyLiveGame && fantasyLiveGame.status!=="final" && (fantasyLiveGame.home===fantasyMyTeam || fantasyLiveGame.away===fantasyMyTeam);
