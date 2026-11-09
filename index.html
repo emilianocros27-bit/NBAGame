@@ -2100,7 +2100,7 @@
     <path d="M20 14h8" stroke="#b79bff" stroke-width="1.2" opacity=".6"/>
   </svg>`;
   // puente para el minijuego "Encestes" (vive en otro script)
-  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, addCandies:(n)=>addCandies(n), perPoint:COINS_PER_POINT, perSwishPoint:COINS_PER_SWISH_POINT, perBasket:COINS_PER_BASKET,
+  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, addCandies:(n)=>{ if(window.DunkMissions) window.DunkMissions.candies(n); return addCandies(n); }, perPoint:COINS_PER_POINT, perSwishPoint:COINS_PER_SWISH_POINT, perBasket:COINS_PER_BASKET,
     // récord robusto: máx(nube, respaldo local), monotónico (nunca baja) → no se reinicia ni se farmea
     getBest:()=>{ let ls=0; try{ ls=+(localStorage.getItem('basket_best')||0); }catch(e){} return Math.max(state.bestScore||0, ls||0); },
     setBest:(v)=>{ v=Math.max(state.bestScore||0, v||0); state.bestScore=v; try{ localStorage.setItem('basket_best',v); }catch(e){} save(); } };
@@ -3529,6 +3529,7 @@
   }
   const _msOwned   = ()=> CARD_PLAYERS.filter(p=>ownsAny(p.slug)).length;
   const _msLegends = ()=> LEGENDS_90S.filter(p=>ownsNormal(p.slug)||ownsGraded(p.slug)).length;
+  const _msDuos    = ()=> PROMO.filter(c=>c.rank==="duo" && ownsPromo(c.id)).length;
   const _msGraded  = ()=> Object.keys(state.graded||{}).some(s=>gradesOf(s).length>0)?1:0;
   const DAILY_MISSIONS = [
     { id:"play3",    t:"Juega 3 partidas de Encestes", goal:3,  cur:()=>state.missions.daily.games,   r:{coins:250} },
@@ -3536,6 +3537,9 @@
     { id:"golden3",  t:"Mete 3 aros dorados",          goal:3,  cur:()=>state.missions.daily.golden,  r:{coins:350} },
     { id:"swish5",   t:"Haz 5 swishes (sin tocar aro)",goal:5,  cur:()=>state.missions.daily.swishes||0, r:{coins:300} },
     { id:"pack2",    t:"Abre 2 sobres",                goal:2,  cur:()=>state.missions.daily.packs,   r:{coins:200} },
+    // evento Duos: caramelos
+    { id:"candy30",  t:"Gana 30 caramelos hoy",        goal:30, cur:()=>state.missions.daily.candies||0, r:{candies:15} },
+    { id:"candyrun15",t:"Gana 15 caramelos en una sola partida", goal:15, cur:()=>state.missions.daily.bestCandyRun||0, r:{candies:10, coins:150} },
   ];
   const ACH_MISSIONS = [
     { id:"cards25",   t:"Colecciona 25 cartas",             goal:25,  cur:_msOwned, r:{coins:400} },
@@ -3548,10 +3552,16 @@
     { id:"streak8",   t:"Racha de 8 en Encestes",           goal:8,   cur:()=>state.missions.stats.maxStreak||0, r:{coins:500} },
     { id:"psa",       t:"Gradúa tu primera carta PSA",      goal:1,   cur:_msGraded, r:{coins:600} },
     { id:"netskin",   t:"Equipa una skin de aro",           goal:1,   cur:()=>(state.equip&&state.equip.net)?1:0, r:{coins:400} },
+    // evento Duos
+    { id:"candy500",  t:"Gana 500 caramelos en total",      goal:500, cur:()=>state.missions.stats.totalCandies||0, r:{candies:50, coins:500} },
+    { id:"duo1",      t:"Consigue tu primera carta Duos",   goal:1,   cur:_msDuos, r:{coins:500} },
+    { id:"duo4",      t:"Consigue 4 cartas Duos",           goal:4,   cur:_msDuos, r:{candies:100} },
+    { id:"duo8",      t:"Completa la colección Duos (8)",   goal:8,   cur:_msDuos, r:{coins:1500, rewardPacks:1} },
   ];
   function msApplyReward(r){
     const txt=[];
     if(r.coins){ addCoins(r.coins); txt.push(`<span class="coin-ico"></span> ${r.coins}`); }
+    if(r.candies){ addCandies(r.candies); txt.push(`🍬 ${r.candies}`); }
     if(r.rewardPacks){ state.rewardPacks=(state.rewardPacks||0)+r.rewardPacks; txt.push(`${r.rewardPacks} sobre${r.rewardPacks>1?"s":""}`); }
     if(r.promo && PROMO_BY[r.promo]){ grantPromo([r.promo]); txt.push(`carta <b>${esc(PROMO_BY[r.promo].nombre)}</b>`); }
     if(r.skin && SKIN_BY[r.skin]){ state.skins=state.skins||{}; state.skins[r.skin]=1; equipSkin(r.skin); txt.push(`balón <b>${esc(SKIN_BY[r.skin].nombre)}</b>`); }
@@ -3573,7 +3583,7 @@
     const cur=Math.min(mi.cur(), mi.goal), done=mi.cur()>=mi.goal;
     const store = kind==="daily"?state.missions.daily.claimed:state.missions.claimed;
     const claimed=!!store[mi.id], pct=Math.round(cur/mi.goal*100);
-    const rwd=(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` ${mi.r.rewardPacks} sobre${mi.r.rewardPacks>1?"s":""}`:"")+(mi.r.promo&&PROMO_BY[mi.r.promo]?` carta ${esc(PROMO_BY[mi.r.promo].nombre)}`:"");
+    const rwd=(mi.r.candies?`🍬 ${mi.r.candies} `:"")+(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` ${mi.r.rewardPacks} sobre${mi.r.rewardPacks>1?"s":""}`:"")+(mi.r.promo&&PROMO_BY[mi.r.promo]?` carta ${esc(PROMO_BY[mi.r.promo].nombre)}`:"");
     const act = claimed ? `<span class="ms-claimed">Reclamado ✓</span>`
       : done ? `<button class="btn btn-primary ms-claim" data-ms-kind="${kind}" data-ms-id="${mi.id}">Reclamar</button>`
       : `<span class="ms-count">${cur}/${mi.goal}</span>`;
@@ -3599,6 +3609,7 @@
     game(){ ensureMissions(); state.missions.daily.games++; save(); },
     basket(golden, swish){ ensureMissions(); state.missions.daily.baskets++; if(golden) state.missions.daily.golden++; if(swish) state.missions.daily.swishes=(state.missions.daily.swishes||0)+1; state.missions.stats.totalBaskets=(state.missions.stats.totalBaskets||0)+1; save(); },
     streak(s){ ensureMissions(); state.missions.stats.maxStreak=Math.max(state.missions.stats.maxStreak||0,s); save(); },
+    candies(n){ ensureMissions(); const d=state.missions.daily; d.candies=(d.candies||0)+n; d.bestCandyRun=Math.max(d.bestCandyRun||0,n); state.missions.stats.totalCandies=(state.missions.stats.totalCandies||0)+n; save(); },
     score(sc){ ensureMissions(); state.missions.stats.bestScore=Math.max(state.missions.stats.bestScore||0,sc); save(); },
   };
 
