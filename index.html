@@ -3647,13 +3647,13 @@
   const myDuoIds = ()=> PROMO.filter(c=>c.rank==="duo" && ownsPromo(c.id)).map(c=>c.id);
   function duoChecks(d){
     const me=currentUid, ot=duoOther(d), P=d.progress||{}, a=P[me]||{}, b=P[ot]||{};
-    const myBest=Math.max(state.bestScore||0, a.best||0);
+    // todo cuenta DESDE que empezó la misión: mejor partida y canastas de cada uno
+    const myBest=a.best||0, myBk=a.baskets||0, otBk=b.baskets||0;
     const recOk = myBest>DUO_REC && (b.best||0)>DUO_REC;
-    const bk=(a.baskets||0)+(b.baskets||0);
     const mine=new Set(myDuoIds()), common=(b.duos||[]).filter(x=>mine.has(x) && PROMO_BY[x]);
     return [
-      { t:`Los dos con récord de más de ${DUO_REC} puntos`, ok:recOk, txt:`Tú ${myBest} · @${(d.names||{})[ot]||"amigo"} ${b.best||0}` },
-      { t:`Anoten más de ${DUO_BASKETS} canastas entre los dos`, ok:bk>DUO_BASKETS, txt:`${Math.min(bk,DUO_BASKETS+1)}/${DUO_BASKETS+1} canastas` },
+      { t:`Los dos hagan más de ${DUO_REC} puntos en una partida`, ok:recOk, txt:`Tu mejor: ${myBest} · @${(d.names||{})[ot]||"amigo"}: ${b.best||0}` },
+      { t:`Cada uno anote más de ${DUO_BASKETS} canastas`, ok:myBk>DUO_BASKETS && otBk>DUO_BASKETS, txt:`Tú ${myBk}/${DUO_BASKETS+1} · @${(d.names||{})[ot]||"amigo"} ${otBk}/${DUO_BASKETS+1}` },
       { t:"Tengan la misma carta Duo los dos", ok:common.length>0, txt: common.length ? `En común: ${common.map(x=>PROMO_BY[x].nombre).join(", ")}` : "Aún sin carta en común" },
     ];
   }
@@ -3675,11 +3675,11 @@
     myProfile=Object.assign(myProfile||{}, {duoMission:id});
     window.DunkFire.saveProfile(currentUid, {duoMission:id}).catch(()=>{});
   }
-  // sube mi progreso (récord, canastas desde que empezó, cartas Duo) a la misión activa
-  function duoReport(addBaskets){
+  // sube mi progreso (mejor partida y canastas desde que empezó, cartas Duo) a la misión activa
+  function duoReport(addBaskets, gameScore){
     const d=duoList.find(x=>x.status==="active"); if(!d) return;
     const cur=(d.progress||{})[currentUid]||{};
-    const next={ best:Math.max(cur.best||0, state.bestScore||0), baskets:(cur.baskets||0)+(addBaskets||0), duos:myDuoIds() };
+    const next={ best:Math.max(cur.best||0, gameScore||0), baskets:(cur.baskets||0)+(addBaskets||0), duos:myDuoIds() };
     if(next.best===cur.best && next.baskets===cur.baskets && JSON.stringify(next.duos)===JSON.stringify(cur.duos||[])) return;
     d.progress=Object.assign({}, d.progress, {[currentUid]:next});
     window.DunkFire.duoUpdate(d.id, {["progress."+currentUid]:next}).catch(()=>{});
@@ -3788,7 +3788,7 @@
     basket(golden, swish){ ensureMissions(); state.missions.daily.baskets++; if(golden) state.missions.daily.golden++; if(swish) state.missions.daily.swishes=(state.missions.daily.swishes||0)+1; state.missions.stats.totalBaskets=(state.missions.stats.totalBaskets||0)+1; save(); },
     streak(s){ ensureMissions(); state.missions.stats.maxStreak=Math.max(state.missions.stats.maxStreak||0,s); save(); },
     candies(n){ ensureMissions(); const d=state.missions.daily; d.candies=(d.candies||0)+n; d.bestCandyRun=Math.max(d.bestCandyRun||0,n); state.missions.stats.totalCandies=(state.missions.stats.totalCandies||0)+n; save(); },
-    duoGame(nBaskets){ try{ duoReport(nBaskets||0); }catch(e){} },
+    duoGame(nBaskets, sc){ try{ duoReport(nBaskets||0, sc||0); }catch(e){} },
     score(sc){ ensureMissions(); state.missions.stats.bestScore=Math.max(state.missions.stats.bestScore||0,sc); save(); },
   };
 
@@ -6759,7 +6759,7 @@ window.MiniGame = (function(){
       if(rw) rw.innerHTML += (rw.innerHTML?' · ':'')+'🍬 +'+candiesRun+' caramelo'+(candiesRun>1?'s':''); }
     if(score>0 && window.__submitScore) window.__submitScore(score);   // a la tabla global
     if(window.DunkMissions) window.DunkMissions.score(score);          // misión: puntos en una partida
-    if(window.DunkMissions && window.DunkMissions.duoGame) window.DunkMissions.duoGame(baskets);   // misión dúo: récord y canastas
+    if(window.DunkMissions && window.DunkMissions.duoGame) window.DunkMissions.duoGame(baskets, score);   // misión dúo: récord y canastas
     document.getElementById('mg-over').style.display='flex';
   }
   function updateHUD(){
