@@ -1318,6 +1318,19 @@
   .skin-img{width:72px; height:72px; object-fit:contain; filter:drop-shadow(0 3px 8px rgba(255,201,74,.4));}
   .skin-card .pcard, .skin-card .psa{width:108px; flex:0 0 auto; margin:0 auto 4px;}
   /* evento duos */
+  body.in-tienda .bg-arena{background:linear-gradient(180deg,rgba(10,11,16,.78),rgba(10,11,16,.9)), url("game-bg/tienda-duos.jpg") center/cover no-repeat !important;}
+  .duo-pair{max-width:760px; border-radius:16px; padding:16px; border:1px solid rgba(255,120,180,.35);
+    background:linear-gradient(135deg,rgba(255,92,170,.12),rgba(40,200,190,.08));}
+  .duo-pair p{margin:0 0 10px; color:var(--muted-2); font-size:13px;}
+  .duo-with{display:flex; align-items:center; gap:10px; margin-bottom:12px; font-weight:700;}
+  .duo-friends{display:grid; gap:8px;}
+  .duo-friend{display:flex; align-items:center; gap:10px; padding:8px 10px; border-radius:12px; background:rgba(255,255,255,.04);}
+  .duo-friend .nm{flex:1 1 auto; font-weight:700; min-width:0;}
+  .duo-actions{display:flex; gap:8px; flex-wrap:wrap; margin-top:12px;}
+  .pf-medal.pf-medal-duo{background:linear-gradient(135deg, rgba(255,92,170,.16), rgba(40,200,190,.1) 60%);}
+  .pf-medal.pf-medal-duo .pf-medal-ico{background:radial-gradient(circle at 35% 30%, #ffd1ea, #ff5caa 45%, #1aa79c 100%);}
+  .pf-medal.pf-medal-duo .pf-medal-ico svg{color:#2a0a1c;}
+  .pf-medal.pf-medal-duo .pf-medal-txt b{color:#ffd1ea;}
   .candy-bal{display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,rgba(255,92,170,.16),rgba(255,180,60,.1)); border:1px solid rgba(255,120,180,.4); border-radius:16px; padding:14px 18px; margin-bottom:16px;}
   .candy-bal-ico{font-size:36px; line-height:1;}
   .candy-bal .polvo-bal-txt b{color:#ff8cc6;}
@@ -1684,6 +1697,10 @@
       <div class="ms-list" id="ms-daily"></div>
       <h3 class="ms-head">Logros</h3>
       <div class="ms-list" id="ms-ach"></div>
+      <h3 class="ms-head">Misiones Dúos 🍬</h3>
+      <div class="ms-list" id="ms-duo"></div>
+      <h3 class="ms-head">Misiones Dúo con un amigo</h3>
+      <div class="duo-pair" id="ms-duo-pair"></div>
     </section>
 
     <!-- ===== MINIJUEGO: ENCESTES ===== -->
@@ -2505,11 +2522,13 @@
       try{ await settleTrades(); }catch(e){}   // aplica intercambios aceptados pendientes
       subscribeTrades();                       // escucha intercambios en vivo
       subscribeScores();                       // tabla de clasificación en vivo
+      try{ subscribeDuo(); }catch(e){}          // misiones dúo con amigos
       ensurePsaEvent();
       save(); checkTeamRewards(); updateAccountUI(); hideAuth(); renderAll(); renderPsaBadge();
       try{ await fantasySyncInbox(); }catch(e){}
     } else {
       authUser=null; currentUid=null; cloudReady=false; myProfile=null; updateAccountUI(); showAuth();
+      if(duoUnsub){ duoUnsub(); duoUnsub=null; } duoList=[];
     }
   }
   function startSession(){
@@ -2608,6 +2627,12 @@
           <div class="pf-medal-txt"><b>90's completados</b><span>Todas las cartas de Leyendas 90s coleccionadas</span></div>
         </div>`);
       }
+      ((isMe ? state.duoMedals : prof.duoMedals) || []).forEach(m=>{
+        medalsHtml.push(`<div class="pf-medal pf-medal-duo">
+          <div class="pf-medal-ico">${trophyIco}</div>
+          <div class="pf-medal-txt"><b>Misiones Dúo</b><span>Completadas con @${esc(m.with||"amigo")}</span></div>
+        </div>`);
+      });
       if(medalsHtml.length){ medalsEl.hidden=false; medalsEl.innerHTML=medalsHtml.join(""); }
       else { medalsEl.hidden=true; medalsEl.innerHTML=""; }
     }
@@ -3537,9 +3562,6 @@
     { id:"golden3",  t:"Mete 3 aros dorados",          goal:3,  cur:()=>state.missions.daily.golden,  r:{coins:350} },
     { id:"swish5",   t:"Haz 5 swishes (sin tocar aro)",goal:5,  cur:()=>state.missions.daily.swishes||0, r:{coins:300} },
     { id:"pack2",    t:"Abre 2 sobres",                goal:2,  cur:()=>state.missions.daily.packs,   r:{coins:200} },
-    // evento Duos: caramelos
-    { id:"candy30",  t:"Gana 30 caramelos hoy",        goal:30, cur:()=>state.missions.daily.candies||0, r:{candies:15} },
-    { id:"candyrun15",t:"Gana 15 caramelos en una sola partida", goal:15, cur:()=>state.missions.daily.bestCandyRun||0, r:{candies:10, coins:150} },
   ];
   const ACH_MISSIONS = [
     { id:"cards25",   t:"Colecciona 25 cartas",             goal:25,  cur:_msOwned, r:{coins:400} },
@@ -3552,11 +3574,16 @@
     { id:"streak8",   t:"Racha de 8 en Encestes",           goal:8,   cur:()=>state.missions.stats.maxStreak||0, r:{coins:500} },
     { id:"psa",       t:"Gradúa tu primera carta PSA",      goal:1,   cur:_msGraded, r:{coins:600} },
     { id:"netskin",   t:"Equipa una skin de aro",           goal:1,   cur:()=>(state.equip&&state.equip.net)?1:0, r:{coins:400} },
-    // evento Duos
-    { id:"candy500",  t:"Gana 500 caramelos en total",      goal:500, cur:()=>state.missions.stats.totalCandies||0, r:{candies:50, coins:500} },
-    { id:"duo1",      t:"Consigue tu primera carta Duos",   goal:1,   cur:_msDuos, r:{coins:500} },
-    { id:"duo4",      t:"Consigue 4 cartas Duos",           goal:4,   cur:_msDuos, r:{candies:100} },
-    { id:"duo8",      t:"Completa la colección Duos (8)",   goal:8,   cur:_msDuos, r:{coins:1500, rewardPacks:1} },
+  ];
+  // MISIONES DÚOS (individuales): los caramelos son exclusivos, así que dan pocos y más balones.
+  // daily:true → se reinician cada día (se reclaman en daily.claimed)
+  const DUO_MISSIONS = [
+    { id:"candy30",   daily:true, t:"Gana 30 caramelos hoy",                 goal:30,  cur:()=>state.missions.daily.candies||0,      r:{candies:3, coins:300} },
+    { id:"candyrun15",daily:true, t:"Gana 15 caramelos en una sola partida", goal:15,  cur:()=>state.missions.daily.bestCandyRun||0, r:{candies:2, coins:250} },
+    { id:"candy500",  t:"Gana 500 caramelos en total",      goal:500, cur:()=>state.missions.stats.totalCandies||0, r:{candies:10, coins:1000} },
+    { id:"duo1",      t:"Consigue tu primera carta Duos",   goal:1,   cur:_msDuos, r:{candies:5, coins:600} },
+    { id:"duo4",      t:"Consigue 4 cartas Duos",           goal:4,   cur:_msDuos, r:{candies:10, coins:1200} },
+    { id:"duo8",      t:"Completa la colección Duos (8)",   goal:8,   cur:_msDuos, r:{candies:20, coins:2500, rewardPacks:1} },
   ];
   function msApplyReward(r){
     const txt=[];
@@ -3570,9 +3597,9 @@
   }
   function claimMission(kind, id){
     ensureMissions();
-    const list = kind==="daily"?DAILY_MISSIONS:ACH_MISSIONS;
+    const list = kind==="daily"?DAILY_MISSIONS:kind==="duo"?DUO_MISSIONS:ACH_MISSIONS;
     const mi=list.find(x=>x.id===id); if(!mi) return;
-    const store = kind==="daily"?state.missions.daily.claimed:state.missions.claimed;
+    const store = (kind==="daily" || (kind==="duo" && mi.daily))?state.missions.daily.claimed:state.missions.claimed;
     if(store[id] || mi.cur()<mi.goal) return;
     store[id]=true;
     const got=msApplyReward(mi.r);
@@ -3581,7 +3608,7 @@
   }
   function missionCardHTML(kind, mi){
     const cur=Math.min(mi.cur(), mi.goal), done=mi.cur()>=mi.goal;
-    const store = kind==="daily"?state.missions.daily.claimed:state.missions.claimed;
+    const store = (kind==="daily" || (kind==="duo" && mi.daily))?state.missions.daily.claimed:state.missions.claimed;
     const claimed=!!store[mi.id], pct=Math.round(cur/mi.goal*100);
     const rwd=(mi.r.candies?`🍬 ${mi.r.candies} `:"")+(mi.r.coins?`<span class="coin-ico"></span> ${mi.r.coins}`:"")+(mi.r.rewardPacks?` ${mi.r.rewardPacks} sobre${mi.r.rewardPacks>1?"s":""}`:"")+(mi.r.promo&&PROMO_BY[mi.r.promo]?` carta ${esc(PROMO_BY[mi.r.promo].nombre)}`:"");
     const act = claimed ? `<span class="ms-claimed">Reclamado ✓</span>`
@@ -3603,18 +3630,170 @@
     const d=$("#ms-daily"), a=$("#ms-ach");
     if(d) d.innerHTML=DAILY_MISSIONS.map(mi=>missionCardHTML("daily",mi)).join("");
     if(a) a.innerHTML=ACH_MISSIONS.map(mi=>missionCardHTML("ach",mi)).join("");
+    const du=$("#ms-duo"); if(du) du.innerHTML=DUO_MISSIONS.map(mi=>missionCardHTML("duo",mi)).join("");
+    renderDuoPair();
   }
+
+  /* ===== MISIÓN DÚO CON UN AMIGO =====
+     Doc compartido duoMissions/{par}: users, names, by, status pending|active|done, progress{uid:{best,baskets,duos}}, claimed{uid}.
+     Candado: profiles/{uid}.duoMission = id de la misión en curso (público), así un amigo no puede
+     tener dos iniciadas a la vez. Cada quien limpia el suyo al terminar/rechazarse. */
+  let duoList=[], duoUnsub=null, duoFriendsCache=null;
+  const DUO_REC=100, DUO_BASKETS=200;
+  const myDuo = ()=> duoList.find(d=>d.status==="active" || (d.status==="pending" && d.by===currentUid)) ||
+                     duoList.find(d=>d.status==="done" && !(d.claimed||{})[currentUid]) || null;
+  const duoInvites = ()=> duoList.filter(d=>d.status==="pending" && d.by!==currentUid);
+  const duoOther = d=> d.users.find(u=>u!==currentUid);
+  const myDuoIds = ()=> PROMO.filter(c=>c.rank==="duo" && ownsPromo(c.id)).map(c=>c.id);
+  function duoChecks(d){
+    const me=currentUid, ot=duoOther(d), P=d.progress||{}, a=P[me]||{}, b=P[ot]||{};
+    const myBest=Math.max(state.bestScore||0, a.best||0);
+    const recOk = myBest>DUO_REC && (b.best||0)>DUO_REC;
+    const bk=(a.baskets||0)+(b.baskets||0);
+    const mine=new Set(myDuoIds()), common=(b.duos||[]).filter(x=>mine.has(x) && PROMO_BY[x]);
+    return [
+      { t:`Los dos con récord de más de ${DUO_REC} puntos`, ok:recOk, txt:`Tú ${myBest} · @${(d.names||{})[ot]||"amigo"} ${b.best||0}` },
+      { t:`Anoten más de ${DUO_BASKETS} canastas entre los dos`, ok:bk>DUO_BASKETS, txt:`${Math.min(bk,DUO_BASKETS+1)}/${DUO_BASKETS+1} canastas` },
+      { t:"Tengan la misma carta Duo los dos", ok:common.length>0, txt: common.length ? `En común: ${common.map(x=>PROMO_BY[x].nombre).join(", ")}` : "Aún sin carta en común" },
+    ];
+  }
+  function subscribeDuo(){
+    if(duoUnsub || !currentUid || !window.DunkFire || !window.DunkFire.duoWatch) return;
+    duoUnsub = window.DunkFire.duoWatch(currentUid, list=>{
+      duoList=list; duoSelfHeal(); duoReport(0);
+      renderMessages(); if($("#msg-list")) drawMessages();
+      if($("#view-misiones")?.classList.contains("active")) renderDuoPair();
+    });
+  }
+  // limpia mi candado si apunta a una misión que ya no existe o ya reclamé
+  function duoSelfHeal(){
+    const lock=myProfile && myProfile.duoMission; if(!lock) return;
+    const d=duoList.find(x=>x.id===lock);
+    if(!d || (d.claimed||{})[currentUid]) duoSetLock("");
+  }
+  function duoSetLock(id){
+    myProfile=Object.assign(myProfile||{}, {duoMission:id});
+    window.DunkFire.saveProfile(currentUid, {duoMission:id}).catch(()=>{});
+  }
+  // sube mi progreso (récord, canastas desde que empezó, cartas Duo) a la misión activa
+  function duoReport(addBaskets){
+    const d=duoList.find(x=>x.status==="active"); if(!d) return;
+    const cur=(d.progress||{})[currentUid]||{};
+    const next={ best:Math.max(cur.best||0, state.bestScore||0), baskets:(cur.baskets||0)+(addBaskets||0), duos:myDuoIds() };
+    if(next.best===cur.best && next.baskets===cur.baskets && JSON.stringify(next.duos)===JSON.stringify(cur.duos||[])) return;
+    d.progress=Object.assign({}, d.progress, {[currentUid]:next});
+    window.DunkFire.duoUpdate(d.id, {["progress."+currentUid]:next}).catch(()=>{});
+  }
+  async function duoFriends(){
+    if(duoFriendsCache) return duoFriendsCache;
+    let all=[]; try{ all=await window.DunkFire.listFriendships(currentUid); }catch(e){}
+    const out=[];
+    for(const f of all.filter(f=>f.status==="accepted")){
+      const uid=f.users.find(u=>u!==currentUid); let prof=null; try{ prof=await window.DunkFire.getProfile(uid); }catch(e){}
+      out.push({uid, prof});
+    }
+    duoFriendsCache=out; setTimeout(()=>{ duoFriendsCache=null; }, 30000);
+    return out;
+  }
+  async function renderDuoPair(){
+    const box=$("#ms-duo-pair"); if(!box) return;
+    if(!currentUid){ box.innerHTML=`<p>Inicia sesión para hacer misiones dúo con tus amigos.</p>`; return; }
+    subscribeDuo();
+    const d=myDuo();
+    const invites=duoInvites();
+    let html="";
+    if(invites.length){
+      html += invites.map(iv=>`<div class="duo-friend"><span class="nm">@${esc((iv.names||{})[iv.by]||"amigo")} te invitó a una misión dúo</span>
+        <button class="btn btn-primary" data-duo-accept="${esc(iv.id)}">Aceptar</button>
+        <button class="btn btn-ghost" data-duo-reject="${esc(iv.id)}">Rechazar</button></div>`).join("") + `<div style="height:12px"></div>`;
+    }
+    if(d){
+      const ot=duoOther(d), nm=(d.names||{})[ot]||"amigo";
+      if(d.status==="pending"){
+        html += `<div class="duo-with">Esperando a que @${esc(nm)} acepte tu invitación…</div>
+          <div class="duo-actions"><button class="btn btn-ghost" data-duo-cancel="${esc(d.id)}">Cancelar invitación</button></div>`;
+      } else {
+        const ch=duoChecks(d), n=ch.filter(c=>c.ok).length, all=n===3;
+        html += `<div class="duo-with">Misión con @${esc(nm)}</div><div class="ms-list">` +
+          ch.map((c,i)=>`<div class="ms-card ${c.ok?'is-claimed':''}"><div class="ms-info"><div class="ms-title">${i+1}. ${esc(c.t)}</div>
+            <div class="ms-bar"><span style="width:${c.ok?100:0}%"></span></div><div class="ms-reward">${esc(c.txt)}</div></div>
+            <div class="ms-act">${c.ok?'<span class="ms-claimed">Hecho ✓</span>':''}</div></div>`).join("") +
+          `<div class="ms-card ${all?'ready':''}"><div class="ms-info"><div class="ms-title">4. Completa las otras tres misiones</div>
+            <div class="ms-bar"><span style="width:${Math.round(n/3*100)}%"></span></div>
+            <div class="ms-reward">Recompensa: medalla de perfil "Misiones Dúo · con @${esc(nm)}"</div></div>
+            <div class="ms-act">${all?`<button class="btn btn-primary" data-duo-claim="${esc(d.id)}">Reclamar</button>`:`<span class="ms-count">${n}/3</span>`}</div></div></div>`;
+        if(d.status==="active") html += `<div class="duo-actions"><button class="btn btn-ghost" data-duo-cancel="${esc(d.id)}">Abandonar misión</button></div>`;
+      }
+    } else {
+      html += `<p>Elige a un amigo para empezar. Le llega la invitación a su correo 🔔 y tiene que aceptarla. Ninguno de los dos puede tener otra misión dúo iniciada.</p>
+        <div class="duo-friends" id="duo-friends"><div class="pf-empty">Cargando amigos…</div></div>`;
+    }
+    box.innerHTML=html;
+    if(!d){
+      const fr=await duoFriends(); const w=$("#duo-friends"); if(!w) return;
+      w.innerHTML = fr.length ? fr.map(f=>{
+          const busy=f.prof && f.prof.duoMission;
+          return `<div class="duo-friend"><div style="width:32px;height:32px;border-radius:50%;overflow:hidden;flex:0 0 auto">${avatarHTML(f.prof,false)}</div>
+            <span class="nm">@${esc((f.prof&&f.prof.username)||"jugador")}</span>
+            ${busy?`<span class="ms-count">Ya tiene una</span>`:`<button class="btn btn-primary" data-duo-invite="${esc(f.uid)}">Invitar</button>`}</div>`; }).join("")
+        : `<div class="pf-empty">Aún no tienes amigos. Agrégalos desde tu perfil.</div>`;
+    }
+  }
+  async function duoInvite(uid){
+    if(myDuo()){ toast("Ya tienes una misión dúo iniciada"); return; }
+    if(!myProfile || !myProfile.username){ toast("Primero crea tu perfil"); return; }
+    let prof=null; try{ prof=await window.DunkFire.getProfile(uid); }catch(e){}
+    if(prof && prof.duoMission){ toast(`@${esc(prof.username||"tu amigo")} ya tiene una misión dúo con alguien más`); return; }
+    const id=[currentUid,uid].sort().join("__");
+    try{
+      await window.DunkFire.duoSet(id, { users:[currentUid,uid], by:currentUid, status:"pending", at:Date.now(),
+        names:{[currentUid]:myProfile.username, [uid]:(prof&&prof.username)||"amigo"}, progress:{}, claimed:{} });
+      duoSetLock(id); duoFriendsCache=null; toast("Invitación enviada");
+    }catch(e){ toast("No se pudo enviar la invitación"); }
+  }
+  async function duoAccept(id){
+    const d=duoList.find(x=>x.id===id); if(!d) return;
+    if(myDuo()){ toast("Ya tienes una misión dúo iniciada; termínala o abandónala primero"); return; }
+    try{
+      await window.DunkFire.duoUpdate(id, { status:"active", startedAt:Date.now(), ["names."+currentUid]:(myProfile&&myProfile.username)||"amigo" });
+      duoSetLock(id); closeSheet(); showView("misiones"); toast("¡Misión dúo iniciada!");
+    }catch(e){ toast("No se pudo aceptar"); }
+  }
+  async function duoDrop(id){
+    try{ await window.DunkFire.duoDelete(id); }catch(e){}
+    if(myProfile && myProfile.duoMission===id) duoSetLock("");
+  }
+  async function duoClaim(id){
+    const d=duoList.find(x=>x.id===id); if(!d || !duoChecks(d).every(c=>c.ok)) return;
+    const ot=duoOther(d), nm=(d.names||{})[ot]||"amigo";
+    state.duoMedals=(state.duoMedals||[]).filter(m=>m.uid!==ot).concat([{uid:ot, with:nm, at:Date.now()}]);
+    save();
+    try{ await window.DunkFire.duoUpdate(id, { ["claimed."+currentUid]:true, status:"done" }); }catch(e){}
+    myProfile=Object.assign(myProfile||{}, {duoMedals:state.duoMedals, duoMission:""});
+    window.DunkFire.saveProfile(currentUid, {duoMedals:state.duoMedals, duoMission:""}).catch(()=>{});
+    renderDuoPair();
+    toast(`¡Medalla desbloqueada! <b>Misiones Dúo · con @${esc(nm)}</b>`);
+  }
+  document.addEventListener("click", e=>{
+    const t=e.target.closest("[data-duo-invite],[data-duo-accept],[data-duo-reject],[data-duo-cancel],[data-duo-claim]"); if(!t) return;
+    if(t.dataset.duoInvite) duoInvite(t.dataset.duoInvite);
+    else if(t.dataset.duoAccept) duoAccept(t.dataset.duoAccept);
+    else if(t.dataset.duoReject) duoDrop(t.dataset.duoReject);
+    else if(t.dataset.duoCancel){ if(confirm("¿Seguro? Se borra el progreso de la misión dúo.")) duoDrop(t.dataset.duoCancel); }
+    else if(t.dataset.duoClaim) duoClaim(t.dataset.duoClaim);
+  });
   // ganchos para el minijuego (vive en otro script)
   window.DunkMissions = {
     game(){ ensureMissions(); state.missions.daily.games++; save(); },
     basket(golden, swish){ ensureMissions(); state.missions.daily.baskets++; if(golden) state.missions.daily.golden++; if(swish) state.missions.daily.swishes=(state.missions.daily.swishes||0)+1; state.missions.stats.totalBaskets=(state.missions.stats.totalBaskets||0)+1; save(); },
     streak(s){ ensureMissions(); state.missions.stats.maxStreak=Math.max(state.missions.stats.maxStreak||0,s); save(); },
     candies(n){ ensureMissions(); const d=state.missions.daily; d.candies=(d.candies||0)+n; d.bestCandyRun=Math.max(d.bestCandyRun||0,n); state.missions.stats.totalCandies=(state.missions.stats.totalCandies||0)+n; save(); },
+    duoGame(nBaskets){ try{ duoReport(nBaskets||0); }catch(e){} },
     score(sc){ ensureMissions(); state.missions.stats.bestScore=Math.max(state.missions.stats.bestScore||0,sc); save(); },
   };
 
   // ---- MENSAJES / BANDEJA ----
-  const unclaimedCount = () => (state.messages||[]).filter(m=> (m.type==="psa"||m.type==="trade") ? !m.read : !m.claimed).length;
+  const unclaimedCount = () => (state.messages||[]).filter(m=> (m.type==="psa"||m.type==="trade") ? !m.read : !m.claimed).length + duoInvites().length;
   function renderMessages(){
     const n=unclaimedCount(); const badge=$("#bell-badge");
     if(!badge) return;
@@ -3624,12 +3803,18 @@
   function drawMessages(){
     const list=$("#msg-list"); if(!list) return;
     const msgs=(state.messages||[]).slice().reverse();
+    const inv=duoInvites().map(iv=>`<div class="msg">
+        <div class="msg-ico" style="font-size:24px">🍬</div>
+        <div class="msg-body"><h4>Invitación a Misión Dúo</h4><p>@${esc((iv.names||{})[iv.by]||"Un amigo")} quiere hacer las misiones dúo contigo.</p></div>
+        <div style="display:flex;gap:6px;flex-wrap:wrap"><button class="btn btn-primary" data-duo-accept="${esc(iv.id)}">Aceptar</button><button class="btn btn-ghost" data-duo-reject="${esc(iv.id)}">Rechazar</button></div>
+      </div>`).join("");
+    if(!msgs.length && inv){ list.innerHTML=inv; return; }
     if(!msgs.length){
       list.innerHTML=`<div class="empty" style="padding:30px 20px"><h3>Sin mensajes</h3><p>Completa los 5 jugadores de un mismo equipo y aquí te llegará tu recompensa.</p></div>`;
       return;
     }
     const trophy=`<svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor" aria-hidden="true"><path d="M18 2H6v2H2.5v3.5A4.5 4.5 0 0 0 7 12h.6A5.5 5.5 0 0 0 11 15.4V18H7.5v2.2h9V18H13v-2.6A5.5 5.5 0 0 0 16.4 12h.6a4.5 4.5 0 0 0 4.5-4.5V4H18V2zM6 9.9A2.5 2.5 0 0 1 4.5 7.5V6H6v3.9zm13.5-2.4A2.5 2.5 0 0 1 18 9.9V6h1.5v1.5z"/><rect x="6.5" y="20.6" width="11" height="1.7" rx=".85"/></svg>`;
-    list.innerHTML = msgs.map(m=>{
+    list.innerHTML = inv + msgs.map(m=>{
       if(m.type==="psa") return `
         <div class="msg">
           <div class="msg-ico"><span class="psa-logo"><b>P</b><i>S</i><b>A</b></span></div>
@@ -4312,6 +4497,7 @@
     if(v==="misiones") renderMissions();
     if(v==="trueques") renderTrades();
     if(v==="tienda") renderTienda();
+    document.body.classList.toggle("in-tienda", v==="tienda");   // fondo del evento en la tienda
     if(v==="noventas") renderAlbum90s();
     if(v==="juego"){ subscribeScores(); renderLeaderboard(scoresCache); }
     if(window.MiniGame){ if(v==="juego") window.MiniGame.start(); else window.MiniGame.stop(); }
@@ -6573,6 +6759,7 @@ window.MiniGame = (function(){
       if(rw) rw.innerHTML += (rw.innerHTML?' · ':'')+'🍬 +'+candiesRun+' caramelo'+(candiesRun>1?'s':''); }
     if(score>0 && window.__submitScore) window.__submitScore(score);   // a la tabla global
     if(window.DunkMissions) window.DunkMissions.score(score);          // misión: puntos en una partida
+    if(window.DunkMissions && window.DunkMissions.duoGame) window.DunkMissions.duoGame(baskets);   // misión dúo: récord y canastas
     document.getElementById('mg-over').style.display='flex';
   }
   function updateHUD(){
@@ -6657,8 +6844,8 @@ window.MiniGame = (function(){
     drawBackground();
     drawHoop(); drawAim(); drawBall(); drawParticles();
   }
-  // fondo de temporada del minijuego (null = el gimnasio de siempre; Halloween ya terminó)
-  const GAME_BG_SRC = null;
+  // fondo de temporada del minijuego (evento Duos; null = el gimnasio de siempre)
+  const GAME_BG_SRC = "game-bg/duos.jpg";
   function drawBackground(){
     const gy=GROUND();
     const bgImg=GAME_BG_SRC ? getTex(GAME_BG_SRC) : null;
@@ -6985,6 +7172,12 @@ window.MiniGame = (function(){
       const qs=await getDocs(query(collection(db,"friendships"), where("users","array-contains",me)));
       return qs.docs.map(d=>d.data());
     },
+    // ---- MISIONES DÚO ----
+    duoSet:(id,data)=>setDoc(doc(db,"duoMissions",id), data),
+    duoUpdate:(id,data)=>updateDoc(doc(db,"duoMissions",id), data),
+    duoDelete:(id)=>deleteDoc(doc(db,"duoMissions",id)),
+    duoWatch:(me,cb)=> onSnapshot(query(collection(db,"duoMissions"), where("users","array-contains",me)),
+      qs=> cb(qs.docs.map(d=>Object.assign({id:d.id}, d.data()))), ()=>{}),
     // ---- INTERCAMBIOS ----
     createTrade: async (t)=>{ const id=`${t.from}__${t.to}__${Date.now()}`; await setDoc(doc(db,"trades",id), Object.assign({id},t)); return id; },
     listTrades: async (me)=>{ const qs=await getDocs(query(collection(db,"trades"), where("parties","array-contains",me))); return qs.docs.map(d=>Object.assign({id:d.id}, d.data())); },
