@@ -1317,6 +1317,12 @@
   .skin-desc{font-size:11.5px; color:var(--muted); line-height:1.25; min-height:28px;}
   .skin-img{width:72px; height:72px; object-fit:contain; filter:drop-shadow(0 3px 8px rgba(255,201,74,.4));}
   .skin-card .pcard, .skin-card .psa{width:108px; flex:0 0 auto; margin:0 auto 4px;}
+  /* evento duos */
+  .candy-bal{display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,rgba(255,92,170,.16),rgba(255,180,60,.1)); border:1px solid rgba(255,120,180,.4); border-radius:16px; padding:14px 18px; margin-bottom:16px;}
+  .candy-bal-ico{font-size:36px; line-height:1;}
+  .candy-bal .polvo-bal-txt b{color:#ff8cc6;}
+  .candy-ic{vertical-align:-1px; line-height:1;}
+  .pcard.pc-duo{aspect-ratio:9/16;}
   /* polvos */
   .polvo-bal{display:flex; align-items:center; gap:14px; background:linear-gradient(135deg,rgba(138,92,255,.16),rgba(90,47,208,.1)); border:1px solid rgba(154,92,255,.4); border-radius:16px; padding:14px 18px; margin-bottom:16px;}
   .polvo-bal-ico{flex:0 0 auto; display:flex;}
@@ -1620,6 +1626,13 @@
         <h2>Tienda</h2>
         <p>Ofertas exclusivas por tiempo limitado. Cartas que no salen en sobres.</p>
       </div></div>
+
+      <div class="pf-sec-head"><h3>Evento Duos</h3></div>
+      <div class="candy-bal">
+        <div class="candy-bal-ico">🍬</div>
+        <div class="polvo-bal-txt"><b class="candy-amount">0</b> caramelos<span>Juega Encestes: 1 por canasta, 2 por swish</span></div>
+      </div>
+      <div class="shop-skins" id="shop-duos"></div>
 
       <div id="shop-offers"></div>
 
@@ -2071,6 +2084,9 @@
   function addCoins(n){ state.coins = (state.coins||0) + n; save(); renderCoins(); return state.coins; }
   function spendCoins(n){ if((state.coins||0) < n) return false; state.coins -= n; save(); renderCoins(); return true; }
   // ===== POLVOS (dust): moneda de intercambiar cartas repetidas =====
+  function addCandies(n){ state.candies=(state.candies||0)+n; save(); renderCandies(); return state.candies; }
+  function spendCandies(n){ if((state.candies||0)<n) return false; state.candies-=n; save(); renderCandies(); return true; }
+  function renderCandies(){ document.querySelectorAll(".candy-amount").forEach(e=> e.textContent=(state.candies||0).toLocaleString("es")); }
   function addPolvos(n){ state.polvos=(state.polvos||0)+n; save(); renderPolvos(); return state.polvos; }
   function spendPolvos(n){ if((state.polvos||0)<n) return false; state.polvos-=n; save(); renderPolvos(); return true; }
   function renderPolvos(){ document.querySelectorAll(".polvo-amount").forEach(e=> e.textContent=(state.polvos||0).toLocaleString("es")); if(typeof renderShop==="function") renderShop(); }
@@ -2084,7 +2100,7 @@
     <path d="M20 14h8" stroke="#b79bff" stroke-width="1.2" opacity=".6"/>
   </svg>`;
   // puente para el minijuego "Encestes" (vive en otro script)
-  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, perPoint:COINS_PER_POINT, perSwishPoint:COINS_PER_SWISH_POINT, perBasket:COINS_PER_BASKET,
+  window.DunkEconomy = { add:(n)=>addCoins(n), get:()=>state.coins||0, addCandies:(n)=>addCandies(n), perPoint:COINS_PER_POINT, perSwishPoint:COINS_PER_SWISH_POINT, perBasket:COINS_PER_BASKET,
     // récord robusto: máx(nube, respaldo local), monotónico (nunca baja) → no se reinicia ni se farmea
     getBest:()=>{ let ls=0; try{ ls=+(localStorage.getItem('basket_best')||0); }catch(e){} return Math.max(state.bestScore||0, ls||0); },
     setBest:(v)=>{ v=Math.max(state.bestScore||0, v||0); state.bestScore=v; try{ localStorage.setItem('basket_best',v); }catch(e){} save(); } };
@@ -2238,6 +2254,15 @@
     { id:"wembi",             slug:"victor-wembanyama",  nombre:"Wemby",                equipo:"San Antonio Spurs", media:97, foto:"tienda-cards/12-San-Antonio-Spurs/wemby-2tallanimation.gif", fit:"contain" },
     { id:"wemby-halloween",   slug:"victor-wembanyama",  nombre:"Wemby · Halloween",    equipo:"San Antonio Spurs", media:97, foto:"tienda-cards/12-San-Antonio-Spurs/wemby-halloween.jpg" },
     { id:"brunson-anim",      slug:"jalen-brunson",      nombre:"Brunson Animado",      equipo:"New York Knicks", media:97, foto:"promo-cards/brunson-anim.gif", fit:"contain" },
+    // EVENTO DUOS: se compran con caramelos (1 por canasta, 2 por swish en Encestes)
+    { id:"duo-jordan-pippen", slug:"duo-jordan-pippen", nombre:"Jordan & Pippen",   equipo:"Chicago Bulls",         media:99, rank:"duo", foto:"duos-cards/michael-jordan-scottie-pippen.jpg", trade:true },
+    { id:"duo-kobe-shaq",     slug:"duo-kobe-shaq",     nombre:"Kobe & Shaq",       equipo:"Los Angeles Lakers",    media:99, rank:"duo", foto:"duos-cards/kobe-bryant-shaquille-oneal.jpg", trade:true },
+    { id:"duo-magic-kareem",  slug:"duo-magic-kareem",  nombre:"Magic & Kareem",    equipo:"Los Angeles Lakers",    media:99, rank:"duo", foto:"duos-cards/magic-johnson-kareem-abdul-jabbar.jpg", trade:true },
+    { id:"duo-lebron-wade",   slug:"duo-lebron-wade",   nombre:"LeBron & Wade",     equipo:"Miami Heat",            media:98, rank:"duo", foto:"duos-cards/lebron-james-dwyane-wade.jpg", trade:true },
+    { id:"duo-curry-klay",    slug:"duo-curry-klay",    nombre:"Curry & Klay",      equipo:"Golden State Warriors", media:98, rank:"duo", foto:"duos-cards/stephen-curry-klay-thompson.jpg", trade:true },
+    { id:"duo-bird-mchale",   slug:"duo-bird-mchale",   nombre:"Bird & McHale",     equipo:"Boston Celtics",        media:97, rank:"duo", foto:"duos-cards/larry-bird-kevin-mchale.jpg", trade:true },
+    { id:"duo-duncan-robinson",slug:"duo-duncan-robinson",nombre:"Duncan & Robinson",equipo:"San Antonio Spurs",    media:97, rank:"duo", foto:"duos-cards/tim-duncan-david-robinson.jpg", trade:true },
+    { id:"duo-lamelo-ant",    slug:"duo-lamelo-ant",    nombre:"LaMelo & Ant",      equipo:"Especial",              media:93, rank:"duo", foto:"duos-cards/lamelo-ball-anthony-edwards.jpg", trade:true },
     // Cartas de PODIO (premios de torneo) — el número muestra el puesto, no la media
     { id:"coach-1st", slug:"coach-thibodeau", nombre:"Thibodeau · 1er Lugar",     equipo:"New York Knicks",  media:99, rankLabel:"1st", rank:"gold",   foto:"promo-cards/coach-knicks.jpg", trade:true },
     { id:"coach-2nd", slug:"coach-spurs-2",   nombre:"Entrenador Spurs · 2do Lugar", equipo:"San Antonio Spurs", media:98, rankLabel:"2nd", rank:"silver", foto:"promo-cards/coach-spurs.jpg", trade:true },
@@ -2273,9 +2298,6 @@
   // PAQUETES de la tienda (cada uno con su precio y código propio)
   // (Brunson Animado ya no se vende; quien la tiene la conserva y el código BRUNSON sigue sirviendo)
   const OFFERS = [
-    { id:"wemby-halloween", tagline:"Edición Halloween", title:"Wemby · Halloween",
-      sub:"Victor Wembanyama disfrazado para Halloween. Carta promo de edición limitada.",
-      price:9000, cards:["wemby-halloween"] },
   ];
   const OFFER_BY = Object.fromEntries(OFFERS.map(o=>[o.id,o]));
   // ===== SKINS DE BALÓN (cosméticas para el minijuego) =====
@@ -2286,7 +2308,7 @@
     { id:"oro",     nombre:"Oro MVP",  price:6000,  desc:"Balón dorado de leyenda.",         g:["#fff3b8","#ffd24d","#b9892a"], seam:"#5a3d09", fire:false, type:"basket", tex:"ball-tex/oro.png" },
     { id:"inferno", nombre:"Inferno",  price:15000, desc:"En llamas: deja estela de fuego.", g:["#ffe0a0","#ff6a2a","#b81414"], seam:"#3a0a0a", fire:true,  type:"basket", tex:"ball-tex/inferno.png" },
     { id:"verano",  nombre:"Verano", price:7500, desc:"Balón especial de verano: playa con sillas y sombrilla.", g:["#fff3b0","#ffd24d","#1fb6c9"], seam:"#0c5563", fire:false, type:"basket", tex:"ball-tex/verano.png", retired:true },   // retirado: ya no sale en la tienda para nadie
-    { id:"calabaza", nombre:"Calabaza", price:5000, desc:"Balón de Halloween: calabaza con cara.", g:["#ffd08a","#f28f2f","#c85912"], seam:"#4a230c", fire:false, type:"pumpkin", tex:"ball-tex/calabaza.svg" },
+    { id:"calabaza", nombre:"Calabaza", price:5000, desc:"Balón de Halloween: calabaza con cara.", g:["#ffd08a","#f28f2f","#c85912"], seam:"#4a230c", fire:false, type:"pumpkin", tex:"ball-tex/calabaza.svg", retired:true },   // Halloween terminó: quien la tiene la conserva
     // Balones del SOBRE (no se compran sueltos; salen al azar del sobre de 700)
     // Diseños exactos vía emoji real; golf no tiene emoji → dibujo de hoyuelos.
     { id:"futbol",  nombre:"Fútbol",   pack:true, emoji:"⚽", desc:"El clásico blanquinegro.", g:["#ffffff","#ededed","#bcbcbc"] },
@@ -4124,6 +4146,37 @@
     { id:"pv-jokic",   promo:"win-jokic", price:1300 },
     { id:"pv-trofeo",  skin:"trofeo",     price:700 },
   ];
+  // ---- EVENTO DUOS (cartas que se compran con caramelos) ----
+  // precio según la dupla y su nivel: de 200 a 450 caramelos
+  const DUO_SHOP = [
+    { promo:"duo-jordan-pippen",   price:450, desc:"Los Bulls de los 6 anillos." },
+    { promo:"duo-kobe-shaq",       price:450, desc:"Tres títulos seguidos en LA." },
+    { promo:"duo-magic-kareem",    price:420, desc:"El Showtime de los Lakers." },
+    { promo:"duo-lebron-wade",     price:400, desc:"El Heat de los Big Three." },
+    { promo:"duo-curry-klay",      price:380, desc:"Los Splash Brothers." },
+    { promo:"duo-bird-mchale",     price:340, desc:"Los Celtics de los 80." },
+    { promo:"duo-duncan-robinson", price:320, desc:"Las Torres Gemelas de San Antonio." },
+    { promo:"duo-lamelo-ant",      price:200, desc:"La nueva generación." },
+  ];
+  const candyIco = (s=16) => `<span class="candy-ic" style="font-size:${s}px" aria-hidden="true">🍬</span>`;
+  function renderDuoStore(){
+    renderCandies();
+    const wrap=$("#shop-duos"); if(!wrap) return;
+    wrap.innerHTML = DUO_SHOP.map(it=>{
+      const pc=PROMO_BY[it.promo]; if(!pc) return "";
+      const owned=ownsPromo(it.promo), afford=(state.candies||0)>=it.price;
+      const btn = owned ? `<button class="btn btn-ghost" disabled>Ya la tienes</button>`
+        : `<button class="btn btn-primary ${afford?'':'cant-afford'}" data-duo-buy="${it.promo}">${candyIco(15)} ${it.price}</button>`;
+      return `<div class="skin-card">${promoCardHTML(pc,{owned:true})}<div class="skin-name">${esc(pc.nombre)}</div><div class="skin-desc">${esc(it.desc)}</div>${btn}</div>`;
+    }).join("");
+  }
+  function buyDuo(id){
+    const it=DUO_SHOP.find(x=>x.promo===id); if(!it) return;
+    if(ownsPromo(id)){ toast("Ya la tienes"); return; }
+    if(!spendCandies(it.price)){ toast(`Te faltan caramelos. Juega <b>Encestes</b>: 1 por canasta, 2 por swish.`); return; }
+    grantPromo([id]); renderDuoStore();
+    toast(`¡Carta <b>${esc(PROMO_BY[id].nombre)}</b> desbloqueada!`);
+  }
   function renderPolvosStore(){
     const head=$("#polvos-head"), sec=$("#polvos-section"); if(!head||!sec) return;
     if(!IS_LOCAL){ head.style.display="none"; sec.style.display="none"; return; }
@@ -4171,7 +4224,7 @@
   }
   function renderTienda(){
     const wrap=$("#shop-offers"); if(wrap) wrap.innerHTML = OFFERS.map(offerHTML).join("");
-    renderEquip(); renderSkins(); renderNets(); renderPolvosStore();
+    renderDuoStore(); renderEquip(); renderSkins(); renderNets(); renderPolvosStore();
     const mine=$("#shop-mine");
     if(mine){
       const owned=PROMO.filter(c=>ownsPromo(c.id));
@@ -6230,6 +6283,9 @@
     $("#shop-nets")?.addEventListener("click", e=>{
       const neteq=e.target.closest("[data-net-equip]"); if(neteq){ equipNet(neteq.dataset.netEquip); return; }
     });
+    $("#shop-duos")?.addEventListener("click", e=>{
+      const b=e.target.closest("[data-duo-buy]"); if(b) buyDuo(b.dataset.duoBuy);
+    });
     $("#shop-polvos")?.addEventListener("click", e=>{
       const pv=e.target.closest("[data-polvo-buy]"); if(pv){ buyPolvoItem(pv.dataset.polvoBuy); return; }
       const pc=e.target.closest(".pcard[data-promo]"); if(pc){ openPromoPreview(pc.dataset.promo); return; }
@@ -6369,7 +6425,7 @@
 window.MiniGame = (function(){
   let cv, ctx, stage, W, H, S, lastAvailW=0;
   let ball, hoop, dragging, dragStart, dragNow;
-  let score, streak, timeLeft, running, best, timerId, msgTimeout, baskets, coinsRun;
+  let score, streak, timeLeft, running, best, timerId, msgTimeout, baskets, coinsRun, candiesRun;
   let bMod={hoopSpeed:1,hoopR:1,time:60,golden:true};
   function fmtN(n){ n=Math.round(n); return n<100000 ? ''+n : n.toExponential(2); }   // grandes → 1.23e+7
   let particles = [], rings = [], rafId = null, active = false, inited = false;
@@ -6476,7 +6532,7 @@ window.MiniGame = (function(){
   }
   function startGame(){
     bMod = {hoopSpeed:1,hoopR:1,time:60,golden:true};
-    score=0; streak=0; baskets=0; coinsRun=0; timeLeft=bMod.time||60; running=true;
+    score=0; streak=0; baskets=0; coinsRun=0; candiesRun=0; timeLeft=bMod.time||60; running=true;
     if(window.DunkMissions) window.DunkMissions.game();   // misión diaria: jugar partida
     document.getElementById('mg-over').style.display='none';
     document.getElementById('mg-hint').style.opacity='1';
@@ -6501,6 +6557,9 @@ window.MiniGame = (function(){
     if(earned>0 && window.DunkEconomy){ window.DunkEconomy.add(earned);
       rw.innerHTML='<span class="coin-ico"></span> +'+earned+' balones'+(newBest?' · ¡Récord!':''); }
     else if(rw){ rw.textContent=''; }
+    if(candiesRun>0 && window.DunkEconomy && window.DunkEconomy.addCandies){
+      window.DunkEconomy.addCandies(candiesRun);
+      if(rw) rw.innerHTML += (rw.innerHTML?' · ':'')+'🍬 +'+candiesRun+' caramelo'+(candiesRun>1?'s':''); }
     if(score>0 && window.__submitScore) window.__submitScore(score);   // a la tabla global
     if(window.DunkMissions) window.DunkMissions.score(score);          // misión: puntos en una partida
     document.getElementById('mg-over').style.display='flex';
@@ -6564,6 +6623,7 @@ window.MiniGame = (function(){
     // balones: 5 por punto, 10 por punto si fue swish
     const E=window.DunkEconomy||{};
     coinsRun += pts * (swish ? (E.perSwishPoint||10) : (E.perPoint||5));
+    candiesRun += swish ? 2 : 1;   // evento Duos: 1 caramelo por canasta, 2 si es swish
     if(window.DunkMissions){ window.DunkMissions.basket(hoop.golden, swish); window.DunkMissions.streak(streak); }
     const col = hoop.golden ? '#ffd24d' : swish ? '#7CFC9B' : streak>=3 ? '#ff7a3d' : '#ffd24d';
     burst(hoop.x,hoop.rimY, col);
@@ -6586,12 +6646,12 @@ window.MiniGame = (function(){
     drawBackground();
     drawHoop(); drawAim(); drawBall(); drawParticles();
   }
-  // fondo de temporada del minijuego (Halloween); si no ha cargado se dibuja el gimnasio de siempre
-  const GAME_BG_SRC = "game-bg/halloween.jpg";
+  // fondo de temporada del minijuego (null = el gimnasio de siempre; Halloween ya terminó)
+  const GAME_BG_SRC = null;
   function drawBackground(){
     const gy=GROUND();
-    const bgImg=getTex(GAME_BG_SRC);
-    if(bgImg.complete && bgImg.naturalWidth){
+    const bgImg=GAME_BG_SRC ? getTex(GAME_BG_SRC) : null;
+    if(bgImg && bgImg.complete && bgImg.naturalWidth){
       // "cover": llena todo el lienzo sin deformar, recortando lo que sobre
       const k=Math.max(W/bgImg.naturalWidth, H/bgImg.naturalHeight);
       const iw=bgImg.naturalWidth*k, ih=bgImg.naturalHeight*k;
