@@ -5075,7 +5075,7 @@
       ${rows.map((r,i)=>{ const gp=r.w+r.l, pct=gp?(r.w/gp).toFixed(3).replace(/^0/,""):".000", dif=gp?Math.round((r.pf-r.pa)/gp*10)/10:0;
         return `<tr data-tb-team="${esc(r.team)}" class="${r.team===fantasyMyTeam?"mine":""}">
           <td>${i+1}</td>
-          <td><div class="tb-team"><i class="tb-dot" style="background:${teamOf(r.team).c1}"></i><span>${esc(r.team)}</span>${r.owned?`<span class="tb-owner">DT</span>`:""}</div></td>
+          <td><div class="tb-team"><i class="tb-dot" style="background:${teamOf(r.team).c1}"></i><span>${esc(r.team)}</span>${r.owned?`<span class="tb-owner">DT</span>`:""}${(fantasySeasonData&&fantasySeasonData.suspendedTeams||{})[r.team]?`<span class="tb-owner" style="background:#e0303a;color:#fff">SUSPENDIDO</span>`:""}</div></td>
           <td>${r.w}</td><td>${r.l}</td><td>${pct}</td>
           <td class="tb-hide-sm">${gp?Math.round(r.pf/gp):"-"}</td><td class="tb-hide-sm">${gp?Math.round(r.pa/gp):"-"}</td>
           <td class="${dif>0?"tb-pos":dif<0?"tb-neg":""}">${dif>0?"+":""}${dif}</td>
@@ -5947,6 +5947,16 @@
         $("#fantasy-join-btn").hidden=true;
         return;
       }
+      // cuenta baneada de DT (multicuentas, trampas): no entra en toda la temporada
+      if(season && season.bans && season.bans[currentUid]){
+        const b=season.bans[currentUid];
+        fantasyMyTeam = null; fantasySeasonData = null;
+        fantasyHideAll(); $("#fantasy-join").hidden=false;
+        $("#fantasy-join-title").textContent="Baneado del modo DT";
+        $("#fantasy-join-sub").textContent=`Tu cuenta fue baneada del modo DT por esta temporada. Causa: ${b.reason||"incumplir las reglas"}.`;
+        $("#fantasy-join-btn").hidden=true;
+        return;
+      }
       $("#fantasy-join-btn").hidden=false;
       if(season && season.started===undefined) season.started = !!season.startedAt;   // compat: temporadas creadas antes del control de inicio
       const mine = season && season.teams ? Object.keys(season.teams).find(t=>season.teams[t]===currentUid) : null;
@@ -6301,6 +6311,15 @@
   async function fantasyEnsureGameDoc(gameId, home, away, kickoff){
     let game=null;
     try{ game = await window.DunkFire.fantasyGetGame(gameId); }catch(e){ return null; }
+    const susp = (fantasySeasonData && fantasySeasonData.suspendedTeams) || {};
+    if(!game && (susp[home] || susp[away])){
+      const out = susp[home] ? home : away;
+      game = { home, away, finalHome: susp[home]?0:20, finalAway: susp[away]?0:20, forfeit:out,
+        plays:[{ t:0, team:out, pts:0, player:"", slug:"", scoreH:0, scoreA:0, text:`Partido cancelado: ${out} está suspendido por la liga. Victoria por forfeit.` }],
+        lineupEvents:{}, liveStartedAt: kickoff, status:"final", createdAt: Date.now() };
+      try{ await window.DunkFire.fantasyCreateGame(gameId, game); }catch(e){ return null; }
+      return game;
+    }
     if(!game){
       let homeStarters=null, awayStarters=null;
       try{
@@ -7227,9 +7246,10 @@ window.MiniGame = (function(){
           const teams={}; eligibleTeams.forEach(t=>{ teams[t]=null; });
           data = { seasonNumber: data ? (data.seasonNumber||1)+1 : 1, started:false, startedAt:null, endsAt:null, seasonDays, dayMs:(dayMs||86400000), teams, playerMoves:{}, budgetBonus:{} };
         }
+        if(data.bans && data.bans[uid]) throw new Error("Tu cuenta está baneada del modo DT esta temporada");
         const mine = Object.keys(data.teams).find(t=>data.teams[t]===uid);
         if(mine){ tx.set(ref, data); return { team:mine, season:data }; }
-        const free = Object.keys(data.teams).filter(t=>!data.teams[t]);
+        const free = Object.keys(data.teams).filter(t=>!data.teams[t] && !(data.suspendedTeams||{})[t]);
         if(!free.length) throw new Error("No quedan equipos libres esta temporada");
         const pick = free[Math.floor(Math.random()*free.length)];
         data.teams[pick] = uid;
