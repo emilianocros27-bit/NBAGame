@@ -6042,6 +6042,12 @@
       await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, games, FANTASY_GRID_VERSION);
       sched = { games, createdAt: Date.now(), gridVersion: FANTASY_GRID_VERSION };
     }
+    // partidos programados ANTES de que arrancara la temporada no existen para nadie: si un calendario
+    // regenerado los trae (pasó con Cavaliers), se quitan para que todos jueguen los mismos partidos
+    if(fantasySeasonData.startedAt && sched.games.some(g=>!g.type && g.scheduledAt && g.scheduledAt < fantasySeasonData.startedAt)){
+      sched.games = sched.games.filter(g=>g.type || !g.scheduledAt || g.scheduledAt >= fantasySeasonData.startedAt);
+      try{ await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, sched.games, sched.gridVersion); }catch(e){}
+    }
     fantasySchedule = sched;
     // borra finales "fantasma": Copa/Playoffs contra un rival sin dueño, que se generaban al azar
     // y hacían que cada quien tuviera SU propia final distinta (campeones diferentes en la misma liga)
