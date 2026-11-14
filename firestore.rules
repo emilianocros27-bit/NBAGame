@@ -69,7 +69,15 @@ service cloud.firestore {
         (request.auth.token.email == "emilianocros27@gmail.com"
          || (request.resource.data.started == resource.data.started
              && resource.data.get("locked", false) == false
-             && request.resource.data.get("locked", false) == false));
+             && request.resource.data.get("locked", false) == false
+             // baneados de DT (multicuentas) no pueden tocar la temporada (ni reclamar equipo)
+             && !(request.auth.uid in resource.data.get("bans", {}))
+             // solo el comisionado cambia baneos y equipos suspendidos
+             && request.resource.data.get("bans", {}) == resource.data.get("bans", {})
+             && request.resource.data.get("suspendedTeams", {}) == resource.data.get("suspendedTeams", {})
+             // un equipo suspendido no se puede reclamar
+             && !(request.resource.data.teams.get("New Orleans Pelicans", null) != null
+                  && resource.data.get("suspendedTeams", {}).get("New Orleans Pelicans", false) == true)));
     }
     match /fantasySchedules/{team} {
       allow read, write: if request.auth != null;
