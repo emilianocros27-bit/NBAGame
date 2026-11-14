@@ -6422,6 +6422,43 @@
     toast(`Se jugaron ${played} partido${played>1?"s":""} mientras no estabas: <b>${wins}G-${played-wins}P</b> · +${esc(fantasyFmtMoney(Math.round(money*10)/10))}`);
     return played;
   }
+  // COMISIONADO: pone al día los partidos ya vencidos de un equipo cuyo dueño no ha entrado.
+  // Igual que la puesta al día normal, pero sin tocar el estado local (balones/misiones) de quien
+  // lo corre: solo crea/cierra los partidos, guarda su calendario y le acredita la taquilla al equipo.
+  async function fantasyCommishCatchUp(team){
+    if(authUser!=="emilianocros27@gmail.com") throw new Error("Solo el comisionado");
+    const prevSeason=fantasySeasonData;
+    fantasySeasonData = await window.DunkFire.fantasyGetSeason();
+    const sched = await window.DunkFire.fantasyGetSchedule(team);
+    if(!sched || !sched.games) throw new Error("Sin calendario para "+team);
+    const now=Date.now();
+    const pending = sched.games.filter(g=>g.status!=="final" && g.scheduledAt && (now-g.scheduledAt) >= FANTASY_TOTAL_REAL*1000)
+      .sort((a,b)=>a.scheduledAt-b.scheduledAt);
+    let money=0, wins=0, played=0;
+    for(const entry of pending){
+      const isAway = entry.role==="away";
+      const home = isAway ? entry.opponent : team, away = isAway ? team : entry.opponent;
+      const game = await fantasyEnsureGameDoc(entry.id, home, away, entry.scheduledAt);
+      if(!game) continue;
+      if(game.status!=="final") await window.DunkFire.fantasyUpdateGame(entry.id, {status:"final"}).catch(()=>{});
+      const won = isAway ? game.finalAway>game.finalHome : game.finalHome>game.finalAway;
+      const typeBonus = entry.type ? ((won?FANTASY_TYPE_WIN_BONUS:FANTASY_TYPE_LOSS_BONUS)[entry.type]||0) : 0;
+      money += FANTASY_GAME_REVENUE + typeBonus;
+      entry.status="final"; entry.won=won; entry.finalHome=game.finalHome; entry.finalAway=game.finalAway;
+      played++; if(won) wins++;
+    }
+    if(played){
+      await window.DunkFire.fantasySaveSchedule(team, sched.games, sched.gridVersion);
+      await window.DunkFire.fantasyAdjustBudget(team, Math.round(money*10)/10);
+      // quema suspensiones/lesiones de su plantilla
+      const susp=Object.assign({}, fantasySeasonData.suspensions||{}); let ch=false;
+      fantasyRoster(team).forEach(p=>{ const x=susp[p.slug]; if(x && x.gamesLeft>0){ const left=x.gamesLeft-played; if(left<=0) delete susp[p.slug]; else susp[p.slug]=Object.assign({},x,{gamesLeft:left}); ch=true; } });
+      if(ch) await window.DunkFire.fantasySetSuspensions(susp);
+    }
+    fantasySeasonData = prevSeason || fantasySeasonData;
+    return { team, played, wins, losses: played-wins, money: Math.round(money*10)/10 };
+  }
+  window.fantasyCommishCatchUp = fantasyCommishCatchUp;
   async function fantasyFinishGame(){
     const g=fantasyLiveGame;
     const e = fantasySchedule ? fantasySchedule.games.find(x=>x.id===fantasyLiveGameId) : null;
