@@ -5724,8 +5724,11 @@
   // firmar la contraoferta: el trato va con los términos NUEVOS (offeredSlug/amount ya actualizados)
   async function fantasyAcceptCounter(offer){
     try{
+      const bad = await fantasyTradeProblem(offer);
+      if(bad){ toast(bad); return; }
       await window.DunkFire.fantasyAcceptCounterOffer(offer.id);
       await fantasyExecuteTradeMoves(offer);
+      await fantasyCancelConflictingOffers(offer);
       toast("Contraoferta firmada ✓ — traspaso ejecutado al instante");
       closeSheet();
       renderFantasyTransfer();
@@ -5816,10 +5819,40 @@
       try{ fantasySeasonData = await window.DunkFire.fantasyRemoveTransferListing(slug); }catch(e){}
     }
   }
+  // antes de firmar: datos frescos — evita vender dos veces al mismo jugador o firmar sin dinero
+  async function fantasyTradeProblem(offer){
+    try{
+      const fresh = await window.DunkFire.fantasyGetSeason();
+      if(fresh) fantasySeasonData = fresh;
+    }catch(e){}
+    if(offer.playerSlug){
+      const p = BY[offer.playerSlug];
+      if(!p || fantasyEffectiveTeam(p)!==offer.toTeam) return "Ese jugador ya no está en "+offer.toTeam+" — la oferta no es válida";
+    }
+    for(const slug of fantasyOfferedList(offer.offeredSlug)){
+      const p = BY[slug];
+      if(!p || fantasyEffectiveTeam(p)!==offer.fromTeam) return (p?p.nombre:slug)+" ya no está en "+offer.fromTeam+" — la oferta no es válida";
+    }
+    if(offer.amount>0 && fantasyTeamBudget(offer.fromTeam) < offer.amount) return offer.fromTeam+" no tiene dinero suficiente para esta oferta";
+    return null;
+  }
+  // al firmar: las demás ofertas pendientes por los mismos jugadores quedan rechazadas
+  async function fantasyCancelConflictingOffers(offer){
+    const moved = new Set(fantasyOfferedList(offer.offeredSlug).concat(offer.playerSlug?[offer.playerSlug]:[]));
+    let list=[];
+    try{ list = await window.DunkFire.fantasyOffersForTeam(offer.toTeam); }catch(e){}
+    for(const o of list){
+      if(o.id===offer.id || (o.status!=="pending" && o.status!=="countered")) continue;
+      if(moved.has(o.playerSlug)){ try{ await window.DunkFire.fantasyRejectOffer(o.id); }catch(e){} }
+    }
+  }
   async function fantasyAcceptOfferAsRecipient(offer){
     try{
+      const bad = await fantasyTradeProblem(offer);
+      if(bad){ toast(bad); return; }
       await window.DunkFire.fantasyAcceptOfferAsRecipient(offer.id);
       await fantasyExecuteTradeMoves(offer);
+      await fantasyCancelConflictingOffers(offer);
       toast("Firmado ✓ — traspaso ejecutado al instante");
       fantasyOpenMail();
       fantasyRefreshMailBadge();
