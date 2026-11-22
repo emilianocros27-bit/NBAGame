@@ -4906,7 +4906,7 @@
   // se generan hasta 3 rondas extra (Cuartos y Semis a 1 partido, Final a mejor de 3). ----
   const FANTASY_PLAYOFF_WINS_NEEDED = 48;   // de 80 partidos de temporada regular (60%, sin contar Copa)
   const FANTASY_PLAYOFF_ROUNDS = ["playoff-qf","playoff-sf","playoff-final"];
-  const FANTASY_PLAYOFF_ROUND_LABEL = { "playoff-qf":"Cuartos de Playoffs", "playoff-sf":"Semifinal de Playoffs", "playoff-final":"Final de Playoffs" };
+  const FANTASY_PLAYOFF_ROUND_LABEL = { "playoff-r1":"Primera ronda de Playoffs", "playoff-qf":"Cuartos de Playoffs", "playoff-sf":"Semifinal de Playoffs", "playoff-final":"Final de Playoffs" };
   function fantasyRegularGames(){
     return fantasySchedule ? fantasySchedule.games.filter(g=>!g.type) : [];
   }
@@ -4924,6 +4924,24 @@
   }
   async function fantasyCheckPlayoffs(){
     if(!fantasySchedule || !fantasySeasonData) return;
+    // cuadro armado por el comisionado: solo se agregan los cruces que él publicó, nada automático
+    const bracket = fantasySeasonData.playoffBracket;
+    if(Array.isArray(bracket)){
+      const have = new Set(fantasySchedule.games.map(g=>g.id));
+      const lastDay = Math.max(0, ...fantasySchedule.games.filter(g=>!g.type).map(g=>g.day||0));
+      let added=0;
+      for(const m of bracket){
+        if(!m || have.has(m.id) || (m.home!==fantasyMyTeam && m.away!==fantasyMyTeam)) continue;
+        const isHome = m.home===fantasyMyTeam;
+        fantasySchedule.games.push({ id:m.id, day:lastDay+(m.round||1), opponent:isHome?m.away:m.home, role:isHome?"home":"away", status:"scheduled", scheduledAt:m.at||Date.now(), type:m.type });
+        added++;
+      }
+      if(added){
+        try{ await window.DunkFire.fantasySaveSchedule(fantasyMyTeam, fantasySchedule.games); }catch(e){}
+        toast("Nuevo partido de Playoffs disponible");
+      }
+      return;
+    }
     const reg = fantasyRegularGames();
     if(reg.length < 1 || reg.some(g=>g.status!=="final")) return;   // temporada regular completa
     if(fantasyRegularWins() < FANTASY_PLAYOFF_WINS_NEEDED) return;   // no clasificó
@@ -6136,7 +6154,7 @@
     $("#fantasy-mail-btn")?.addEventListener("click", fantasyOpenMail);
     fantasyRefreshMailBadge();
   }
-  const FANTASY_TYPE_LABEL = { "copa-final":"Final Copa NBA", "playoff-qf":"Cuartos de Playoffs", "playoff-sf":"Semifinal de Playoffs", "playoff-final":"Final de Playoffs" };
+  const FANTASY_TYPE_LABEL = { "copa-final":"Final Copa NBA", "playoff-r1":"Primera ronda de Playoffs", "playoff-qf":"Cuartos de Playoffs", "playoff-sf":"Semifinal de Playoffs", "playoff-final":"Final de Playoffs" };
   const fantasyFmtKick = ts => new Date(ts).toLocaleString("es-MX", {timeZone:"America/Mexico_City", day:"numeric", month:"short", hour:"numeric", minute:"2-digit"});
   function fantasyGameRowHTML(g, day){
     const now=Date.now();
@@ -6498,6 +6516,38 @@
     return { team, played, wins, losses: played-wins, money: Math.round(money*10)/10 };
   }
   window.fantasyCommishCatchUp = fantasyCommishCatchUp;
+  // comisionado: juega un partido de postemporada ya resuelto con el ganador que él decide.
+  // Genera el partido normal (jugadas, alineaciones) y repite hasta que gane quien debe.
+  async function fantasyCommishPlayoffGame(m){
+    if(authUser!=="emilianocros27@gmail.com") throw new Error("Solo el comisionado");
+    const prevSeason=fantasySeasonData;
+    fantasySeasonData = await window.DunkFire.fantasyGetSeason();
+    const lineup = async t=>{ try{ const l=await window.DunkFire.fantasyGetLineup(t); return l&&l.starters; }catch(e){ return null; } };
+    const hs=await lineup(m.home), as=await lineup(m.away);
+    let game=null;
+    for(let i=0;i<400;i++){
+      const g=generateFantasyGame(m.home, m.away, hs, as);
+      if((g.finalHome>g.finalAway ? m.home : m.away)===m.winner){ game=g; break; }
+    }
+    if(!game) throw new Error("No salió el ganador pedido: "+m.home+" vs "+m.away);
+    const at=m.at||Date.now();
+    game.status="final"; game.liveStartedAt=at-FANTASY_TOTAL_REAL*1000; game.type=m.type;
+    await window.DunkFire.fantasyCreateGame(m.id, game);
+    for(const t of [m.home, m.away]){
+      if(!(fantasySeasonData.teams||{})[t]) continue;   // los bots no llevan calendario
+      const sched=await window.DunkFire.fantasyGetSchedule(t);
+      if(!sched||!sched.games) continue;
+      const games=sched.games.filter(g=>g.id!==m.id);
+      const isHome=t===m.home;
+      const lastDay=Math.max(0, ...games.filter(g=>!g.type).map(g=>g.day||0));
+      games.push({ id:m.id, day:lastDay+(m.round||1), opponent:isHome?m.away:m.home, role:isHome?"home":"away", type:m.type,
+        status:"final", scheduledAt:game.liveStartedAt, finalHome:game.finalHome, finalAway:game.finalAway, won:t===m.winner });
+      await window.DunkFire.fantasySaveSchedule(t, games, sched.gridVersion);
+    }
+    fantasySeasonData = prevSeason || fantasySeasonData;
+    return { id:m.id, home:m.home, away:m.away, finalHome:game.finalHome, finalAway:game.finalAway, winner:m.winner };
+  }
+  window.fantasyCommishPlayoffGame = fantasyCommishPlayoffGame;
   async function fantasyFinishGame(){
     const g=fantasyLiveGame;
     const e = fantasySchedule ? fantasySchedule.games.find(x=>x.id===fantasyLiveGameId) : null;
